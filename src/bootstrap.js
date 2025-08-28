@@ -271,18 +271,19 @@ async function main() {
 
 
 module.exports = async ({ strapi }) => {
-  // Make Firebase admin available globally
+  // Make Firebase admin available globally if initialized
   strapi.firebase = admin;
   
-  // Log Firebase initialization
-  console.log('🔥 Firebase Admin SDK initialized successfully');
-  
-  // Verify Firebase connection
-  try {
-    await admin.auth().listUsers(1);
-    console.log('✅ Firebase Auth connection verified');
-  } catch (error) {
-    console.error('❌ Firebase Auth connection failed:', error.message);
+  if (admin?.apps?.length) {
+    console.log('🔥 Firebase Admin SDK initialized successfully');
+    try {
+      await admin.auth().listUsers(1);
+      console.log('✅ Firebase Auth connection verified');
+    } catch (error) {
+      console.error('❌ Firebase Auth connection failed:', error.message);
+    }
+  } else {
+    console.warn('Firebase Admin not initialized. Skipping Firebase checks.');
   }
   
   await seedExampleApp();
