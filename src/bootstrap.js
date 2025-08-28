@@ -3,6 +3,7 @@
 const fs = require('fs-extra');
 const path = require('path');
 const mime = require('mime-types');
+const admin = require('../config/firebase');
 const { categories, authors, articles, global, about } = require('../data/data.json');
 
 async function seedExampleApp() {
@@ -269,6 +270,20 @@ async function main() {
 }
 
 
-module.exports = async () => {
+module.exports = async ({ strapi }) => {
+  // Make Firebase admin available globally
+  strapi.firebase = admin;
+  
+  // Log Firebase initialization
+  console.log('🔥 Firebase Admin SDK initialized successfully');
+  
+  // Verify Firebase connection
+  try {
+    await admin.auth().listUsers(1);
+    console.log('✅ Firebase Auth connection verified');
+  } catch (error) {
+    console.error('❌ Firebase Auth connection failed:', error.message);
+  }
+  
   await seedExampleApp();
 };
