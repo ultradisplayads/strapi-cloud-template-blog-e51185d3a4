@@ -1,0 +1,26 @@
+{
+  "collectionName": "components_reusable_social_medias",
+  "info": {
+    "displayName": "Social Media",
+    "icon": "globe"
+  },
+  "options": {},
+  "attributes": {
+    "facebook": {
+      "type": "string"
+    },
+    "instagram": {
+      "type": "string"
+    },
+    "twitter": {
+      "type": "string"
+    },
+    "youtube": {
+      "type": "string"
+    },
+    "line": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

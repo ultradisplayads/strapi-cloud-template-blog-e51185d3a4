@@ -1,0 +1,29 @@
+{
+  "collectionName": "components_reusable_pricings",
+  "info": {
+    "displayName": "Pricing",
+    "icon": "priceTag"
+  },
+  "options": {},
+  "attributes": {
+    "amount": {
+      "type": "decimal"
+    },
+    "currency": {
+      "type": "string",
+      "default": "THB"
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "free",
+        "paid",
+        "donation"
+      ]
+    },
+    "description": {
+      "type": "text"
+    }
+  },
+  "config": {}
+}

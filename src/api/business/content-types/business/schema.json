@@ -1,0 +1,142 @@
+{
+  "kind": "collectionType",
+  "collectionName": "businesses",
+  "info": {
+    "singularName": "business",
+    "pluralName": "businesses",
+    "displayName": "Business"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "required": true
+    },
+    "description": {
+      "type": "richtext"
+    },
+    "categories": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::category.category",
+      "inversedBy": "businesses"
+    },
+    "address": {
+      "type": "component",
+      "component": "reusable.location",
+      "repeatable": true,
+      "required": true
+    },
+    "contact": {
+      "type": "component",
+      "component": "reusable.contact-info",
+      "repeatable": true
+    },
+    "hours": {
+      "type": "component",
+      "component": "reusable.business-hours",
+      "repeatable": true
+    },
+    "amenities": {
+      "type": "component",
+      "component": "reusable.amenities",
+      "repeatable": true
+    },
+    "images": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "logo": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "coverImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "rating": {
+      "type": "decimal",
+      "min": 0,
+      "max": 5
+    },
+    "reviewCount": {
+      "type": "integer",
+      "default": 0
+    },
+    "priceRange": {
+      "type": "enumeration",
+      "enum": [
+        "cheap",
+        "mid",
+        "good",
+        "premium"
+      ]
+    },
+    "tags": {
+      "type": "component",
+      "component": "reusable.tags",
+      "repeatable": true
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "socialMedia": {
+      "type": "component",
+      "component": "reusable.social-media",
+      "repeatable": true
+    },
+    "seo": {
+      "type": "component",
+      "component": "reusable.seo-metadata",
+      "repeatable": true
+    },
+    "events": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::event.event",
+      "mappedBy": "business"
+    },
+    "deals": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::deal.deal",
+      "mappedBy": "business"
+    },
+    "reviews": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::review.review",
+      "mappedBy": "business"
+    }
+  }
+}

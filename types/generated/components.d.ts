@@ -1,5 +1,129 @@
 import type { Schema, Struct } from '@strapi/strapi';
 
+export interface ReusableAmenities extends Struct.ComponentSchema {
+  collectionName: 'components_reusable_amenities';
+  info: {
+    displayName: 'Amenities';
+    icon: 'house';
+  };
+  attributes: {
+    airConditioning: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
+    creditCardsAccepted: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
+    customAmenities: Schema.Attribute.JSON;
+    parking: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    wheelchairAccessible: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
+    wifi: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+  };
+}
+
+export interface ReusableBusinessHours extends Struct.ComponentSchema {
+  collectionName: 'components_reusable_business_hours';
+  info: {
+    displayName: 'Business Hours';
+    icon: 'clock';
+  };
+  attributes: {
+    friday: Schema.Attribute.String;
+    monday: Schema.Attribute.String;
+    saturday: Schema.Attribute.String;
+    sunday: Schema.Attribute.String;
+    thursday: Schema.Attribute.String;
+    tuesday: Schema.Attribute.String;
+    wednesday: Schema.Attribute.String;
+  };
+}
+
+export interface ReusableContactInfo extends Struct.ComponentSchema {
+  collectionName: 'components_reusable_contact_infos';
+  info: {
+    displayName: 'Contact Info';
+    icon: 'pinMap';
+  };
+  attributes: {
+    email: Schema.Attribute.Email;
+    lineId: Schema.Attribute.String;
+    phone: Schema.Attribute.String;
+    website: Schema.Attribute.String;
+    whatsapp: Schema.Attribute.String;
+  };
+}
+
+export interface ReusableLocation extends Struct.ComponentSchema {
+  collectionName: 'components_reusable_locations';
+  info: {
+    displayName: 'Location';
+    icon: 'globe';
+  };
+  attributes: {
+    address: Schema.Attribute.String & Schema.Attribute.Required;
+    city: Schema.Attribute.String;
+    country: Schema.Attribute.String & Schema.Attribute.DefaultTo<'Thailand'>;
+    formattedAddress: Schema.Attribute.Text;
+    latitutde: Schema.Attribute.Decimal;
+    longitude: Schema.Attribute.Decimal;
+    postalCode: Schema.Attribute.String;
+    state: Schema.Attribute.String;
+  };
+}
+
+export interface ReusablePricing extends Struct.ComponentSchema {
+  collectionName: 'components_reusable_pricings';
+  info: {
+    displayName: 'Pricing';
+    icon: 'priceTag';
+  };
+  attributes: {
+    amount: Schema.Attribute.Decimal;
+    currency: Schema.Attribute.String & Schema.Attribute.DefaultTo<'THB'>;
+    description: Schema.Attribute.Text;
+    type: Schema.Attribute.Enumeration<['free', 'paid', 'donation']>;
+  };
+}
+
+export interface ReusableSeoMetadata extends Struct.ComponentSchema {
+  collectionName: 'components_reusable_seo_metadata';
+  info: {
+    displayName: 'SEO Metadata';
+  };
+  attributes: {
+    keywords: Schema.Attribute.String;
+    metaDescription: Schema.Attribute.Text;
+    metaTitle: Schema.Attribute.String;
+    ogDescription: Schema.Attribute.Text;
+    ogImage: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    ogTitle: Schema.Attribute.String;
+  };
+}
+
+export interface ReusableSocialMedia extends Struct.ComponentSchema {
+  collectionName: 'components_reusable_social_medias';
+  info: {
+    displayName: 'Social Media';
+    icon: 'globe';
+  };
+  attributes: {
+    facebook: Schema.Attribute.String;
+    instagram: Schema.Attribute.String;
+    line: Schema.Attribute.String;
+    twitter: Schema.Attribute.String;
+    youtube: Schema.Attribute.String;
+  };
+}
+
+export interface ReusableTags extends Struct.ComponentSchema {
+  collectionName: 'components_reusable_tags';
+  info: {
+    displayName: 'Tags';
+    icon: 'priceTag';
+  };
+  attributes: {
+    tags: Schema.Attribute.JSON;
+  };
+}
+
 export interface SharedMedia extends Struct.ComponentSchema {
   collectionName: 'components_shared_media';
   info: {
@@ -65,6 +189,14 @@ export interface SharedSlider extends Struct.ComponentSchema {
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
+      'reusable.amenities': ReusableAmenities;
+      'reusable.business-hours': ReusableBusinessHours;
+      'reusable.contact-info': ReusableContactInfo;
+      'reusable.location': ReusableLocation;
+      'reusable.pricing': ReusablePricing;
+      'reusable.seo-metadata': ReusableSeoMetadata;
+      'reusable.social-media': ReusableSocialMedia;
+      'reusable.tags': ReusableTags;
       'shared.media': SharedMedia;
       'shared.quote': SharedQuote;
       'shared.rich-text': SharedRichText;

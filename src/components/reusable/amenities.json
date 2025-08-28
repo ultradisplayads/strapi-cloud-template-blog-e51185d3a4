@@ -1,0 +1,34 @@
+{
+  "collectionName": "components_reusable_amenities",
+  "info": {
+    "displayName": "Amenities",
+    "icon": "house"
+  },
+  "options": {},
+  "attributes": {
+    "wifi": {
+      "type": "boolean",
+      "default": false
+    },
+    "parking": {
+      "type": "boolean",
+      "default": false
+    },
+    "airConditioning": {
+      "type": "boolean",
+      "default": false
+    },
+    "wheelchairAccessible": {
+      "type": "boolean",
+      "default": false
+    },
+    "creditCardsAccepted": {
+      "type": "boolean",
+      "default": false
+    },
+    "customAmenities": {
+      "type": "json"
+    }
+  },
+  "config": {}
+}

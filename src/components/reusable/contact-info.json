@@ -1,0 +1,26 @@
+{
+  "collectionName": "components_reusable_contact_infos",
+  "info": {
+    "displayName": "Contact Info",
+    "icon": "pinMap"
+  },
+  "options": {},
+  "attributes": {
+    "phone": {
+      "type": "string"
+    },
+    "email": {
+      "type": "email"
+    },
+    "website": {
+      "type": "string"
+    },
+    "lineId": {
+      "type": "string"
+    },
+    "whatsapp": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}
