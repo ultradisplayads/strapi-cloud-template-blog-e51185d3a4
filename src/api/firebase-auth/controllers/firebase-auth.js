@@ -5,38 +5,143 @@ module.exports = {
     try {
       console.log('🔥 Firebase Auth: Register endpoint called');
       
-      const { username, email, password, firebaseUid } = ctx.request.body;
+      let { username, email, firebaseUid } = ctx.request.body;
       
-      if (!username || !email || !firebaseUid) {
-        return ctx.badRequest('Username, email, and firebaseUid are required');
+      if (!firebaseUid) {
+        return ctx.badRequest('firebaseUid is required');
       }
 
-      console.log('Creating user with data:', { username, email, firebaseUid });
-
-      // Check if user already exists
-      const existingUser = await strapi.entityService.findMany('plugin::users-permissions.user', {
-        filters: { 
-          $or: [
-            { email },
-            { firebaseUid }
-          ]
+      // If email missing, try to resolve from Firebase Admin
+      if (!email) {
+        try {
+          const fbUser = await strapi.firebase.auth().getUser(firebaseUid);
+          email = fbUser?.email || '';
+          console.log('📧 Resolved email from Firebase Admin:', email || 'none');
+        } catch (e) {
+          console.warn('⚠️ Could not resolve email from Firebase Admin for UID:', firebaseUid);
         }
-      });
+      }
 
-      if (existingUser && existingUser.length > 0) {
-        return ctx.badRequest('User already exists with this email or firebaseUid');
+      // Fallback username if missing
+      if (!username) {
+        username = email ? email.split('@')[0] : `user-${String(firebaseUid).slice(0,6)}`;
+      }
+
+      // If still no email, synthesize a placeholder to satisfy schema requirements
+      if (!email) {
+        email = `${firebaseUid}@no-email.firebase`;
+        console.warn('⚠️ Email missing; synthesizing placeholder for registration:', email);
       }
 
       // Create the user
-      const userData = {
+      let userData = {
         username,
         email,
         firebaseUid,
         confirmed: true,
         blocked: false,
-        role: 1, // Authenticated role
         provider: 'firebase'
       };
+
+      // Ensure username is unique; if taken, append a short suffix
+      const sameUsername = await strapi.entityService.findMany('plugin::users-permissions.user', {
+        filters: { username }
+      });
+      if (sameUsername && sameUsername.length > 0) {
+        const suffix = String(Date.now()).slice(-4);
+        userData.username = `${username}-${suffix}`;
+        console.warn('⚠️ Username taken, using fallback:', userData.username);
+      }
+
+      // Resolve default authenticated role id dynamically
+      const defaultRole = await strapi.query('plugin::users-permissions.role').findOne({
+        where: { type: 'authenticated' },
+      });
+
+      if (!defaultRole) {
+        return ctx.badRequest('Default role not found');
+      }
+
+      userData = { ...userData, role: defaultRole.id };
+
+      console.log('Creating/Linking user with data:', { username, email, firebaseUid });
+
+      // Check if user already exists
+      const existingUser = await strapi.entityService.findMany('plugin::users-permissions.user', {
+        filters: {
+          $or: [
+            { email: { $eqi: email } },
+            { firebaseUid: { $eq: firebaseUid } }
+          ]
+        }
+      });
+
+      if (existingUser && existingUser.length > 0) {
+        const user = existingUser[0];
+
+        // If user exists with same email but no firebaseUid, link the account
+        if (user.email === email && !user.firebaseUid) {
+          const updated = await strapi.entityService.update('plugin::users-permissions.user', user.id, {
+            data: {
+              firebaseUid,
+              provider: 'firebase',
+              confirmed: true,
+              blocked: false,
+            },
+          });
+
+          console.log('🔗 Linked existing user with firebaseUid:', updated.id);
+
+          return ctx.send({
+            message: 'User linked successfully',
+            user: {
+              id: updated.id,
+              username: updated.username,
+              email: updated.email,
+              firebaseUid: updated.firebaseUid,
+            }
+          });
+        }
+
+        // If user exists with same email but with a different firebaseUid, overwrite to new UID
+        if (user.email === email && user.firebaseUid !== firebaseUid) {
+          const updated = await strapi.entityService.update('plugin::users-permissions.user', user.id, {
+            data: {
+              firebaseUid,
+              provider: 'firebase',
+              confirmed: true,
+              blocked: false,
+            },
+          });
+
+          console.log('🔄 Updated existing user firebaseUid:', { id: updated.id, oldUid: user.firebaseUid, newUid: firebaseUid });
+
+          return ctx.send({
+            message: 'User firebaseUid updated successfully',
+            user: {
+              id: updated.id,
+              username: updated.username,
+              email: updated.email,
+              firebaseUid: updated.firebaseUid,
+            }
+          });
+        }
+
+        // If user already exists with this firebaseUid, return success
+        if (user.firebaseUid === firebaseUid) {
+          return ctx.send({
+            message: 'User already exists',
+            user: {
+              id: user.id,
+              username: user.username,
+              email: user.email,
+              firebaseUid: user.firebaseUid,
+            }
+          });
+        }
+
+        return ctx.badRequest('User already exists with this email or firebaseUid');
+      }
 
       const user = await strapi.entityService.create('plugin::users-permissions.user', {
         data: userData
