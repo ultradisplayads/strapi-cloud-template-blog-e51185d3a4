@@ -13,10 +13,21 @@ const serviceAccount = {
   client_x509_cert_url: process.env.FIREBASE_CLIENT_X509_CERT_URL,
 };
 
-if (!admin.apps.length) {
+const hasRequiredCreds = Boolean(
+  serviceAccount.project_id &&
+  serviceAccount.client_email &&
+  serviceAccount.private_key
+);
+
+if (!admin.apps.length && hasRequiredCreds) {
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
   });
+} else if (!hasRequiredCreds) {
+  // Skip initialization in environments without Firebase credentials
+  // This allows Strapi to build/run without Firebase configured (middleware will no-op)
+  // console.warn kept minimal to avoid noisy logs in build output
+  console.warn('Firebase credentials not found. Skipping Firebase Admin initialization.');
 }
 
 module.exports = admin; 

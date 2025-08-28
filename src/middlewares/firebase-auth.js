@@ -27,8 +27,12 @@ module.exports = (config, { strapi }) => {
           }
         }
       } catch (jwtError) {
-        // JWT verification failed, try Firebase token
+        // JWT verification failed, try Firebase token if admin is initialized
         try {
+          if (!strapi.firebase?.apps?.length) {
+            console.log('Firebase Admin not initialized. Skipping Firebase token verification.');
+            return next();
+          }
           const decodedToken = await strapi.firebase.auth().verifyIdToken(token);
           
           if (decodedToken && decodedToken.uid) {
