@@ -1,0 +1,117 @@
+{
+  "kind": "collectionType",
+  "collectionName": "deals",
+  "info": {
+    "singularName": "deal",
+    "pluralName": "deals",
+    "displayName": "Deal"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "uid",
+      "required": true
+    },
+    "description": {
+      "type": "richtext"
+    },
+    "business": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::business.business",
+      "inversedBy": "deals"
+    },
+    "category": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::category.category",
+      "inversedBy": "deals"
+    },
+    "originalPrice": {
+      "type": "decimal",
+      "required": true
+    },
+    "salePrice": {
+      "type": "decimal",
+      "required": true
+    },
+    "discountPercent": {
+      "type": "integer"
+    },
+    "currency": {
+      "type": "string",
+      "default": "THB"
+    },
+    "startDate": {
+      "type": "datetime",
+      "required": true
+    },
+    "endDate": {
+      "type": "datetime",
+      "required": true
+    },
+    "maxQuantity": {
+      "type": "integer"
+    },
+    "soldQuantity": {
+      "type": "integer",
+      "default": 0
+    },
+    "images": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "terms": {
+      "type": "richtext"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true
+    },
+    "isGrouponListed": {
+      "type": "boolean",
+      "default": false
+    },
+    "grouponCommission": {
+      "type": "decimal"
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "views": {
+      "type": "integer",
+      "default": 0
+    },
+    "clicks": {
+      "type": "integer",
+      "default": 0
+    },
+    "conversions": {
+      "type": "integer",
+      "default": 0
+    },
+    "tags": {
+      "type": "component",
+      "component": "reusable.tags",
+      "repeatable": true
+    },
+    "seo": {
+      "type": "component",
+      "component": "reusable.seo-metadata",
+      "repeatable": true
+    }
+  }
+}

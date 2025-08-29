@@ -1,0 +1,14 @@
+{
+  "collectionName": "components_reusable_tags",
+  "info": {
+    "displayName": "Tags",
+    "icon": "priceTag"
+  },
+  "options": {},
+  "attributes": {
+    "tags": {
+      "type": "json"
+    }
+  },
+  "config": {}
+}

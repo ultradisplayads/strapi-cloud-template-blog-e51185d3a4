@@ -1,0 +1,37 @@
+{
+  "collectionName": "components_reusable_locations",
+  "info": {
+    "displayName": "Location",
+    "icon": "globe"
+  },
+  "options": {},
+  "attributes": {
+    "address": {
+      "type": "string",
+      "required": true
+    },
+    "city": {
+      "type": "string"
+    },
+    "state": {
+      "type": "string"
+    },
+    "country": {
+      "type": "string",
+      "default": "Thailand"
+    },
+    "postalCode": {
+      "type": "string"
+    },
+    "latitutde": {
+      "type": "decimal"
+    },
+    "longitude": {
+      "type": "decimal"
+    },
+    "formattedAddress": {
+      "type": "text"
+    }
+  },
+  "config": {}
+}

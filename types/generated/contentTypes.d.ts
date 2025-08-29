@@ -386,7 +386,13 @@ export interface ApiAboutAbout extends Struct.SingleTypeSchema {
   };
   attributes: {
     blocks: Schema.Attribute.DynamicZone<
-      ['shared.media', 'shared.quote', 'shared.rich-text', 'shared.slider']
+      [
+        'shared.media',
+        'shared.quote',
+        'shared.rich-text',
+        'shared.slider',
+        'reusable.location',
+      ]
     >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -474,6 +480,73 @@ export interface ApiAuthorAuthor extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiBusinessBusiness extends Struct.CollectionTypeSchema {
+  collectionName: 'businesses';
+  info: {
+    displayName: 'Business';
+    pluralName: 'businesses';
+    singularName: 'business';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    address: Schema.Attribute.Component<'reusable.location', true> &
+      Schema.Attribute.Required;
+    amenities: Schema.Attribute.Component<'reusable.amenities', true>;
+    categories: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::category.category'
+    >;
+    contact: Schema.Attribute.Component<'reusable.contact-info', true>;
+    coverImage: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios'
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    deals: Schema.Attribute.Relation<'manyToMany', 'api::deal.deal'>;
+    description: Schema.Attribute.RichText;
+    events: Schema.Attribute.Relation<'oneToMany', 'api::event.event'>;
+    featured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    hours: Schema.Attribute.Component<'reusable.business-hours', true>;
+    images: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios',
+      true
+    >;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::business.business'
+    > &
+      Schema.Attribute.Private;
+    logo: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    priceRange: Schema.Attribute.Enumeration<
+      ['cheap', 'mid', 'good', 'premium']
+    >;
+    publishedAt: Schema.Attribute.DateTime;
+    rating: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 5;
+          min: 0;
+        },
+        number
+      >;
+    reviewCount: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    reviews: Schema.Attribute.Relation<'oneToMany', 'api::review.review'>;
+    seo: Schema.Attribute.Component<'reusable.seo-metadata', true>;
+    slug: Schema.Attribute.UID & Schema.Attribute.Required;
+    socialMedia: Schema.Attribute.Component<'reusable.social-media', true>;
+    tags: Schema.Attribute.Component<'reusable.tags', true>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    verified: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+  };
+}
+
 export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
   collectionName: 'categories';
   info: {
@@ -486,11 +559,22 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
     draftAndPublish: false;
   };
   attributes: {
+    active: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
     articles: Schema.Attribute.Relation<'oneToMany', 'api::article.article'>;
+    businesses: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::business.business'
+    >;
+    color: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    deals: Schema.Attribute.Relation<'oneToMany', 'api::deal.deal'>;
     description: Schema.Attribute.Text;
+    events: Schema.Attribute.Relation<'oneToMany', 'api::event.event'>;
+    featured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    icon: Schema.Attribute.String;
+    image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -498,11 +582,120 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     name: Schema.Attribute.String;
+    order: Schema.Attribute.Integer;
     publishedAt: Schema.Attribute.DateTime;
     slug: Schema.Attribute.UID;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+  };
+}
+
+export interface ApiDealDeal extends Struct.CollectionTypeSchema {
+  collectionName: 'deals';
+  info: {
+    displayName: 'Deal';
+    pluralName: 'deals';
+    singularName: 'deal';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    business: Schema.Attribute.Relation<'manyToMany', 'api::business.business'>;
+    category: Schema.Attribute.Relation<'manyToOne', 'api::category.category'>;
+    clicks: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    conversions: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    currency: Schema.Attribute.String & Schema.Attribute.DefaultTo<'THB'>;
+    description: Schema.Attribute.RichText;
+    discountPercent: Schema.Attribute.Integer;
+    endDate: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    featured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    grouponCommission: Schema.Attribute.Decimal;
+    images: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios',
+      true
+    >;
+    isActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    isGrouponListed: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::deal.deal'> &
+      Schema.Attribute.Private;
+    maxQuantity: Schema.Attribute.Integer;
+    originalPrice: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    salePrice: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    seo: Schema.Attribute.Component<'reusable.seo-metadata', true>;
+    slug: Schema.Attribute.UID & Schema.Attribute.Required;
+    soldQuantity: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    startDate: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    tags: Schema.Attribute.Component<'reusable.tags', true>;
+    terms: Schema.Attribute.RichText;
+    title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    views: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+  };
+}
+
+export interface ApiEventEvent extends Struct.CollectionTypeSchema {
+  collectionName: 'events';
+  info: {
+    displayName: 'Event';
+    pluralName: 'events';
+    singularName: 'event';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    business: Schema.Attribute.Relation<'manyToOne', 'api::business.business'>;
+    capacity: Schema.Attribute.Integer;
+    category: Schema.Attribute.Relation<'manyToOne', 'api::category.category'>;
+    coverImage: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios'
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.RichText;
+    endTime: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    eventStatus: Schema.Attribute.Enumeration<
+      ['draft', 'published', 'cancelled', 'completed']
+    >;
+    eventType: Schema.Attribute.Enumeration<['in-person', 'virtual', 'hybrid']>;
+    featured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    images: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios',
+      true
+    >;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::event.event'> &
+      Schema.Attribute.Private;
+    location: Schema.Attribute.Component<'reusable.location', true>;
+    price: Schema.Attribute.Component<'reusable.pricing', true>;
+    publishedAt: Schema.Attribute.DateTime;
+    registeredAttendees: Schema.Attribute.Integer &
+      Schema.Attribute.DefaultTo<0>;
+    registrationDeadline: Schema.Attribute.DateTime;
+    registrationRequired: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
+    seo: Schema.Attribute.Component<'reusable.seo-metadata', true>;
+    shortDescription: Schema.Attribute.Text;
+    slug: Schema.Attribute.UID & Schema.Attribute.Required;
+    startDate: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    tags: Schema.Attribute.Component<'reusable.tags', true>;
+    timezone: Schema.Attribute.String;
+    title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    venue: Schema.Attribute.String;
   };
 }
 
@@ -535,6 +728,57 @@ export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+  };
+}
+
+export interface ApiReviewReview extends Struct.CollectionTypeSchema {
+  collectionName: 'reviews';
+  info: {
+    displayName: 'Review';
+    pluralName: 'reviews';
+    singularName: 'review';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    business: Schema.Attribute.Relation<'manyToOne', 'api::business.business'>;
+    content: Schema.Attribute.RichText;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    helpful: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    images: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios',
+      true
+    >;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::review.review'
+    > &
+      Schema.Attribute.Private;
+    notHelpful: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    publishedAt: Schema.Attribute.DateTime;
+    rating: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 5;
+          min: 0;
+        },
+        number
+      >;
+    reviewStatus: Schema.Attribute.Enumeration<
+      ['pending', 'approved', 'rejected']
+    >;
+    title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    verifiedPurchase: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
+    visitDate: Schema.Attribute.Date;
   };
 }
 
@@ -1050,8 +1294,12 @@ declare module '@strapi/strapi' {
       'api::about.about': ApiAboutAbout;
       'api::article.article': ApiArticleArticle;
       'api::author.author': ApiAuthorAuthor;
+      'api::business.business': ApiBusinessBusiness;
       'api::category.category': ApiCategoryCategory;
+      'api::deal.deal': ApiDealDeal;
+      'api::event.event': ApiEventEvent;
       'api::global.global': ApiGlobalGlobal;
+      'api::review.review': ApiReviewReview;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

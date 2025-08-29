@@ -1,0 +1,129 @@
+{
+  "kind": "collectionType",
+  "collectionName": "events",
+  "info": {
+    "singularName": "event",
+    "pluralName": "events",
+    "displayName": "Event"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "uid",
+      "required": true
+    },
+    "description": {
+      "type": "richtext"
+    },
+    "shortDescription": {
+      "type": "text"
+    },
+    "category": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::category.category",
+      "inversedBy": "events"
+    },
+    "business": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::business.business",
+      "inversedBy": "events"
+    },
+    "startDate": {
+      "type": "datetime",
+      "required": true
+    },
+    "endTime": {
+      "type": "datetime",
+      "required": true
+    },
+    "timezone": {
+      "type": "string"
+    },
+    "location": {
+      "type": "component",
+      "component": "reusable.location",
+      "repeatable": true
+    },
+    "venue": {
+      "type": "string"
+    },
+    "images": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "coverImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "price": {
+      "type": "component",
+      "component": "reusable.pricing",
+      "repeatable": true
+    },
+    "capacity": {
+      "type": "integer"
+    },
+    "registeredAttendees": {
+      "type": "integer",
+      "default": 0
+    },
+    "eventStatus": {
+      "type": "enumeration",
+      "enum": [
+        "draft",
+        "published",
+        "cancelled",
+        "completed"
+      ]
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "tags": {
+      "type": "component",
+      "component": "reusable.tags",
+      "repeatable": true
+    },
+    "seo": {
+      "type": "component",
+      "component": "reusable.seo-metadata",
+      "repeatable": true
+    },
+    "registrationRequired": {
+      "type": "boolean",
+      "default": false
+    },
+    "registrationDeadline": {
+      "type": "datetime"
+    },
+    "eventType": {
+      "type": "enumeration",
+      "enum": [
+        "in-person",
+        "virtual",
+        "hybrid"
+      ]
+    }
+  }
+}
