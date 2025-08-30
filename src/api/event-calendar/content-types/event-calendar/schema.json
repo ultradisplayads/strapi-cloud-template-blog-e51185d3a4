@@ -1,0 +1,117 @@
+{
+  "kind": "collectionType",
+  "collectionName": "event_calendars",
+  "info": {
+    "singularName": "event-calendar",
+    "pluralName": "event-calendars",
+    "displayName": "Event Calendar"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Title": {
+      "type": "string",
+      "required": true
+    },
+    "Date": {
+      "type": "date",
+      "required": true
+    },
+    "Time": {
+      "type": "time",
+      "required": true
+    },
+    "Location": {
+      "type": "string",
+      "required": true
+    },
+    "Attendees": {
+      "type": "integer",
+      "default": 0
+    },
+    "MaxAttendees": {
+      "type": "integer"
+    },
+    "Price": {
+      "type": "decimal",
+      "default": 0
+    },
+    "Category": {
+      "type": "enumeration",
+      "enum": [
+        "Music",
+        "Sports",
+        "Tourism",
+        "Entertainment",
+        "Nightlife",
+        "Shopping",
+        "Food",
+        "Culture",
+        "Business",
+        "Education",
+        "Health",
+        "Technology"
+      ],
+      "required": true
+    },
+    "Status": {
+      "type": "enumeration",
+      "enum": [
+        "confirmed",
+        "filling-fast",
+        "sold-out",
+        "free",
+        "cancelled",
+        "postponed"
+      ],
+      "default": "confirmed"
+    },
+    "Image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "Featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "IsActive": {
+      "type": "boolean",
+      "default": true
+    },
+    "Description": {
+      "type": "text"
+    },
+    "Organizer": {
+      "type": "string"
+    },
+    "ContactEmail": {
+      "type": "string"
+    },
+    "ContactPhone": {
+      "type": "string"
+    },
+    "Website": {
+      "type": "string"
+    },
+    "Tags": {
+      "type": "json"
+    },
+    "Duration": {
+      "type": "string"
+    },
+    "AgeRestriction": {
+      "type": "string"
+    },
+    "Accessibility": {
+      "type": "text"
+    },
+    "LastUpdated": {
+      "type": "datetime"
+    }
+  }
+}

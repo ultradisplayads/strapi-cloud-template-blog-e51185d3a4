@@ -1,0 +1,92 @@
+{
+  "kind": "collectionType",
+  "collectionName": "google_reviews",
+  "info": {
+    "singularName": "google-review",
+    "pluralName": "google-reviews",
+    "displayName": "Google Review"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "AuthorName": {
+      "type": "string",
+      "required": true
+    },
+    "AuthorProfilePhotoUrl": {
+      "type": "string"
+    },
+    "AuthorProfileUrl": {
+      "type": "string"
+    },
+    "Rating": {
+      "type": "integer",
+      "min": 1,
+      "max": 5,
+      "required": true
+    },
+    "ReviewText": {
+      "type": "text",
+      "required": true
+    },
+    "ReviewTime": {
+      "type": "datetime",
+      "required": true
+    },
+    "RelativeTimeDescription": {
+      "type": "string"
+    },
+    "BusinessName": {
+      "type": "string",
+      "required": true
+    },
+    "BusinessAddress": {
+      "type": "string"
+    },
+    "BusinessType": {
+      "type": "string"
+    },
+    "BusinessUrl": {
+      "type": "string"
+    },
+    "Verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "IsActive": {
+      "type": "boolean",
+      "default": true
+    },
+    "Featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "Category": {
+      "type": "enumeration",
+      "enum": [
+        "Restaurant",
+        "Hotel",
+        "Spa",
+        "Shopping",
+        "Entertainment",
+        "Nightlife",
+        "Tourism",
+        "Transportation",
+        "Health",
+        "Other"
+      ]
+    },
+    "Location": {
+      "type": "string"
+    },
+    "Language": {
+      "type": "string",
+      "default": "en"
+    },
+    "LastUpdated": {
+      "type": "datetime"
+    }
+  }
+}

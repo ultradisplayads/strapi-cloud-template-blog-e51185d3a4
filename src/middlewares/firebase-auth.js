@@ -2,6 +2,16 @@
 
 module.exports = (config, { strapi }) => {
   return async (ctx, next) => {
+    // Skip Firebase auth for admin routes
+    if (ctx.request.url.startsWith('/admin')) {
+      return next();
+    }
+    
+    // Skip Firebase auth for non-API routes
+    if (!ctx.request.url.startsWith('/api')) {
+      return next();
+    }
+    
     console.log('🔥 Firebase Auth Middleware: Request to', ctx.request.url);
     const token = ctx.request.header.authorization?.replace('Bearer ', '');
     

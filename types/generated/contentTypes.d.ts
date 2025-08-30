@@ -555,6 +555,74 @@ export interface ApiBreakingNewsBreakingNews
   };
 }
 
+export interface ApiBusinessSpotlightBusinessSpotlight
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'business_spotlights';
+  info: {
+    displayName: 'Business Spotlight';
+    pluralName: 'business-spotlights';
+    singularName: 'business-spotlight';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    Address: Schema.Attribute.Text;
+    Category: Schema.Attribute.Enumeration<
+      [
+        'Fine Dining',
+        'Casual Dining',
+        'Health & Beauty',
+        'Water Sports',
+        'Shopping',
+        'Entertainment',
+        'Wellness',
+        'Adventure',
+        'Nightlife',
+        'Culture',
+      ]
+    > &
+      Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Deal: Schema.Attribute.String;
+    Description: Schema.Attribute.Text & Schema.Attribute.Required;
+    Email: Schema.Attribute.String;
+    Featured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    Hours: Schema.Attribute.String;
+    Image: Schema.Attribute.Media<'images'>;
+    IsActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    LastUpdated: Schema.Attribute.DateTime;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::business-spotlight.business-spotlight'
+    > &
+      Schema.Attribute.Private;
+    Location: Schema.Attribute.String & Schema.Attribute.Required;
+    Name: Schema.Attribute.String & Schema.Attribute.Required;
+    Phone: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    Rating: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 5;
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<0>;
+    Reviews: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    SocialMedia: Schema.Attribute.JSON;
+    Tags: Schema.Attribute.JSON;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Website: Schema.Attribute.String;
+  };
+}
+
 export interface ApiBusinessBusiness extends Struct.CollectionTypeSchema {
   collectionName: 'businesses';
   info: {
@@ -718,6 +786,82 @@ export interface ApiDealDeal extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiEventCalendarEventCalendar
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'event_calendars';
+  info: {
+    displayName: 'Event Calendar';
+    pluralName: 'event-calendars';
+    singularName: 'event-calendar';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    Accessibility: Schema.Attribute.Text;
+    AgeRestriction: Schema.Attribute.String;
+    Attendees: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    Category: Schema.Attribute.Enumeration<
+      [
+        'Music',
+        'Sports',
+        'Tourism',
+        'Entertainment',
+        'Nightlife',
+        'Shopping',
+        'Food',
+        'Culture',
+        'Business',
+        'Education',
+        'Health',
+        'Technology',
+      ]
+    > &
+      Schema.Attribute.Required;
+    ContactEmail: Schema.Attribute.String;
+    ContactPhone: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Date: Schema.Attribute.Date & Schema.Attribute.Required;
+    Description: Schema.Attribute.Text;
+    Duration: Schema.Attribute.String;
+    Featured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    Image: Schema.Attribute.Media<'images'>;
+    IsActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    LastUpdated: Schema.Attribute.DateTime;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::event-calendar.event-calendar'
+    > &
+      Schema.Attribute.Private;
+    Location: Schema.Attribute.String & Schema.Attribute.Required;
+    MaxAttendees: Schema.Attribute.Integer;
+    Organizer: Schema.Attribute.String;
+    Price: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
+    publishedAt: Schema.Attribute.DateTime;
+    Status: Schema.Attribute.Enumeration<
+      [
+        'confirmed',
+        'filling-fast',
+        'sold-out',
+        'free',
+        'cancelled',
+        'postponed',
+      ]
+    > &
+      Schema.Attribute.DefaultTo<'confirmed'>;
+    Tags: Schema.Attribute.JSON;
+    Time: Schema.Attribute.Time & Schema.Attribute.Required;
+    Title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Website: Schema.Attribute.String;
+  };
+}
+
 export interface ApiEventEvent extends Struct.CollectionTypeSchema {
   collectionName: 'events';
   info: {
@@ -774,6 +918,67 @@ export interface ApiEventEvent extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiForumActivityForumActivity
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'forum_activities';
+  info: {
+    displayName: 'Forum Activity';
+    pluralName: 'forum-activities';
+    singularName: 'forum-activity';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    AuthorAvatar: Schema.Attribute.Media<'images'>;
+    AuthorName: Schema.Attribute.String & Schema.Attribute.Required;
+    AuthorReputation: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    Category: Schema.Attribute.Enumeration<
+      [
+        'Nightlife',
+        'Visa & Legal',
+        'Transportation',
+        'Events',
+        'Living',
+        'Food & Dining',
+        'Accommodation',
+        'Shopping',
+        'Health',
+        'Entertainment',
+        'Sports',
+        'General',
+      ]
+    > &
+      Schema.Attribute.Required;
+    Content: Schema.Attribute.Text;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Featured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    IsActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    IsHot: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    IsPinned: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    LastActivity: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    LastUpdated: Schema.Attribute.DateTime;
+    Likes: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::forum-activity.forum-activity'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    Replies: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    Tags: Schema.Attribute.JSON;
+    Title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    URL: Schema.Attribute.String;
+    Views: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+  };
+}
+
 export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
   collectionName: 'globals';
   info: {
@@ -800,6 +1005,116 @@ export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
     publishedAt: Schema.Attribute.DateTime;
     siteDescription: Schema.Attribute.Text & Schema.Attribute.Required;
     siteName: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiGoogleReviewGoogleReview
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'google_reviews';
+  info: {
+    displayName: 'Google Review';
+    pluralName: 'google-reviews';
+    singularName: 'google-review';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    AuthorName: Schema.Attribute.String & Schema.Attribute.Required;
+    AuthorProfilePhotoUrl: Schema.Attribute.String;
+    AuthorProfileUrl: Schema.Attribute.String;
+    BusinessAddress: Schema.Attribute.String;
+    BusinessName: Schema.Attribute.String & Schema.Attribute.Required;
+    BusinessType: Schema.Attribute.String;
+    BusinessUrl: Schema.Attribute.String;
+    Category: Schema.Attribute.Enumeration<
+      [
+        'Restaurant',
+        'Hotel',
+        'Spa',
+        'Shopping',
+        'Entertainment',
+        'Nightlife',
+        'Tourism',
+        'Transportation',
+        'Health',
+        'Other',
+      ]
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Featured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    IsActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    Language: Schema.Attribute.String & Schema.Attribute.DefaultTo<'en'>;
+    LastUpdated: Schema.Attribute.DateTime;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::google-review.google-review'
+    > &
+      Schema.Attribute.Private;
+    Location: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    Rating: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 5;
+          min: 1;
+        },
+        number
+      >;
+    RelativeTimeDescription: Schema.Attribute.String;
+    ReviewText: Schema.Attribute.Text & Schema.Attribute.Required;
+    ReviewTime: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Verified: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+  };
+}
+
+export interface ApiLiveEventLiveEvent extends Struct.CollectionTypeSchema {
+  collectionName: 'live_events';
+  info: {
+    displayName: 'Live Event';
+    pluralName: 'live-events';
+    singularName: 'live-event';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    Attendees: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    Category: Schema.Attribute.String & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Description: Schema.Attribute.Text;
+    EndTime: Schema.Attribute.DateTime;
+    Featured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    Image: Schema.Attribute.Media<'images'>;
+    IsActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    LastUpdated: Schema.Attribute.DateTime;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::live-event.live-event'
+    > &
+      Schema.Attribute.Private;
+    Location: Schema.Attribute.String & Schema.Attribute.Required;
+    Order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    publishedAt: Schema.Attribute.DateTime;
+    StartTime: Schema.Attribute.DateTime;
+    Status: Schema.Attribute.Enumeration<['live', 'starting', 'upcoming']> &
+      Schema.Attribute.Required;
+    Tags: Schema.Attribute.JSON;
+    Time: Schema.Attribute.String & Schema.Attribute.Required;
+    Title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -850,6 +1165,109 @@ export interface ApiNewsArticleNewsArticle extends Struct.CollectionTypeSchema {
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     URL: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
+export interface ApiPhotoGalleryPhotoGallery
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'photo_galleries';
+  info: {
+    displayName: 'Photo Gallery';
+    pluralName: 'photo-galleries';
+    singularName: 'photo-gallery';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    Author: Schema.Attribute.String & Schema.Attribute.Required;
+    CameraSettings: Schema.Attribute.JSON;
+    Category: Schema.Attribute.Enumeration<
+      [
+        'Landscape',
+        'Food',
+        'Culture',
+        'Nightlife',
+        'Architecture',
+        'People',
+        'Nature',
+        'Events',
+        'Street',
+        'Portrait',
+        'Travel',
+        'Other',
+      ]
+    > &
+      Schema.Attribute.Required;
+    Comments: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Description: Schema.Attribute.Text;
+    Featured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    Image: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
+    IsActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    LastUpdated: Schema.Attribute.DateTime;
+    Likes: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::photo-gallery.photo-gallery'
+    > &
+      Schema.Attribute.Private;
+    Location: Schema.Attribute.String & Schema.Attribute.Required;
+    LocationCoordinates: Schema.Attribute.JSON;
+    publishedAt: Schema.Attribute.DateTime;
+    Tags: Schema.Attribute.JSON;
+    TimeAgo: Schema.Attribute.String;
+    Title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Views: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+  };
+}
+
+export interface ApiQuickLinkQuickLink extends Struct.CollectionTypeSchema {
+  collectionName: 'quick_links';
+  info: {
+    displayName: 'Quick Link';
+    pluralName: 'quick-links';
+    singularName: 'quick-link';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    Category: Schema.Attribute.Enumeration<
+      ['main', 'travel', 'personal', 'social', 'info']
+    > &
+      Schema.Attribute.Required;
+    Color: Schema.Attribute.String & Schema.Attribute.Required;
+    Count: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Description: Schema.Attribute.Text;
+    Featured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    HoverColor: Schema.Attribute.String & Schema.Attribute.Required;
+    Href: Schema.Attribute.String & Schema.Attribute.Required;
+    Icon: Schema.Attribute.String & Schema.Attribute.Required;
+    IsActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    LastUpdated: Schema.Attribute.DateTime;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::quick-link.quick-link'
+    > &
+      Schema.Attribute.Private;
+    Order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    publishedAt: Schema.Attribute.DateTime;
+    Tags: Schema.Attribute.JSON;
+    Title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
   };
 }
 
@@ -948,6 +1366,206 @@ export interface ApiReviewReview extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiSocialMediaPostSocialMediaPost
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'social_media_posts';
+  info: {
+    displayName: 'Social Media Post';
+    pluralName: 'social-media-posts';
+    singularName: 'social-media-post';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    Author: Schema.Attribute.String & Schema.Attribute.Required;
+    Avatar: Schema.Attribute.Media<'images'>;
+    Category: Schema.Attribute.Enumeration<
+      [
+        'Tourism',
+        'Food',
+        'Nightlife',
+        'Culture',
+        'Events',
+        'Business',
+        'Lifestyle',
+      ]
+    >;
+    Comments: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    Content: Schema.Attribute.Text & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Featured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    Handle: Schema.Attribute.String & Schema.Attribute.Required;
+    Hashtags: Schema.Attribute.JSON;
+    Image: Schema.Attribute.Media<'images'>;
+    IsActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    Likes: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::social-media-post.social-media-post'
+    > &
+      Schema.Attribute.Private;
+    Location: Schema.Attribute.String;
+    Platform: Schema.Attribute.Enumeration<
+      ['twitter', 'threads', 'instagram', 'bluesky', 'facebook', 'tiktok']
+    > &
+      Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    Shares: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    Timestamp: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    URL: Schema.Attribute.String;
+    Verified: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+  };
+}
+
+export interface ApiTrafficIncidentTrafficIncident
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'traffic_incidents';
+  info: {
+    displayName: 'Traffic Incident';
+    pluralName: 'traffic-incidents';
+    singularName: 'traffic-incident';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    AffectedRoutes: Schema.Attribute.JSON;
+    Coordinates: Schema.Attribute.JSON;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Description: Schema.Attribute.Text & Schema.Attribute.Required;
+    EstimatedClearTime: Schema.Attribute.String & Schema.Attribute.Required;
+    Featured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    IsActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    LastUpdated: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::traffic-incident.traffic-incident'
+    > &
+      Schema.Attribute.Private;
+    Location: Schema.Attribute.String & Schema.Attribute.Required;
+    Order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    publishedAt: Schema.Attribute.DateTime;
+    Severity: Schema.Attribute.Enumeration<['low', 'medium', 'high']> &
+      Schema.Attribute.Required;
+    Type: Schema.Attribute.Enumeration<
+      ['accident', 'construction', 'event', 'weather']
+    > &
+      Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiTrafficRouteTrafficRoute
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'traffic_routes';
+  info: {
+    displayName: 'Traffic Route';
+    pluralName: 'traffic-routes';
+    singularName: 'traffic-route';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    CurrentTime: Schema.Attribute.String & Schema.Attribute.Required;
+    Delay: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    Description: Schema.Attribute.Text;
+    Distance: Schema.Attribute.String & Schema.Attribute.Required;
+    Featured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    From: Schema.Attribute.String & Schema.Attribute.Required;
+    Incidents: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    IsActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    LastUpdated: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::traffic-route.traffic-route'
+    > &
+      Schema.Attribute.Private;
+    NormalTime: Schema.Attribute.String & Schema.Attribute.Required;
+    Order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    publishedAt: Schema.Attribute.DateTime;
+    Status: Schema.Attribute.Enumeration<
+      ['clear', 'moderate', 'heavy', 'blocked']
+    > &
+      Schema.Attribute.Required;
+    To: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiTrendingTopicTrendingTopic
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'trending_topics';
+  info: {
+    displayName: 'Trending Topic';
+    pluralName: 'trending-topics';
+    singularName: 'trending-topic';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    Category: Schema.Attribute.Enumeration<
+      [
+        'Tourism',
+        'Nightlife',
+        'Events',
+        'Shopping',
+        'Culture',
+        'Food',
+        'Business',
+        'Entertainment',
+      ]
+    > &
+      Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Description: Schema.Attribute.Text;
+    Featured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    Growth: Schema.Attribute.Decimal & Schema.Attribute.DefaultTo<0>;
+    Icon: Schema.Attribute.String;
+    IsActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    LastUpdated: Schema.Attribute.DateTime;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::trending-topic.trending-topic'
+    > &
+      Schema.Attribute.Private;
+    Posts: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    publishedAt: Schema.Attribute.DateTime;
+    Rank: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    Title: Schema.Attribute.String & Schema.Attribute.Required;
+    Type: Schema.Attribute.Enumeration<
+      ['hashtag', 'location', 'event', 'business', 'topic']
+    > &
+      Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    URL: Schema.Attribute.String;
+  };
+}
+
 export interface ApiWeatherWeather extends Struct.CollectionTypeSchema {
   collectionName: 'weathers';
   info: {
@@ -986,6 +1604,64 @@ export interface ApiWeatherWeather extends Struct.CollectionTypeSchema {
     UvIndex: Schema.Attribute.Integer;
     Visibility: Schema.Attribute.Decimal;
     Windspeed: Schema.Attribute.Decimal;
+  };
+}
+
+export interface ApiYoutubeVideoYoutubeVideo
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'youtube_videos';
+  info: {
+    displayName: 'YouTube Video';
+    pluralName: 'youtube-videos';
+    singularName: 'youtube-video';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    Category: Schema.Attribute.Enumeration<
+      [
+        'Travel',
+        'Food',
+        'Nightlife',
+        'Culture',
+        'Adventure',
+        'Hotels',
+        'Entertainment',
+        'Sports',
+      ]
+    >;
+    ChannelId: Schema.Attribute.String;
+    ChannelName: Schema.Attribute.String & Schema.Attribute.Required;
+    Comments: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Description: Schema.Attribute.Text;
+    Dislikes: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    Duration: Schema.Attribute.String;
+    Featured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    IsActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    Likes: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::youtube-video.youtube-video'
+    > &
+      Schema.Attribute.Private;
+    Promoted: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    publishedAt: Schema.Attribute.DateTime;
+    Tags: Schema.Attribute.JSON;
+    Thumbnail: Schema.Attribute.Media<'images'>;
+    Title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    URL: Schema.Attribute.String;
+    VideoId: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    Views: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
   };
 }
 
@@ -1503,15 +2179,27 @@ declare module '@strapi/strapi' {
       'api::article.article': ApiArticleArticle;
       'api::author.author': ApiAuthorAuthor;
       'api::breaking-news.breaking-news': ApiBreakingNewsBreakingNews;
+      'api::business-spotlight.business-spotlight': ApiBusinessSpotlightBusinessSpotlight;
       'api::business.business': ApiBusinessBusiness;
       'api::category.category': ApiCategoryCategory;
       'api::deal.deal': ApiDealDeal;
+      'api::event-calendar.event-calendar': ApiEventCalendarEventCalendar;
       'api::event.event': ApiEventEvent;
+      'api::forum-activity.forum-activity': ApiForumActivityForumActivity;
       'api::global.global': ApiGlobalGlobal;
+      'api::google-review.google-review': ApiGoogleReviewGoogleReview;
+      'api::live-event.live-event': ApiLiveEventLiveEvent;
       'api::news-article.news-article': ApiNewsArticleNewsArticle;
+      'api::photo-gallery.photo-gallery': ApiPhotoGalleryPhotoGallery;
+      'api::quick-link.quick-link': ApiQuickLinkQuickLink;
       'api::radio-station.radio-station': ApiRadioStationRadioStation;
       'api::review.review': ApiReviewReview;
+      'api::social-media-post.social-media-post': ApiSocialMediaPostSocialMediaPost;
+      'api::traffic-incident.traffic-incident': ApiTrafficIncidentTrafficIncident;
+      'api::traffic-route.traffic-route': ApiTrafficRouteTrafficRoute;
+      'api::trending-topic.trending-topic': ApiTrendingTopicTrendingTopic;
       'api::weather.weather': ApiWeatherWeather;
+      'api::youtube-video.youtube-video': ApiYoutubeVideoYoutubeVideo;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

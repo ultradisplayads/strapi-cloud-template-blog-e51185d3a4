@@ -1,0 +1,68 @@
+{
+  "kind": "collectionType",
+  "collectionName": "traffic_incidents",
+  "info": {
+    "singularName": "traffic-incident",
+    "pluralName": "traffic-incidents",
+    "displayName": "Traffic Incident"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Type": {
+      "type": "enumeration",
+      "enum": [
+        "accident",
+        "construction",
+        "event",
+        "weather"
+      ],
+      "required": true
+    },
+    "Location": {
+      "type": "string",
+      "required": true
+    },
+    "Severity": {
+      "type": "enumeration",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "required": true
+    },
+    "Description": {
+      "type": "text",
+      "required": true
+    },
+    "EstimatedClearTime": {
+      "type": "string",
+      "required": true
+    },
+    "IsActive": {
+      "type": "boolean",
+      "default": true
+    },
+    "Featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "Order": {
+      "type": "integer",
+      "default": 0
+    },
+    "Coordinates": {
+      "type": "json"
+    },
+    "AffectedRoutes": {
+      "type": "json"
+    },
+    "LastUpdated": {
+      "type": "datetime",
+      "required": true
+    }
+  }
+}
