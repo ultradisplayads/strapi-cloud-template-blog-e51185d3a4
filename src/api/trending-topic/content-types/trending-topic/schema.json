@@ -1,0 +1,76 @@
+{
+  "kind": "collectionType",
+  "collectionName": "trending_topics",
+  "info": {
+    "singularName": "trending-topic",
+    "pluralName": "trending-topics",
+    "displayName": "Trending Topic"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Title": {
+      "type": "string",
+      "required": true
+    },
+    "Type": {
+      "type": "enumeration",
+      "enum": [
+        "hashtag",
+        "location",
+        "event",
+        "business",
+        "topic"
+      ],
+      "required": true
+    },
+    "Posts": {
+      "type": "integer",
+      "default": 0
+    },
+    "Growth": {
+      "type": "decimal",
+      "default": 0
+    },
+    "Category": {
+      "type": "enumeration",
+      "enum": [
+        "Tourism",
+        "Nightlife",
+        "Events",
+        "Shopping",
+        "Culture",
+        "Food",
+        "Business",
+        "Entertainment"
+      ],
+      "required": true
+    },
+    "Icon": {
+      "type": "string"
+    },
+    "Description": {
+      "type": "text"
+    },
+    "URL": {
+      "type": "string"
+    },
+    "IsActive": {
+      "type": "boolean",
+      "default": true
+    },
+    "Featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "Rank": {
+      "type": "integer",
+      "default": 0
+    },
+    "LastUpdated": {
+      "type": "datetime"
+    }
+  }
+}

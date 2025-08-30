@@ -1,0 +1,91 @@
+{
+  "kind": "collectionType",
+  "collectionName": "youtube_videos",
+  "info": {
+    "singularName": "youtube-video",
+    "pluralName": "youtube-videos",
+    "displayName": "YouTube Video"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Title": {
+      "type": "string",
+      "required": true
+    },
+    "VideoId": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "Description": {
+      "type": "text"
+    },
+    "Thumbnail": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "Views": {
+      "type": "integer",
+      "default": 0
+    },
+    "Likes": {
+      "type": "integer",
+      "default": 0
+    },
+    "Dislikes": {
+      "type": "integer",
+      "default": 0
+    },
+    "Comments": {
+      "type": "integer",
+      "default": 0
+    },
+    "Duration": {
+      "type": "string"
+    },
+    "ChannelName": {
+      "type": "string",
+      "required": true
+    },
+    "ChannelId": {
+      "type": "string"
+    },
+    "Tags": {
+      "type": "json"
+    },
+    "Category": {
+      "type": "enumeration",
+      "enum": [
+        "Travel",
+        "Food",
+        "Nightlife",
+        "Culture",
+        "Adventure",
+        "Hotels",
+        "Entertainment",
+        "Sports"
+      ]
+    },
+    "Featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "Promoted": {
+      "type": "boolean",
+      "default": false
+    },
+    "IsActive": {
+      "type": "boolean",
+      "default": true
+    },
+    "URL": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "kind": "collectionType",
+  "collectionName": "social_media_posts",
+  "info": {
+    "singularName": "social-media-post",
+    "pluralName": "social-media-posts",
+    "displayName": "Social Media Post"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Platform": {
+      "type": "enumeration",
+      "enum": [
+        "twitter",
+        "threads",
+        "instagram",
+        "bluesky",
+        "facebook",
+        "tiktok"
+      ],
+      "required": true
+    },
+    "Author": {
+      "type": "string",
+      "required": true
+    },
+    "Handle": {
+      "type": "string",
+      "required": true
+    },
+    "Avatar": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "Content": {
+      "type": "text",
+      "required": true
+    },
+    "Timestamp": {
+      "type": "datetime"
+    },
+    "Likes": {
+      "type": "integer",
+      "default": 0
+    },
+    "Comments": {
+      "type": "integer",
+      "default": 0
+    },
+    "Shares": {
+      "type": "integer",
+      "default": 0
+    },
+    "Location": {
+      "type": "string"
+    },
+    "Verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "Hashtags": {
+      "type": "json"
+    },
+    "Image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "URL": {
+      "type": "string"
+    },
+    "IsActive": {
+      "type": "boolean",
+      "default": true
+    },
+    "Featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "Category": {
+      "type": "enumeration",
+      "enum": [
+        "Tourism",
+        "Food",
+        "Nightlife",
+        "Culture",
+        "Events",
+        "Business",
+        "Lifestyle"
+      ]
+    }
+  }
+}
