@@ -1,0 +1,65 @@
+{
+  "kind": "collectionType",
+  "collectionName": "news_articles",
+  "info": {
+    "singularName": "news-article",
+    "pluralName": "news-articles",
+    "displayName": "News Article"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Title": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "Summary": {
+      "type": "text",
+      "maxLength": 200,
+      "required": true
+    },
+    "Content": {
+      "type": "blocks"
+    },
+    "Image": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "Source": {
+      "type": "string",
+      "default": "Pattaya News",
+      "required": true
+    },
+    "URL": {
+      "type": "string",
+      "required": true
+    },
+    "Culture": {
+      "type": "enumeration",
+      "required": true,
+      "enum": [
+        "Tourism",
+        "Culture",
+        "Environment",
+        "Business",
+        "Technology",
+        "Sports"
+      ]
+    },
+    "Trending": {
+      "type": "boolean",
+      "default": false
+    },
+    "PublishedTimestamp": {
+      "type": "datetime",
+      "required": true
+    }
+  }
+}

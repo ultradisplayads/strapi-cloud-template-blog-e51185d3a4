@@ -806,6 +806,53 @@ export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiNewsArticleNewsArticle extends Struct.CollectionTypeSchema {
+  collectionName: 'news_articles';
+  info: {
+    displayName: 'News Article';
+    pluralName: 'news-articles';
+    singularName: 'news-article';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    Content: Schema.Attribute.Blocks;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Culture: Schema.Attribute.Enumeration<
+      ['Tourism', 'Culture', 'Environment', 'Business', 'Technology', 'Sports']
+    > &
+      Schema.Attribute.Required;
+    Image: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::news-article.news-article'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    PublishedTimestamp: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    Source: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'Pattaya News'>;
+    Summary: Schema.Attribute.Text &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 200;
+      }>;
+    Title: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    Trending: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    URL: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
 export interface ApiRadioStationRadioStation
   extends Struct.CollectionTypeSchema {
   collectionName: 'radio_stations';
@@ -1461,6 +1508,7 @@ declare module '@strapi/strapi' {
       'api::deal.deal': ApiDealDeal;
       'api::event.event': ApiEventEvent;
       'api::global.global': ApiGlobalGlobal;
+      'api::news-article.news-article': ApiNewsArticleNewsArticle;
       'api::radio-station.radio-station': ApiRadioStationRadioStation;
       'api::review.review': ApiReviewReview;
       'api::weather.weather': ApiWeatherWeather;
