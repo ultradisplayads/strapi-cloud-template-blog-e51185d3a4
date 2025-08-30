@@ -1,0 +1,91 @@
+{
+  "kind": "collectionType",
+  "collectionName": "photo_galleries",
+  "info": {
+    "singularName": "photo-gallery",
+    "pluralName": "photo-galleries",
+    "displayName": "Photo Gallery"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Title": {
+      "type": "string",
+      "required": true
+    },
+    "Image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ],
+      "required": true
+    },
+    "Author": {
+      "type": "string",
+      "required": true
+    },
+    "Location": {
+      "type": "string",
+      "required": true
+    },
+    "Likes": {
+      "type": "integer",
+      "default": 0
+    },
+    "Comments": {
+      "type": "integer",
+      "default": 0
+    },
+    "Views": {
+      "type": "integer",
+      "default": 0
+    },
+    "TimeAgo": {
+      "type": "string"
+    },
+    "Category": {
+      "type": "enumeration",
+      "enum": [
+        "Landscape",
+        "Food",
+        "Culture",
+        "Nightlife",
+        "Architecture",
+        "People",
+        "Nature",
+        "Events",
+        "Street",
+        "Portrait",
+        "Travel",
+        "Other"
+      ],
+      "required": true
+    },
+    "IsActive": {
+      "type": "boolean",
+      "default": true
+    },
+    "Featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "Description": {
+      "type": "text"
+    },
+    "Tags": {
+      "type": "json"
+    },
+    "CameraSettings": {
+      "type": "json"
+    },
+    "LocationCoordinates": {
+      "type": "json"
+    },
+    "LastUpdated": {
+      "type": "datetime"
+    }
+  }
+}

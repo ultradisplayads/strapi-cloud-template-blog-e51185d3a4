@@ -1,0 +1,95 @@
+{
+  "kind": "collectionType",
+  "collectionName": "business_spotlights",
+  "info": {
+    "singularName": "business-spotlight",
+    "pluralName": "business-spotlights",
+    "displayName": "Business Spotlight"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Name": {
+      "type": "string",
+      "required": true
+    },
+    "Category": {
+      "type": "enumeration",
+      "enum": [
+        "Fine Dining",
+        "Casual Dining",
+        "Health & Beauty",
+        "Water Sports",
+        "Shopping",
+        "Entertainment",
+        "Wellness",
+        "Adventure",
+        "Nightlife",
+        "Culture"
+      ],
+      "required": true
+    },
+    "Rating": {
+      "type": "decimal",
+      "min": 0,
+      "max": 5,
+      "default": 0
+    },
+    "Reviews": {
+      "type": "integer",
+      "default": 0
+    },
+    "Location": {
+      "type": "string",
+      "required": true
+    },
+    "Image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "Description": {
+      "type": "text",
+      "required": true
+    },
+    "Hours": {
+      "type": "string"
+    },
+    "Phone": {
+      "type": "string"
+    },
+    "Website": {
+      "type": "string"
+    },
+    "Featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "Deal": {
+      "type": "string"
+    },
+    "Tags": {
+      "type": "json"
+    },
+    "IsActive": {
+      "type": "boolean",
+      "default": true
+    },
+    "Address": {
+      "type": "text"
+    },
+    "Email": {
+      "type": "string"
+    },
+    "SocialMedia": {
+      "type": "json"
+    },
+    "LastUpdated": {
+      "type": "datetime"
+    }
+  }
+}

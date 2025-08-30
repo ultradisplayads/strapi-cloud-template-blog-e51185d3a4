@@ -1,0 +1,78 @@
+{
+  "kind": "collectionType",
+  "collectionName": "live_events",
+  "info": {
+    "singularName": "live-event",
+    "pluralName": "live-events",
+    "displayName": "Live Event"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Title": {
+      "type": "string",
+      "required": true
+    },
+    "Location": {
+      "type": "string",
+      "required": true
+    },
+    "Time": {
+      "type": "string",
+      "required": true
+    },
+    "Attendees": {
+      "type": "integer",
+      "default": 0
+    },
+    "Status": {
+      "type": "enumeration",
+      "enum": [
+        "live",
+        "starting",
+        "upcoming"
+      ],
+      "required": true
+    },
+    "Category": {
+      "type": "string",
+      "required": true
+    },
+    "Image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "IsActive": {
+      "type": "boolean",
+      "default": true
+    },
+    "Featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "Order": {
+      "type": "integer",
+      "default": 0
+    },
+    "Description": {
+      "type": "text"
+    },
+    "Tags": {
+      "type": "json"
+    },
+    "StartTime": {
+      "type": "datetime"
+    },
+    "EndTime": {
+      "type": "datetime"
+    },
+    "LastUpdated": {
+      "type": "datetime"
+    }
+  }
+}

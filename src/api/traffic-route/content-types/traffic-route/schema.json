@@ -1,0 +1,72 @@
+{
+  "kind": "collectionType",
+  "collectionName": "traffic_routes",
+  "info": {
+    "singularName": "traffic-route",
+    "pluralName": "traffic-routes",
+    "displayName": "Traffic Route"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "From": {
+      "type": "string",
+      "required": true
+    },
+    "To": {
+      "type": "string",
+      "required": true
+    },
+    "Distance": {
+      "type": "string",
+      "required": true
+    },
+    "NormalTime": {
+      "type": "string",
+      "required": true
+    },
+    "CurrentTime": {
+      "type": "string",
+      "required": true
+    },
+    "Delay": {
+      "type": "integer",
+      "default": 0
+    },
+    "Status": {
+      "type": "enumeration",
+      "enum": [
+        "clear",
+        "moderate",
+        "heavy",
+        "blocked"
+      ],
+      "required": true
+    },
+    "Incidents": {
+      "type": "integer",
+      "default": 0
+    },
+    "IsActive": {
+      "type": "boolean",
+      "default": true
+    },
+    "Featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "Order": {
+      "type": "integer",
+      "default": 0
+    },
+    "Description": {
+      "type": "text"
+    },
+    "LastUpdated": {
+      "type": "datetime",
+      "required": true
+    }
+  }
+}
