@@ -1,0 +1,51 @@
+{
+  "kind": "collectionType",
+  "collectionName": "breaking_news_plural",
+  "info": {
+    "singularName": "breaking-news",
+    "pluralName": "breaking-news-plural",
+    "displayName": "Breaking News"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Title": {
+      "type": "string",
+      "required": true
+    },
+    "Summary": {
+      "type": "text",
+      "required": true
+    },
+    "Severity": {
+      "type": "enumeration",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ]
+    },
+    "Category": {
+      "type": "string",
+      "required": true
+    },
+    "Source": {
+      "type": "string",
+      "required": true
+    },
+    "URL": {
+      "type": "string",
+      "required": true
+    },
+    "IsBreaking": {
+      "type": "boolean",
+      "default": false
+    },
+    "PublishedTimestamp": {
+      "type": "datetime"
+    }
+  }
+}
