@@ -1,0 +1,58 @@
+{
+  "kind": "collectionType",
+  "collectionName": "weathers",
+  "info": {
+    "singularName": "weather",
+    "pluralName": "weathers",
+    "displayName": "Weather"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Location": {
+      "type": "string"
+    },
+    "Condition": {
+      "type": "string"
+    },
+    "Description": {
+      "type": "text"
+    },
+    "Icon": {
+      "type": "string"
+    },
+    "Temperature": {
+      "type": "decimal"
+    },
+    "FeelsLike": {
+      "type": "decimal"
+    },
+    "Humidity": {
+      "type": "integer"
+    },
+    "Windspeed": {
+      "type": "decimal"
+    },
+    "Pressure": {
+      "type": "integer"
+    },
+    "Visibility": {
+      "type": "decimal"
+    },
+    "UvIndex": {
+      "type": "integer"
+    },
+    "LastUpdated": {
+      "type": "datetime"
+    },
+    "Source": {
+      "type": "string"
+    },
+    "IsActive": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}

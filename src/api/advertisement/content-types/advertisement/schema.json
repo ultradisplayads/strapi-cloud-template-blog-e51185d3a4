@@ -1,0 +1,49 @@
+{
+  "kind": "collectionType",
+  "collectionName": "advertisements",
+  "info": {
+    "singularName": "advertisement",
+    "pluralName": "advertisements",
+    "displayName": "Advertisement"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Tiltle": {
+      "type": "string",
+      "required": true
+    },
+    "Content": {
+      "type": "text",
+      "required": true
+    },
+    "URL": {
+      "type": "string",
+      "required": true
+    },
+    "Image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "Sponsor": {
+      "type": "string",
+      "required": true
+    },
+    "WidgetTarget": {
+      "type": "string",
+      "default": "breaking-news"
+    },
+    "Active": {
+      "type": "boolean",
+      "default": true
+    },
+    "PublishedTimestamp": {
+      "type": "datetime"
+    }
+  }
+}
