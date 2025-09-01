@@ -1,0 +1,27 @@
+{
+  "collectionName": "components_deals_tiered_discounts",
+  "info": {
+    "displayName": "Tiered Discount",
+    "description": "Discount that increases based on quantity purchased"
+  },
+  "options": {},
+  "attributes": {
+    "min_quantity": {
+      "type": "integer",
+      "required": true,
+      "min": 1
+    },
+    "max_quantity": {
+      "type": "integer"
+    },
+    "discount_percentage": {
+      "type": "integer",
+      "required": true,
+      "min": 0,
+      "max": 100
+    },
+    "description": {
+      "type": "string"
+    }
+  }
+}
