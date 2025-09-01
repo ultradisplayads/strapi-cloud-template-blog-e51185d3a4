@@ -11,8 +11,9 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "title": {
-      "type": "string"
+    "deal_title": {
+      "type": "string",
+      "required": true
     },
     "slug": {
       "type": "uid",
@@ -23,69 +24,84 @@
     },
     "business": {
       "type": "relation",
-      "relation": "manyToMany",
+      "relation": "manyToOne",
       "target": "api::business.business",
       "inversedBy": "deals"
     },
-    "category": {
-      "type": "relation",
-      "relation": "manyToOne",
-      "target": "api::category.category",
-      "inversedBy": "deals"
-    },
-    "originalPrice": {
-      "type": "decimal",
+    "deal_category": {
+      "type": "enumeration",
+      "enum": [
+        "Hotel",
+        "Activity",
+        "Food & Drink",
+        "Spa",
+        "Retail"
+      ],
       "required": true
     },
-    "salePrice": {
-      "type": "decimal",
-      "required": true
-    },
-    "discountPercent": {
-      "type": "integer"
-    },
-    "currency": {
-      "type": "string",
-      "default": "THB"
-    },
-    "startDate": {
-      "type": "datetime",
-      "required": true
-    },
-    "endDate": {
-      "type": "datetime",
-      "required": true
-    },
-    "maxQuantity": {
-      "type": "integer"
-    },
-    "soldQuantity": {
-      "type": "integer",
-      "default": 0
-    },
-    "images": {
+    "image_gallery": {
       "type": "media",
       "multiple": true,
       "allowedTypes": [
-        "images",
-        "files",
-        "videos",
-        "audios"
+        "images"
       ]
     },
-    "terms": {
+    "deal_type": {
+      "type": "enumeration",
+      "enum": [
+        "Standard",
+        "Flash"
+      ],
+      "default": "Standard"
+    },
+    "original_price": {
+      "type": "decimal",
+      "required": true
+    },
+    "sale_price": {
+      "type": "decimal",
+      "required": true
+    },
+    "expiry_date_time": {
+      "type": "datetime",
+      "required": true
+    },
+    "the_fine_print": {
       "type": "richtext"
+    },
+    "requires_reservation": {
+      "type": "boolean",
+      "default": false
+    },
+    "quantity_total": {
+      "type": "integer",
+      "default": 0
+    },
+    "quantity_remaining": {
+      "type": "integer",
+      "default": 0
+    },
+    "is_featured_on_homepage": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_in_marquee": {
+      "type": "boolean",
+      "default": false
+    },
+    "time_based_discounts": {
+      "type": "component",
+      "component": "deals.time-based-discount",
+      "repeatable": true
+    },
+    "tiered_discounts": {
+      "type": "component",
+      "component": "deals.tiered-discount",
+      "repeatable": true
     },
     "isActive": {
       "type": "boolean",
       "default": true
-    },
-    "isGrouponListed": {
-      "type": "boolean",
-      "default": false
-    },
-    "grouponCommission": {
-      "type": "decimal"
     },
     "featured": {
       "type": "boolean",
@@ -112,6 +128,12 @@
       "type": "component",
       "component": "reusable.seo-metadata",
       "repeatable": true
+    },
+    "bookings": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::booking.booking",
+      "mappedBy": "deal"
     }
   }
 }

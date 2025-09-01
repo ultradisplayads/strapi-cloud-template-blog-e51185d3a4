@@ -76,6 +76,15 @@
       "relation": "oneToMany",
       "target": "api::business.business",
       "mappedBy": "owner"
+    },
+    "fcm_tokens": {
+      "type": "json"
+    },
+    "bookings": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::booking.booking",
+      "mappedBy": "user"
     }
   }
 }

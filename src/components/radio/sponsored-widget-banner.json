@@ -1,0 +1,57 @@
+{
+  "collectionName": "components_radio_sponsored_widget_banners",
+  "info": {
+    "displayName": "Sponsored Widget Banner",
+    "description": "Banner for sponsoring the entire radio widget"
+  },
+  "options": {},
+  "attributes": {
+    "isSponsored": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the widget is currently sponsored"
+    },
+    "sponsorName": {
+      "type": "string",
+      "description": "Name of the sponsoring brand/company"
+    },
+    "sponsorLogo": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ],
+      "description": "Logo of the sponsoring brand"
+    },
+    "sponsorMessage": {
+      "type": "string",
+      "description": "Custom message from sponsor (e.g., 'Pattaya's Radio, brought to you by Singha Beer')"
+    },
+    "sponsorWebsite": {
+      "type": "string",
+      "description": "Website URL of the sponsoring brand"
+    },
+    "sponsorColor": {
+      "type": "string",
+      "description": "Brand color for the sponsor banner (hex code)"
+    },
+    "sponsorStartDate": {
+      "type": "date",
+      "description": "Start date of the sponsorship"
+    },
+    "sponsorEndDate": {
+      "type": "date",
+      "description": "End date of the sponsorship"
+    },
+    "bannerPosition": {
+      "type": "enumeration",
+      "enum": [
+        "top",
+        "bottom",
+        "overlay"
+      ],
+      "default": "top",
+      "description": "Position of the sponsor banner on the widget"
+    }
+  }
+}
