@@ -1,0 +1,85 @@
+{
+  "kind": "collectionType",
+  "collectionName": "news_sources",
+  "info": {
+    "singularName": "news-source",
+    "pluralName": "news-sources",
+    "displayName": "News Source",
+    "description": "Manage multiple news sources including RSS feeds, APIs, and social media"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "sourceType": {
+      "type": "enumeration",
+      "enum": [
+        "rss_feed",
+        "news_api",
+        "facebook_page",
+        "website_scraper"
+      ],
+      "required": true
+    },
+    "url": {
+      "type": "string",
+      "required": true
+    },
+    "rssUrl": {
+      "type": "string"
+    },
+    "apiKey": {
+      "type": "string",
+      "private": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "keyValue": {
+      "type": "text"
+    },
+    "isActive": {
+      "type": "boolean",
+      "required": true,
+      "default": true
+    },
+    "priority": {
+      "type": "integer",
+      "default": 1,
+      "min": 1,
+      "max": 10
+    },
+    "fetchInterval": {
+      "type": "integer",
+      "required": true,
+      "default": 30,
+      "min": 5,
+      "max": 1440
+    },
+    "lastFetchedAt": {
+      "type": "datetime"
+    },
+    "totalArticlesFetched": {
+      "type": "integer",
+      "default": 0
+    },
+    "lastFetchStatus": {
+      "type": "enumeration",
+      "enum": [
+        "success",
+        "error",
+        "pending"
+      ],
+      "default": "pending"
+    },
+    "lastError": {
+      "type": "text"
+    }
+  }
+}

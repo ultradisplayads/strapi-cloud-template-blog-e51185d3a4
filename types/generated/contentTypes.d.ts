@@ -529,17 +529,29 @@ export interface ApiBreakingNewsBreakingNews
     draftAndPublish: true;
   };
   attributes: {
+    apiSource: Schema.Attribute.String;
     Category: Schema.Attribute.String & Schema.Attribute.Required;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    downvotes: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    fetchedFromAPI: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
     IsBreaking: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    isHidden: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    isPinned: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::breaking-news.breaking-news'
     > &
       Schema.Attribute.Private;
+    moderationStatus: Schema.Attribute.Enumeration<
+      ['approved', 'pending', 'rejected', 'needs_review']
+    > &
+      Schema.Attribute.DefaultTo<'approved'>;
+    originalAPIData: Schema.Attribute.JSON;
+    pinnedAt: Schema.Attribute.DateTime;
     publishedAt: Schema.Attribute.DateTime;
     PublishedTimestamp: Schema.Attribute.DateTime;
     Severity: Schema.Attribute.Enumeration<
@@ -551,7 +563,9 @@ export interface ApiBreakingNewsBreakingNews
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    upvotes: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
     URL: Schema.Attribute.String & Schema.Attribute.Required;
+    voteScore: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
   };
 }
 
@@ -1165,6 +1179,144 @@ export interface ApiNewsArticleNewsArticle extends Struct.CollectionTypeSchema {
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     URL: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
+export interface ApiNewsSettingsNewsSettings extends Struct.SingleTypeSchema {
+  collectionName: 'news_settings';
+  info: {
+    description: 'Global settings for news fetching and moderation';
+    displayName: 'News Settings';
+    pluralName: 'news-settings-collection';
+    singularName: 'news-settings';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    autoModerationEnabled: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<true>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    cronJobEnabled: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    enableVoting: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    fetchIntervalMinutes: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 1440;
+          min: 1;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<30>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::news-settings.news-settings'
+    > &
+      Schema.Attribute.Private;
+    maxArticlesPerFetch: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 100;
+          min: 1;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<20>;
+    moderationKeywords: Schema.Attribute.JSON &
+      Schema.Attribute.DefaultTo<
+        ['spam', 'fake', 'clickbait', 'scam', 'adult', 'explicit']
+      >;
+    newsApiCategory: Schema.Attribute.Enumeration<
+      [
+        'business',
+        'entertainment',
+        'general',
+        'health',
+        'science',
+        'sports',
+        'technology',
+      ]
+    > &
+      Schema.Attribute.DefaultTo<'general'>;
+    newsApiCountry: Schema.Attribute.String & Schema.Attribute.DefaultTo<'us'>;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiNewsSourceNewsSource extends Struct.CollectionTypeSchema {
+  collectionName: 'news_sources';
+  info: {
+    description: 'Manage multiple news sources including RSS feeds, APIs, and social media';
+    displayName: 'News Source';
+    pluralName: 'news-sources';
+    singularName: 'news-source';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    apiKey: Schema.Attribute.String & Schema.Attribute.Private;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.Text;
+    fetchInterval: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 1440;
+          min: 5;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<30>;
+    isActive: Schema.Attribute.Boolean &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<true>;
+    keyValue: Schema.Attribute.Text;
+    lastError: Schema.Attribute.Text;
+    lastFetchedAt: Schema.Attribute.DateTime;
+    lastFetchStatus: Schema.Attribute.Enumeration<
+      ['success', 'error', 'pending']
+    > &
+      Schema.Attribute.DefaultTo<'pending'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::news-source.news-source'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    priority: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 10;
+          min: 1;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<1>;
+    publishedAt: Schema.Attribute.DateTime;
+    rssUrl: Schema.Attribute.String;
+    sourceType: Schema.Attribute.Enumeration<
+      ['rss_feed', 'news_api', 'facebook_page', 'website_scraper']
+    > &
+      Schema.Attribute.Required;
+    totalArticlesFetched: Schema.Attribute.Integer &
+      Schema.Attribute.DefaultTo<0>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    url: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
 
@@ -2190,6 +2342,8 @@ declare module '@strapi/strapi' {
       'api::google-review.google-review': ApiGoogleReviewGoogleReview;
       'api::live-event.live-event': ApiLiveEventLiveEvent;
       'api::news-article.news-article': ApiNewsArticleNewsArticle;
+      'api::news-settings.news-settings': ApiNewsSettingsNewsSettings;
+      'api::news-source.news-source': ApiNewsSourceNewsSource;
       'api::photo-gallery.photo-gallery': ApiPhotoGalleryPhotoGallery;
       'api::quick-link.quick-link': ApiQuickLinkQuickLink;
       'api::radio-station.radio-station': ApiRadioStationRadioStation;

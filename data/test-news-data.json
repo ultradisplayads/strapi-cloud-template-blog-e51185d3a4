@@ -1,0 +1,114 @@
+{
+  "breakingNews": [
+    {
+      "Title": "Discover Oasis Restaurant at Thai Garden Resort in Pattaya!",
+      "Description": "Join us for a delightful culinary experience with our international menu featuring mouth-watering German, Italian, and Thai dishes! Every Saturday, dive into our spectacular buffet paired with live music! Savor delicious food in our tranquil setting, surrounded by lush palm trees. Book your table today! thaigarden.com",
+      "URL": "https://www.pattayamail.com/travel/discover-oasis-restaurant-at-thai-garden-resort-in-pattaya-513805",
+      "PublishedTimestamp": "2025-09-01T04:46:08.000Z",
+      "apiSource": "Pattaya Mail",
+      "moderationStatus": "approved",
+      "isPinned": false,
+      "upvotes": 9,
+      "downvotes": 1,
+      "voteScore": 0
+    },
+    {
+      "Title": "The mystery of Pattaya building “squiggles” finally solved",
+      "Description": "The unusual marks on the side of a building, behind Avenue shopping mall on Pattaya’s second road, has had locals scratching their heads. Opinions have included damage by leaking water, preparation to repair the concrete, a massive repainting job or even plastering over the cracks caused by poor workmanship. The debate even reached the Bangkok […]",
+      "URL": "https://www.pattayamail.com/latestnews/news/the-mystery-of-pattaya-building-squiggles-finally-solved-516718",
+      "PublishedTimestamp": "2025-09-01T04:01:59.000Z",
+      "apiSource": "Pattaya Mail",
+      "moderationStatus": "approved",
+      "isPinned": false,
+      "upvotes": 6,
+      "downvotes": 2,
+      "voteScore": 0
+    },
+    {
+      "Title": "Time to rethink strategy as nightly flashlights and ID checks send wrong signal to Pattaya nightlife",
+      "Description": "PATTAYA, Thailand – That’s right! Police raids on pubs and bars in Pattaya have become an almost weekly occurrence, and while authorities justify them as part of maintaining law and order, one cannot ignore the negative impact on business and the city’s international image. For a tourist destination that markets itself as Thailand’s nightlife capital, […]",
+      "URL": "https://www.pattayamail.com/news/time-to-rethink-strategy-as-nightly-flashlights-and-id-checks-send-wrong-signal-to-pattaya-nightlife-516715",
+      "PublishedTimestamp": "2025-09-01T04:00:19.000Z",
+      "apiSource": "Pattaya Mail",
+      "moderationStatus": "approved",
+      "isPinned": false,
+      "upvotes": 0,
+      "downvotes": 1,
+      "voteScore": 0
+    },
+    {
+      "Title": "Financial stress linked to body found hanging at Phuket shrine",
+      "Description": "Worshippers arriving at Phuket’s famous Jui Tui Shrine this morning were confronted with a grim discovery: a man had died by hanging before dawn. Phuket City Police reported that they were alerted at 7.55am today, August 28, to the death of 56 year old Montree Jongthirawong. Rescue workers and forensic doctors were dispatched to the …\nThe story Financial stress linked to body found hanging at Phuket shrine as seen on Thaiger News.",
+      "URL": "https://thethaiger.com/news/phuket/financial-stress-linked-to-body-found-hanging-at-phuket-shrine",
+      "PublishedTimestamp": "2025-08-28T08:46:56.000Z",
+      "apiSource": "The Thaiger",
+      "moderationStatus": "approved",
+      "isPinned": false,
+      "upvotes": 7,
+      "downvotes": 2,
+      "voteScore": 0
+    },
+    {
+      "Title": "‘Naga coconut tree’ in Phetchabun sparks lucky number frenzy",
+      "Description": "It’s not every day a coconut tree grows into the shape of a mythical serpent, but villagers in Phetchabun believe they have found one that could change their fortunes. As the next national lottery approaches on September 1, residents of Bueng Sam Phan district in Phetchabun province rushed yesterday to witness a bizarre phenomenon: a …\nThe story ‘Naga coconut tree’ in Phetchabun sparks lucky number frenzy as seen on Thaiger News.",
+      "URL": "https://thethaiger.com/news/national/naga-coconut-tree-in-phetchabun-sparks-lucky-number-frenzy",
+      "PublishedTimestamp": "2025-08-28T08:18:19.000Z",
+      "apiSource": "The Thaiger",
+      "moderationStatus": "approved",
+      "isPinned": false,
+      "upvotes": 9,
+      "downvotes": 2,
+      "voteScore": 0
+    },
+    {
+      "Title": "Foreigner nabbed for daring bike theft on Pattaya Walking Street",
+      "Description": "A foreign national was arrested today after allegedly stealing a motorbike on Soi 16 off Pattaya’s Walking Street. The man’s identity and nationality remain unknown, but witnesses claimed he appeared to be under the influence of drugs at the time of the theft. According to police, the incident began today, August 28, when the motorcycle …\nThe story Foreigner nabbed for daring bike theft on Pattaya Walking Street as seen on Thaiger News.",
+      "URL": "https://thethaiger.com/news/pattaya/foreigner-nabbed-for-daring-bike-theft-on-pattaya-walking-street",
+      "PublishedTimestamp": "2025-08-28T07:56:02.000Z",
+      "apiSource": "The Thaiger",
+      "moderationStatus": "approved",
+      "isPinned": false,
+      "upvotes": 7,
+      "downvotes": 0,
+      "voteScore": 0
+    }
+  ],
+  "newsSettings": {
+    "fetchIntervalMinutes": 30,
+    "moderationKeywords": [
+      "spam",
+      "fake",
+      "clickbait",
+      "scam",
+      "adult",
+      "explicit"
+    ],
+    "autoModerationEnabled": true,
+    "maxArticlesPerFetch": 10,
+    "cronJobEnabled": true,
+    "newsApiCountry": "th",
+    "newsApiCategory": "general"
+  },
+  "newsSources": [
+    {
+      "name": "Pattaya Mail",
+      "description": "Pattaya's premier English-language newspaper",
+      "sourceType": "rss_feed",
+      "url": "https://www.pattayamail.com/feed",
+      "rssUrl": "https://www.pattayamail.com/feed",
+      "isActive": true,
+      "priority": 1,
+      "fetchIntervalMinutes": 30
+    },
+    {
+      "name": "The Thaiger",
+      "description": "Thailand news and lifestyle",
+      "sourceType": "rss_feed",
+      "url": "https://thethaiger.com/news/feed",
+      "rssUrl": "https://thethaiger.com/news/feed",
+      "isActive": true,
+      "priority": 2,
+      "fetchIntervalMinutes": 45
+    }
+  ]
+}

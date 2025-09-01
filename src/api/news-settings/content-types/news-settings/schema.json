@@ -1,0 +1,62 @@
+{
+  "kind": "singleType",
+  "collectionName": "news_settings",
+  "info": {
+    "singularName": "news-settings",
+    "pluralName": "news-settings-collection",
+    "displayName": "News Settings",
+    "description": "Global settings for news fetching and moderation"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "fetchIntervalMinutes": {
+      "type": "integer",
+      "required": true,
+      "default": 30,
+      "min": 1,
+      "max": 1440
+    },
+    "moderationKeywords": {
+      "type": "json",
+      "default": ["spam", "fake", "clickbait", "scam", "adult", "explicit"]
+    },
+    "autoModerationEnabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "maxArticlesPerFetch": {
+      "type": "integer",
+      "default": 20,
+      "min": 1,
+      "max": 100
+    },
+    "enableVoting": {
+      "type": "boolean",
+      "default": true
+    },
+    "cronJobEnabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "newsApiCountry": {
+      "type": "string",
+      "default": "us"
+    },
+    "newsApiCategory": {
+      "type": "enumeration",
+      "enum": [
+        "business",
+        "entertainment", 
+        "general",
+        "health",
+        "science",
+        "sports",
+        "technology"
+      ],
+      "default": "general"
+    }
+  }
+}
