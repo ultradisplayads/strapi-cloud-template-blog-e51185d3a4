@@ -665,6 +665,10 @@ export interface ApiBusinessBusiness extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     logo: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     name: Schema.Attribute.String & Schema.Attribute.Required;
+    owner: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
     priceRange: Schema.Attribute.Enumeration<
       ['cheap', 'mid', 'good', 'premium']
     >;
@@ -2123,6 +2127,10 @@ export interface PluginUsersPermissionsUser
   };
   attributes: {
     blocked: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    businesses: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::business.business'
+    >;
     confirmationToken: Schema.Attribute.String & Schema.Attribute.Private;
     confirmed: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     createdAt: Schema.Attribute.DateTime;

@@ -11,6 +11,7 @@
   "options": {
     "draftAndPublish": false
   },
+  "pluginOptions": {},
   "attributes": {
     "username": {
       "type": "string",
@@ -69,6 +70,12 @@
       "type": "string",
       "unique": true,
       "configurable": false
+    },
+    "businesses": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::business.business",
+      "mappedBy": "owner"
     }
   }
-} 
+}
