@@ -1570,6 +1570,125 @@ export interface ApiTrendingTopicTrendingTopic
   };
 }
 
+export interface ApiWeatherActivitySuggestionWeatherActivitySuggestion
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'weather_activity_suggestions';
+  info: {
+    displayName: 'Weather Activity Suggestion';
+    pluralName: 'weather-activity-suggestions';
+    singularName: 'weather-activity-suggestion';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.Text;
+    icon: Schema.Attribute.String;
+    isActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    link: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::weather-activity-suggestion.weather-activity-suggestion'
+    > &
+      Schema.Attribute.Private;
+    priority: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<1>;
+    publishedAt: Schema.Attribute.DateTime;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    weatherCondition: Schema.Attribute.Enumeration<
+      ['sunny', 'rainy', 'cloudy', 'thunderstorm', 'drizzle']
+    >;
+  };
+}
+
+export interface ApiWeatherCacheWeatherCache
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'weather_caches';
+  info: {
+    displayName: 'Weather Cache';
+    pluralName: 'weather-caches';
+    singularName: 'weather-cache';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    expiresAt: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    latRounded: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::weather-cache.weather-cache'
+    > &
+      Schema.Attribute.Private;
+    lonRounded: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    payload: Schema.Attribute.JSON & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    units: Schema.Attribute.Enumeration<['metric', 'imperial']> &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'metric'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiWeatherSettingWeatherSetting
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'weather_settings';
+  info: {
+    displayName: 'Weather Setting';
+    pluralName: 'weather-settings';
+    singularName: 'weather-setting';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    defaultCityName: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'Pattaya City'>;
+    defaultLatitude: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<12.9236>;
+    defaultLongitude: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<100.8825>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::weather-setting.weather-setting'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    sponsoredEnabled: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
+    sponsorLogo: Schema.Attribute.Media<'images'>;
+    sponsorName: Schema.Attribute.String;
+    units: Schema.Attribute.Enumeration<['metric', 'imperial']> &
+      Schema.Attribute.DefaultTo<'metric'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    updateFrequencyMinutes: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<30>;
+    widgetEnabled: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+  };
+}
+
 export interface ApiWeatherWeather extends Struct.CollectionTypeSchema {
   collectionName: 'weathers';
   info: {
@@ -2206,6 +2325,9 @@ declare module '@strapi/strapi' {
       'api::traffic-incident.traffic-incident': ApiTrafficIncidentTrafficIncident;
       'api::traffic-route.traffic-route': ApiTrafficRouteTrafficRoute;
       'api::trending-topic.trending-topic': ApiTrendingTopicTrendingTopic;
+      'api::weather-activity-suggestion.weather-activity-suggestion': ApiWeatherActivitySuggestionWeatherActivitySuggestion;
+      'api::weather-cache.weather-cache': ApiWeatherCacheWeatherCache;
+      'api::weather-setting.weather-setting': ApiWeatherSettingWeatherSetting;
       'api::weather.weather': ApiWeatherWeather;
       'api::youtube-video.youtube-video': ApiYoutubeVideoYoutubeVideo;
       'plugin::content-releases.release': PluginContentReleasesRelease;
