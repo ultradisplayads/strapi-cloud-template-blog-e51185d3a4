@@ -1,5 +1,66 @@
 import type { Schema, Struct } from '@strapi/strapi';
 
+export interface DealsTieredDiscount extends Struct.ComponentSchema {
+  collectionName: 'components_deals_tiered_discounts';
+  info: {
+    description: 'Discount that increases based on quantity purchased';
+    displayName: 'Tiered Discount';
+  };
+  attributes: {
+    description: Schema.Attribute.String;
+    discount_percentage: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 100;
+          min: 0;
+        },
+        number
+      >;
+    max_quantity: Schema.Attribute.Integer;
+    min_quantity: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 1;
+        },
+        number
+      >;
+  };
+}
+
+export interface DealsTimeBasedDiscount extends Struct.ComponentSchema {
+  collectionName: 'components_deals_time_based_discounts';
+  info: {
+    description: 'Discount that applies during specific time periods';
+    displayName: 'Time Based Discount';
+  };
+  attributes: {
+    days_of_week: Schema.Attribute.Enumeration<
+      [
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
+        'Sunday',
+      ]
+    >;
+    discount_percentage: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 100;
+          min: 0;
+        },
+        number
+      >;
+    end_time: Schema.Attribute.Time & Schema.Attribute.Required;
+    start_time: Schema.Attribute.Time & Schema.Attribute.Required;
+  };
+}
+
 export interface ReusableAmenities extends Struct.ComponentSchema {
   collectionName: 'components_reusable_amenities';
   info: {
@@ -189,6 +250,8 @@ export interface SharedSlider extends Struct.ComponentSchema {
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
+      'deals.tiered-discount': DealsTieredDiscount;
+      'deals.time-based-discount': DealsTimeBasedDiscount;
       'reusable.amenities': ReusableAmenities;
       'reusable.business-hours': ReusableBusinessHours;
       'reusable.contact-info': ReusableContactInfo;

@@ -1,0 +1,37 @@
+{
+  "collectionName": "components_deals_time_based_discounts",
+  "info": {
+    "displayName": "Time Based Discount",
+    "description": "Discount that applies during specific time periods"
+  },
+  "options": {},
+  "attributes": {
+    "start_time": {
+      "type": "time",
+      "required": true
+    },
+    "end_time": {
+      "type": "time",
+      "required": true
+    },
+    "discount_percentage": {
+      "type": "integer",
+      "required": true,
+      "min": 0,
+      "max": 100
+    },
+    "days_of_week": {
+      "type": "enumeration",
+      "enum": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday"
+      ],
+      "repeatable": true
+    }
+  }
+}
