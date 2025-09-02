@@ -499,8 +499,6 @@ export interface ApiBreakingNewsBreakingNews
     IsBreaking: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     isHidden: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     isPinned: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
-    isSponsoredWidget: Schema.Attribute.Boolean &
-      Schema.Attribute.DefaultTo<false>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -519,7 +517,7 @@ export interface ApiBreakingNewsBreakingNews
       ['low', 'medium', 'high', 'critical']
     >;
     Source: Schema.Attribute.String & Schema.Attribute.Required;
-    sponsorBanner: Schema.Attribute.String;
+    SponsoredPost: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     sponsorName: Schema.Attribute.String;
     Summary: Schema.Attribute.Text & Schema.Attribute.Required;
     Title: Schema.Attribute.String & Schema.Attribute.Required;
@@ -1583,6 +1581,7 @@ export interface ApiSponsoredPostSponsoredPost
       > &
       Schema.Attribute.DefaultTo<1>;
     publishedAt: Schema.Attribute.DateTime;
+    SourceBreakingNewsId: Schema.Attribute.Integer;
     SponsorLogo: Schema.Attribute.Media<'images'>;
     SponsorName: Schema.Attribute.String & Schema.Attribute.Required;
     Summary: Schema.Attribute.Text & Schema.Attribute.Required;
@@ -1794,7 +1793,6 @@ export interface ApiWidgetControlWidgetControl extends Struct.SingleTypeSchema {
       Schema.Attribute.Private;
     EnableAutoRefresh: Schema.Attribute.Boolean &
       Schema.Attribute.DefaultTo<true>;
-    IsSponsored: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -1816,9 +1814,6 @@ export interface ApiWidgetControlWidgetControl extends Struct.SingleTypeSchema {
     ShowTimestamps: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
     ShowVotingButtons: Schema.Attribute.Boolean &
       Schema.Attribute.DefaultTo<true>;
-    SponsorMessage: Schema.Attribute.String &
-      Schema.Attribute.DefaultTo<'brought to you by'>;
-    SponsorName: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

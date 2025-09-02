@@ -86,6 +86,11 @@
     },
     "CostPerClick": {
       "type": "decimal"
+    },
+    "SourceBreakingNewsId": {
+      "type": "integer",
+      "required": false,
+      "description": "ID of the breaking news item this sponsored post was created from"
     }
   }
 }

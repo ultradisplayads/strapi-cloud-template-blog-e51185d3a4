@@ -29,17 +29,6 @@
       "min": 1,
       "max": 60
     },
-    "IsSponsored": {
-      "type": "boolean",
-      "default": false
-    },
-    "SponsorName": {
-      "type": "string"
-    },
-    "SponsorMessage": {
-      "type": "string",
-      "default": "brought to you by"
-    },
     "ShowVotingButtons": {
       "type": "boolean",
       "default": true

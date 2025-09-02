@@ -158,11 +158,14 @@ module.exports = createCoreController('api::breaking-news.breaking-news', ({ str
   // Get live articles for frontend (approved, not hidden, sorted by pinned first)
   async live(ctx) {
     try {
-      // Get all published breaking news articles
+      // Get all breaking news articles (include both published and draft for now)
       const entries = await strapi.entityService.findMany('api::breaking-news.breaking-news', {
         filters: {
-          publishedAt: { $notNull: true },
-          isHidden: { $ne: true }
+          // Only filter out explicitly hidden items
+          $or: [
+            { isHidden: { $null: true } },
+            { isHidden: false }
+          ]
         },
         populate: '*',
         sort: [
@@ -171,6 +174,9 @@ module.exports = createCoreController('api::breaking-news.breaking-news', ({ str
         ],
         limit: 50
       });
+
+      // Debug logging (can be removed in production)
+      console.log(`Live feed: ${entries.length} total entries found`);
 
       // Get active sponsored posts
       const sponsoredPosts = await strapi.entityService.findMany('api::sponsored-post.sponsored-post', {
@@ -186,41 +192,74 @@ module.exports = createCoreController('api::breaking-news.breaking-news', ({ str
         sort: [{ Priority: 'asc' }]
       });
 
-      // Transform breaking news data
-      const transformedEntries = entries.map(entry => ({
-        id: entry.id,
-        documentId: entry.documentId,
-        title: entry.Title,
-        summary: entry.Summary,
-        content: entry.Summary, // Use Summary as content for breaking news
-        url: entry.URL,
-        image: null, // Breaking news schema doesn't have Image field
-        author: null, // Breaking news schema doesn't have Author field
-        category: entry.Category,
-        isBreaking: entry.IsBreaking,
-        publishedAt: entry.publishedAt,
-        createdAt: entry.createdAt,
-        upvotes: entry.upvotes || 0,
-        downvotes: entry.downvotes || 0,
-        isPinned: entry.isPinned || false,
-        type: 'news'
-      }));
+      // Separate breaking news into regular news and sponsored posts
+      const regularNews = [];
+      const sponsoredFromBreaking = [];
 
-      // Transform sponsored posts
+      entries.forEach(entry => {
+        // Check if this breaking news item should be treated as sponsored
+        if (entry.SponsoredPost && entry.sponsorName) {
+          sponsoredFromBreaking.push({
+            id: entry.id,
+            documentId: entry.documentId,
+            title: entry.Title,
+            summary: entry.Summary,
+            content: entry.Summary,
+            url: entry.URL,
+            image: null,
+            author: null,
+            category: 'Sponsored',
+            isBreaking: false, // Sponsored posts are not breaking news in feed
+            sponsorName: entry.sponsorName,
+            sponsorLogo: null,
+            logo: null,
+            upvotes: entry.upvotes || 0,
+            downvotes: entry.downvotes || 0,
+            isPinned: entry.isPinned || false,
+            displayPosition: 'position-3', // Default position for sponsored breaking news
+            publishedAt: entry.publishedAt,
+            createdAt: entry.createdAt,
+            type: 'sponsored'
+          });
+        } else {
+          regularNews.push({
+            id: entry.id,
+            documentId: entry.documentId,
+            title: entry.Title,
+            summary: entry.Summary,
+            content: entry.Summary,
+            url: entry.URL,
+            image: null,
+            author: null,
+            category: entry.Category,
+            isBreaking: entry.IsBreaking,
+            publishedAt: entry.publishedAt,
+            createdAt: entry.createdAt,
+            upvotes: entry.upvotes || 0,
+            downvotes: entry.downvotes || 0,
+            isPinned: entry.isPinned || false,
+            type: 'news'
+          });
+        }
+      });
+
+      const transformedEntries = regularNews;
+
+      // Transform dedicated sponsored posts
       const transformedSponsored = sponsoredPosts.map(post => ({
         id: post.id,
         documentId: post.documentId,
         title: post.Title,
         summary: post.Summary,
-        content: post.Summary, // Use Summary as content for sponsored posts
+        content: post.Summary,
         url: post.TargetURL,
-        image: post.Image && post.Image.url ? post.Image.url : null,
-        author: null, // No author for sponsored posts
-        category: 'Sponsored', // Mark as sponsored category
-        isBreaking: false, // Sponsored posts are not breaking news
+        image: post['Image'] && post['Image'].url ? post['Image'].url : null,
+        author: null,
+        category: 'Sponsored',
+        isBreaking: false,
         sponsorName: post.SponsorName,
-        sponsorLogo: post.SponsorLogo && post.SponsorLogo.url ? post.SponsorLogo.url : null,
-        logo: post.Logo && post.Logo.url ? post.Logo.url : null,
+        sponsorLogo: post['SponsorLogo'] && post['SponsorLogo'].url ? post['SponsorLogo'].url : null,
+        logo: post['Logo'] && post['Logo'].url ? post['Logo'].url : null,
         upvotes: 0,
         downvotes: 0,
         isPinned: false,
@@ -230,10 +269,13 @@ module.exports = createCoreController('api::breaking-news.breaking-news', ({ str
         type: 'sponsored'
       }));
 
+      // Combine all sponsored posts (dedicated + breaking news marked as sponsored)
+      const allSponsoredPosts = [...transformedSponsored, ...sponsoredFromBreaking];
+
       // Insert sponsored posts at specified positions
       let finalEntries = [...transformedEntries];
       
-      transformedSponsored.forEach(sponsored => {
+      allSponsoredPosts.forEach(sponsored => {
         let insertPosition;
         switch (sponsored.displayPosition) {
           case 'top':
@@ -260,7 +302,7 @@ module.exports = createCoreController('api::breaking-news.breaking-news', ({ str
         meta: {
           total: finalEntries.length,
           newsCount: transformedEntries.length,
-          sponsoredCount: transformedSponsored.length,
+          sponsoredCount: allSponsoredPosts.length,
           breakingCount: transformedEntries.filter(entry => entry.isBreaking).length
         }
       };
@@ -270,58 +312,4 @@ module.exports = createCoreController('api::breaking-news.breaking-news', ({ str
     }
   },
 
-  // Get widget configuration for sponsored display
-  async getWidgetConfig(ctx) {
-    try {
-      const { id } = ctx.params;
-      
-      const entry = await strapi.entityService.findOne('api::breaking-news.breaking-news', id, {
-        populate: '*'
-      });
-
-      if (!entry) {
-        return ctx.throw(404, 'Breaking news entry not found');
-      }
-
-      ctx.body = {
-        data: {
-          id: entry.id,
-          isSponsoredWidget: entry.isSponsoredWidget || false,
-          sponsorName: entry.sponsorName || null,
-          sponsorBanner: entry.sponsorBanner || null
-        }
-      };
-    } catch (error) {
-      strapi.log.error('Error in getWidgetConfig:', error);
-      ctx.throw(500, 'Failed to fetch widget configuration');
-    }
-  },
-
-  // Update widget configuration for sponsored display
-  async updateWidgetConfig(ctx) {
-    try {
-      const { id } = ctx.params;
-      const { isSponsoredWidget, sponsorName, sponsorBanner } = ctx.request.body;
-
-      const updatedEntry = await strapi.entityService.update('api::breaking-news.breaking-news', id, {
-        data: {
-          isSponsoredWidget: isSponsoredWidget || false,
-          sponsorName: isSponsoredWidget ? sponsorName : null,
-          sponsorBanner: isSponsoredWidget && sponsorName ? `Latest Updates, brought to you by ${sponsorName}` : null
-        }
-      });
-
-      ctx.body = {
-        data: {
-          id: updatedEntry.id,
-          isSponsoredWidget: updatedEntry.isSponsoredWidget,
-          sponsorName: updatedEntry.sponsorName,
-          sponsorBanner: updatedEntry.sponsorBanner
-        }
-      };
-    } catch (error) {
-      strapi.log.error('Error in updateWidgetConfig:', error);
-      ctx.throw(500, 'Failed to update widget configuration');
-    }
-  },
 }));

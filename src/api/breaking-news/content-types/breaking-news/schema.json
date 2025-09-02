@@ -90,15 +90,12 @@
     "originalAPIData": {
       "type": "json"
     },
-    "isSponsoredWidget": {
-      "type": "boolean",
-      "default": false
-    },
     "sponsorName": {
       "type": "string"
     },
-    "sponsorBanner": {
-      "type": "string"
+    "SponsoredPost": {
+      "type": "boolean",
+      "default": false
     }
   }
 }
