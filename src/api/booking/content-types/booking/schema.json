@@ -1,0 +1,89 @@
+{
+  "kind": "collectionType",
+  "collectionName": "bookings",
+  "info": {
+    "singularName": "booking",
+    "pluralName": "bookings",
+    "displayName": "Booking"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "bookings"
+    },
+    "deal": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::deal.deal",
+      "inversedBy": "bookings"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "Pending User Confirmation",
+        "Confirmed",
+        "Redeemed",
+        "Expired",
+        "Cancelled"
+      ],
+      "default": "Pending User Confirmation"
+    },
+    "purchase_date": {
+      "type": "datetime",
+      "required": true
+    },
+    "booking_date_time": {
+      "type": "datetime"
+    },
+    "quantity": {
+      "type": "integer",
+      "required": true,
+      "default": 1,
+      "min": 1
+    },
+    "total_amount": {
+      "type": "decimal",
+      "required": true
+    },
+    "confirmation_token": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "confirmation_code": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "qr_code_data": {
+      "type": "text"
+    },
+    "stripe_payment_intent_id": {
+      "type": "string"
+    },
+    "stripe_refund_id": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "text"
+    },
+    "customer_name": {
+      "type": "string"
+    },
+    "customer_email": {
+      "type": "email"
+    },
+    "customer_phone": {
+      "type": "string"
+    },
+    "special_requests": {
+      "type": "text"
+    }
+  }
+}

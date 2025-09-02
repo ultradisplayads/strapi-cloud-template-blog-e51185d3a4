@@ -1,0 +1,40 @@
+{
+  "kind": "collectionType",
+  "collectionName": "weather_caches",
+  "info": {
+    "singularName": "weather-cache",
+    "pluralName": "weather-caches",
+    "displayName": "Weather Cache"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "latRounded": {
+      "type": "decimal",
+      "required": true
+    },
+    "lonRounded": {
+      "type": "decimal",
+      "required": true
+    },
+    "units": {
+      "type": "enumeration",
+      "required": true,
+      "default": "metric",
+      "enum": [
+        "metric",
+        "imperial"
+      ]
+    },
+    "payload": {
+      "type": "json",
+      "required": true
+    },
+    "expiresAt": {
+      "type": "datetime",
+      "required": true
+    }
+  }
+}

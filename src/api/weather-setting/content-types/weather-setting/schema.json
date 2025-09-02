@@ -1,0 +1,61 @@
+{
+  "kind": "collectionType",
+  "collectionName": "weather_settings",
+  "info": {
+    "singularName": "weather-setting",
+    "pluralName": "weather-settings",
+    "displayName": "Weather Setting"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "defaultCityName": {
+      "type": "string",
+      "default": "Pattaya City",
+      "required": true
+    },
+    "defaultLatitude": {
+      "type": "decimal",
+      "required": true,
+      "default": 12.9236
+    },
+    "units": {
+      "type": "enumeration",
+      "default": "metric",
+      "enum": [
+        "metric",
+        "imperial"
+      ]
+    },
+    "updateFrequencyMinutes": {
+      "type": "integer",
+      "required": true,
+      "default": 30
+    },
+    "widgetEnabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "sponsoredEnabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "sponsorName": {
+      "type": "string"
+    },
+    "sponsorLogo": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "defaultLongitude": {
+      "type": "decimal",
+      "required": true,
+      "default": 100.8825
+    }
+  }
+}

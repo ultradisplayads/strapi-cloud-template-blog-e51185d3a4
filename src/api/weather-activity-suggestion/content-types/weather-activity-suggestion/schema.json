@@ -1,0 +1,46 @@
+{
+  "kind": "collectionType",
+  "collectionName": "weather_activity_suggestions",
+  "info": {
+    "singularName": "weather-activity-suggestion",
+    "pluralName": "weather-activity-suggestions",
+    "displayName": "Weather Activity Suggestion"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true
+    },
+    "priority": {
+      "type": "integer",
+      "default": 1
+    },
+    "weatherCondition": {
+      "type": "enumeration",
+      "enum": [
+        "sunny",
+        "rainy",
+        "cloudy",
+        "thunderstorm",
+        "drizzle"
+      ]
+    },
+    "link": {
+      "type": "string"
+    },
+    "icon": {
+      "type": "string"
+    }
+  }
+}

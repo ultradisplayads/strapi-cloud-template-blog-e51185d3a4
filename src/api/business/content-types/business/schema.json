@@ -128,7 +128,7 @@
     },
     "deals": {
       "type": "relation",
-      "relation": "manyToMany",
+      "relation": "oneToMany",
       "target": "api::deal.deal",
       "mappedBy": "business"
     },
@@ -137,6 +137,22 @@
       "relation": "oneToMany",
       "target": "api::review.review",
       "mappedBy": "business"
+    },
+    "owner": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "businesses"
+    },
+    "booking_notification_email": {
+      "type": "email",
+      "required": true
+    },
+    "notification_whatsapp_number": {
+      "type": "string"
+    },
+    "notification_line_id": {
+      "type": "string"
     }
   }
 }

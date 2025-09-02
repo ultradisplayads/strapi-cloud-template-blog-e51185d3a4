@@ -517,6 +517,74 @@ export interface ApiAuthorAuthor extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiBookingBooking extends Struct.CollectionTypeSchema {
+  collectionName: 'bookings';
+  info: {
+    displayName: 'Booking';
+    pluralName: 'bookings';
+    singularName: 'booking';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    booking_date_time: Schema.Attribute.DateTime;
+    confirmation_code: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    confirmation_token: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    customer_email: Schema.Attribute.Email;
+    customer_name: Schema.Attribute.String;
+    customer_phone: Schema.Attribute.String;
+    deal: Schema.Attribute.Relation<'manyToOne', 'api::deal.deal'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::booking.booking'
+    > &
+      Schema.Attribute.Private;
+    notes: Schema.Attribute.Text;
+    publishedAt: Schema.Attribute.DateTime;
+    purchase_date: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    qr_code_data: Schema.Attribute.Text;
+    quantity: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 1;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<1>;
+    special_requests: Schema.Attribute.Text;
+    status: Schema.Attribute.Enumeration<
+      [
+        'Pending User Confirmation',
+        'Confirmed',
+        'Redeemed',
+        'Expired',
+        'Cancelled',
+      ]
+    > &
+      Schema.Attribute.DefaultTo<'Pending User Confirmation'>;
+    stripe_payment_intent_id: Schema.Attribute.String;
+    stripe_refund_id: Schema.Attribute.String;
+    total_amount: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    user: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+  };
+}
+
 export interface ApiBreakingNewsBreakingNews
   extends Struct.CollectionTypeSchema {
   collectionName: 'breaking_news_plural';
@@ -651,6 +719,8 @@ export interface ApiBusinessBusiness extends Struct.CollectionTypeSchema {
     address: Schema.Attribute.Component<'reusable.location', true> &
       Schema.Attribute.Required;
     amenities: Schema.Attribute.Component<'reusable.amenities', true>;
+    booking_notification_email: Schema.Attribute.Email &
+      Schema.Attribute.Required;
     categories: Schema.Attribute.Relation<
       'manyToMany',
       'api::category.category'
@@ -662,7 +732,7 @@ export interface ApiBusinessBusiness extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    deals: Schema.Attribute.Relation<'manyToMany', 'api::deal.deal'>;
+    deals: Schema.Attribute.Relation<'oneToMany', 'api::deal.deal'>;
     description: Schema.Attribute.RichText;
     events: Schema.Attribute.Relation<'oneToMany', 'api::event.event'>;
     featured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
@@ -679,6 +749,12 @@ export interface ApiBusinessBusiness extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     logo: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     name: Schema.Attribute.String & Schema.Attribute.Required;
+    notification_line_id: Schema.Attribute.String;
+    notification_whatsapp_number: Schema.Attribute.String;
+    owner: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
     priceRange: Schema.Attribute.Enumeration<
       ['cheap', 'mid', 'good', 'premium']
     >;
@@ -759,40 +835,48 @@ export interface ApiDealDeal extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    business: Schema.Attribute.Relation<'manyToMany', 'api::business.business'>;
-    category: Schema.Attribute.Relation<'manyToOne', 'api::category.category'>;
+    bookings: Schema.Attribute.Relation<'oneToMany', 'api::booking.booking'>;
+    business: Schema.Attribute.Relation<'manyToOne', 'api::business.business'>;
     clicks: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
     conversions: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    currency: Schema.Attribute.String & Schema.Attribute.DefaultTo<'THB'>;
+    deal_category: Schema.Attribute.Enumeration<
+      ['Hotel', 'Activity', 'Food & Drink', 'Spa', 'Retail']
+    > &
+      Schema.Attribute.Required;
+    deal_title: Schema.Attribute.String & Schema.Attribute.Required;
+    deal_type: Schema.Attribute.Enumeration<['Standard', 'Flash']> &
+      Schema.Attribute.DefaultTo<'Standard'>;
     description: Schema.Attribute.RichText;
-    discountPercent: Schema.Attribute.Integer;
-    endDate: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    expiry_date_time: Schema.Attribute.DateTime & Schema.Attribute.Required;
     featured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
-    grouponCommission: Schema.Attribute.Decimal;
-    images: Schema.Attribute.Media<
-      'images' | 'files' | 'videos' | 'audios',
-      true
-    >;
-    isActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
-    isGrouponListed: Schema.Attribute.Boolean &
+    image_gallery: Schema.Attribute.Media<'images', true>;
+    is_featured_on_homepage: Schema.Attribute.Boolean &
       Schema.Attribute.DefaultTo<false>;
+    is_in_marquee: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    isActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::deal.deal'> &
       Schema.Attribute.Private;
-    maxQuantity: Schema.Attribute.Integer;
-    originalPrice: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    original_price: Schema.Attribute.Decimal & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
-    salePrice: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    quantity_remaining: Schema.Attribute.Integer &
+      Schema.Attribute.DefaultTo<0>;
+    quantity_total: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    requires_reservation: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
+    sale_price: Schema.Attribute.Decimal & Schema.Attribute.Required;
     seo: Schema.Attribute.Component<'reusable.seo-metadata', true>;
     slug: Schema.Attribute.UID & Schema.Attribute.Required;
-    soldQuantity: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
-    startDate: Schema.Attribute.DateTime & Schema.Attribute.Required;
     tags: Schema.Attribute.Component<'reusable.tags', true>;
-    terms: Schema.Attribute.RichText;
-    title: Schema.Attribute.String;
+    the_fine_print: Schema.Attribute.RichText;
+    tiered_discounts: Schema.Attribute.Component<'deals.tiered-discount', true>;
+    time_based_discounts: Schema.Attribute.Component<
+      'deals.time-based-discount',
+      true
+    >;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1435,18 +1519,29 @@ export interface ApiRadioStationRadioStation
     draftAndPublish: true;
   };
   attributes: {
+    AudioPreRollAd: Schema.Attribute.Media<'audios'>;
     CoverImage: Schema.Attribute.Media<'images' | 'files', true>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     CurrentTrack: Schema.Attribute.String;
     Description: Schema.Attribute.Blocks;
+    DisplayOrder: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 999;
+          min: 1;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<999>;
     Facebook: Schema.Attribute.String;
     Featured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     Frequency: Schema.Attribute.String & Schema.Attribute.Required;
     Genre: Schema.Attribute.String;
     Instagram: Schema.Attribute.String;
     IsLive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    IsSponsored: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     Listeners: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -1456,7 +1551,21 @@ export interface ApiRadioStationRadioStation
       Schema.Attribute.Private;
     Logo: Schema.Attribute.Media<'images', true>;
     Name: Schema.Attribute.String & Schema.Attribute.Required;
+    PreRollAdActive: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
+    PreRollAdDuration: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 15;
+          min: 3;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<5>;
+    PreRollAdText: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    SponsoredLabel: Schema.Attribute.String;
+    SponsoredUntil: Schema.Attribute.Date;
     StreamURL: Schema.Attribute.String & Schema.Attribute.Required;
     Twitter: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
@@ -1715,6 +1824,125 @@ export interface ApiTrendingTopicTrendingTopic
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     URL: Schema.Attribute.String;
+  };
+}
+
+export interface ApiWeatherActivitySuggestionWeatherActivitySuggestion
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'weather_activity_suggestions';
+  info: {
+    displayName: 'Weather Activity Suggestion';
+    pluralName: 'weather-activity-suggestions';
+    singularName: 'weather-activity-suggestion';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.Text;
+    icon: Schema.Attribute.String;
+    isActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    link: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::weather-activity-suggestion.weather-activity-suggestion'
+    > &
+      Schema.Attribute.Private;
+    priority: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<1>;
+    publishedAt: Schema.Attribute.DateTime;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    weatherCondition: Schema.Attribute.Enumeration<
+      ['sunny', 'rainy', 'cloudy', 'thunderstorm', 'drizzle']
+    >;
+  };
+}
+
+export interface ApiWeatherCacheWeatherCache
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'weather_caches';
+  info: {
+    displayName: 'Weather Cache';
+    pluralName: 'weather-caches';
+    singularName: 'weather-cache';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    expiresAt: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    latRounded: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::weather-cache.weather-cache'
+    > &
+      Schema.Attribute.Private;
+    lonRounded: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    payload: Schema.Attribute.JSON & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    units: Schema.Attribute.Enumeration<['metric', 'imperial']> &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'metric'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiWeatherSettingWeatherSetting
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'weather_settings';
+  info: {
+    displayName: 'Weather Setting';
+    pluralName: 'weather-settings';
+    singularName: 'weather-setting';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    defaultCityName: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'Pattaya City'>;
+    defaultLatitude: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<12.9236>;
+    defaultLongitude: Schema.Attribute.Decimal &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<100.8825>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::weather-setting.weather-setting'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    sponsoredEnabled: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
+    sponsorLogo: Schema.Attribute.Media<'images'>;
+    sponsorName: Schema.Attribute.String;
+    units: Schema.Attribute.Enumeration<['metric', 'imperial']> &
+      Schema.Attribute.DefaultTo<'metric'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    updateFrequencyMinutes: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<30>;
+    widgetEnabled: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
   };
 }
 
@@ -2275,6 +2503,11 @@ export interface PluginUsersPermissionsUser
   };
   attributes: {
     blocked: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    bookings: Schema.Attribute.Relation<'oneToMany', 'api::booking.booking'>;
+    businesses: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::business.business'
+    >;
     confirmationToken: Schema.Attribute.String & Schema.Attribute.Private;
     confirmed: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     createdAt: Schema.Attribute.DateTime;
@@ -2285,6 +2518,7 @@ export interface PluginUsersPermissionsUser
       Schema.Attribute.SetMinMaxLength<{
         minLength: 6;
       }>;
+    fcm_tokens: Schema.Attribute.JSON;
     firebaseUid: Schema.Attribute.String & Schema.Attribute.Unique;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -2330,6 +2564,7 @@ declare module '@strapi/strapi' {
       'api::advertisement.advertisement': ApiAdvertisementAdvertisement;
       'api::article.article': ApiArticleArticle;
       'api::author.author': ApiAuthorAuthor;
+      'api::booking.booking': ApiBookingBooking;
       'api::breaking-news.breaking-news': ApiBreakingNewsBreakingNews;
       'api::business-spotlight.business-spotlight': ApiBusinessSpotlightBusinessSpotlight;
       'api::business.business': ApiBusinessBusiness;
@@ -2352,6 +2587,9 @@ declare module '@strapi/strapi' {
       'api::traffic-incident.traffic-incident': ApiTrafficIncidentTrafficIncident;
       'api::traffic-route.traffic-route': ApiTrafficRouteTrafficRoute;
       'api::trending-topic.trending-topic': ApiTrendingTopicTrendingTopic;
+      'api::weather-activity-suggestion.weather-activity-suggestion': ApiWeatherActivitySuggestionWeatherActivitySuggestion;
+      'api::weather-cache.weather-cache': ApiWeatherCacheWeatherCache;
+      'api::weather-setting.weather-setting': ApiWeatherSettingWeatherSetting;
       'api::weather.weather': ApiWeatherWeather;
       'api::youtube-video.youtube-video': ApiYoutubeVideoYoutubeVideo;
       'plugin::content-releases.release': PluginContentReleasesRelease;
