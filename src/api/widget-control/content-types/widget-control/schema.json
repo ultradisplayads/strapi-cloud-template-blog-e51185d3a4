@@ -1,0 +1,69 @@
+{
+  "kind": "singleType",
+  "collectionName": "widget_controls",
+  "info": {
+    "singularName": "widget-control",
+    "pluralName": "widget-controls",
+    "displayName": "Widget Control",
+    "description": "Controls for Breaking News widget display and behavior"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "WidgetTitle": {
+      "type": "string",
+      "default": "Pattaya Breaking News",
+      "required": true
+    },
+    "NumberOfArticles": {
+      "type": "integer",
+      "default": 5,
+      "min": 1,
+      "max": 20
+    },
+    "UpdateFrequencyMinutes": {
+      "type": "integer",
+      "default": 5,
+      "min": 1,
+      "max": 60
+    },
+    "IsSponsored": {
+      "type": "boolean",
+      "default": false
+    },
+    "SponsorName": {
+      "type": "string"
+    },
+    "SponsorMessage": {
+      "type": "string",
+      "default": "brought to you by"
+    },
+    "ShowVotingButtons": {
+      "type": "boolean",
+      "default": true
+    },
+    "ShowSourceNames": {
+      "type": "boolean",
+      "default": true
+    },
+    "ShowTimestamps": {
+      "type": "boolean",
+      "default": true
+    },
+    "EnableAutoRefresh": {
+      "type": "boolean",
+      "default": true
+    },
+    "WidgetTheme": {
+      "type": "enumeration",
+      "enum": [
+        "light",
+        "dark",
+        "auto"
+      ],
+      "default": "light"
+    }
+  }
+}

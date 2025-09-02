@@ -1,59 +1,82 @@
 module.exports = {
   /**
-   * News fetching cron job - runs every 5 minutes to fetch real news
+   * News fetching cron job - runs every 1 minute to fetch real news
    */
-  '*/5 * * * *': async ({ strapi }) => {
+  '* * * * *': async ({ strapi }) => {
     try {
-      strapi.log.info('Running 5-minute news fetch...');
-      
-      // Fetch news from RSS feeds and News API
-      const newsSourceService = strapi.service('api::news-source.news-source');
-      const breakingNewsService = strapi.service('api::breaking-news.breaking-news');
+      strapi.log.info('🔄 Running 1-minute news fetch...');
       
       // Get all active news sources
       const sources = await strapi.entityService.findMany('api::news-source.news-source', {
         filters: { isActive: true }
       });
       
+      strapi.log.info(`📡 Found ${sources.length} active news sources`);
+      
       let totalArticles = 0;
+      
+      // Use RSS parser directly for better reliability
+      const RSS = require('rss-parser');
+      const parser = new RSS({
+        customFields: {
+          item: ['creator', 'dc:creator']
+        }
+      });
       
       for (const source of sources) {
         try {
-          let articles = [];
+          strapi.log.info(`📰 Fetching from ${source.name}...`);
           
-          articles = await newsSourceService.fetchFromSource(source);
-          
-          // Process and save articles
-          for (const article of articles.slice(0, 5)) { // Limit to 5 per source
-            try {
-              await strapi.entityService.create('api::article.article', {
-                data: {
-                  title: article.title,
-                  description: article.description?.substring(0, 80) || '',
-                  slug: article.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
-                  publishedAt: article.publishedAt || new Date().toISOString(),
-                  blocks: [
-                    {
-                      __component: 'shared.rich-text',
-                      body: article.content || article.description || ''
-                    }
-                  ]
-                }
-              });
-              totalArticles++;
-            } catch (createError) {
-              // Skip duplicates or validation errors
-              continue;
+          if (source.sourceType === 'rss_feed') {
+            const feed = await parser.parseURL(source.url);
+            const articles = feed.items.slice(0, 3); // Limit to 3 per source
+            
+            for (const item of articles) {
+              try {
+                // Create unique slug with timestamp
+                const slug = `${item.title.toLowerCase()
+                  .replace(/[^a-z0-9]+/g, '-')
+                  .replace(/^-+|-+$/g, '')
+                  .substring(0, 50)}-${Date.now()}`;
+                
+                await strapi.entityService.create('api::breaking-news.breaking-news', {
+                  data: {
+                    Title: item.title || 'Untitled',
+                    Summary: (item.contentSnippet || item.content || '').substring(0, 200),
+                    Category: 'General',
+                    Source: source.name,
+                    URL: item.link || '#',
+                    IsBreaking: false,
+                    PublishedTimestamp: item.pubDate ? new Date(item.pubDate) : new Date(),
+                    isPinned: false,
+                    voteScore: 0,
+                    upvotes: 0,
+                    downvotes: 0,
+                    moderationStatus: 'approved',
+                    isHidden: false,
+                    fetchedFromAPI: true,
+                    apiSource: source.name,
+                    originalAPIData: item,
+                    publishedAt: new Date()
+                  }
+                });
+                totalArticles++;
+                strapi.log.info(`✅ Created: ${item.title}`);
+              } catch (createError) {
+                // Skip duplicates or validation errors
+                strapi.log.debug(`Skipped article: ${createError.message}`);
+                continue;
+              }
             }
           }
         } catch (sourceError) {
-          strapi.log.error(`Failed to fetch from source ${source.name}:`, sourceError.message);
+          strapi.log.error(`❌ Failed to fetch from ${source.name}: ${sourceError.message}`);
         }
       }
       
-      strapi.log.info(`News fetch completed: ${totalArticles} new articles added`);
+      strapi.log.info(`🎯 News fetch completed: ${totalArticles} new articles added`);
     } catch (error) {
-      strapi.log.error('Scheduled news fetch failed:', error.message);
+      strapi.log.error('❌ Scheduled news fetch failed:', error.message);
     }
   },
 
