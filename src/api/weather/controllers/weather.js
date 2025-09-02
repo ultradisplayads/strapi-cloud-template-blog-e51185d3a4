@@ -104,7 +104,6 @@ module.exports = createCoreController('api::weather.weather', ({ strapi }) => ({
 
       return {
         data: suggestions.map(suggestion => ({
-          id: suggestion.id,
           title: suggestion.title,
           description: suggestion.description,
           link: suggestion.link,

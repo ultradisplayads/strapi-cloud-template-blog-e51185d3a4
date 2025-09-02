@@ -380,7 +380,8 @@ module.exports = createCoreService('api::weather.weather', ({ strapi }) => ({
         title: suggestion.title,
         description: suggestion.description,
         link: suggestion.link,
-        icon: suggestion.icon
+        icon: suggestion.icon,
+        priority: suggestion.priority
       }));
     } catch (error) {
       console.error('Error getting weather suggestions:', error);

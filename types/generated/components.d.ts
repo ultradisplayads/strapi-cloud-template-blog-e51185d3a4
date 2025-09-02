@@ -61,6 +61,26 @@ export interface DealsTimeBasedDiscount extends Struct.ComponentSchema {
   };
 }
 
+export interface RadioSponsoredWidgetBanner extends Struct.ComponentSchema {
+  collectionName: 'components_radio_sponsored_widget_banners';
+  info: {
+    description: 'Banner for sponsoring the entire radio widget';
+    displayName: 'Sponsored Widget Banner';
+  };
+  attributes: {
+    bannerPosition: Schema.Attribute.Enumeration<['top', 'bottom', 'overlay']> &
+      Schema.Attribute.DefaultTo<'top'>;
+    isSponsored: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    sponsorColor: Schema.Attribute.String;
+    sponsorEndDate: Schema.Attribute.Date;
+    sponsorLogo: Schema.Attribute.Media<'images'>;
+    sponsorMessage: Schema.Attribute.String;
+    sponsorName: Schema.Attribute.String;
+    sponsorStartDate: Schema.Attribute.Date;
+    sponsorWebsite: Schema.Attribute.String;
+  };
+}
+
 export interface ReusableAmenities extends Struct.ComponentSchema {
   collectionName: 'components_reusable_amenities';
   info: {
@@ -252,6 +272,7 @@ declare module '@strapi/strapi' {
     export interface ComponentSchemas {
       'deals.tiered-discount': DealsTieredDiscount;
       'deals.time-based-discount': DealsTimeBasedDiscount;
+      'radio.sponsored-widget-banner': RadioSponsoredWidgetBanner;
       'reusable.amenities': ReusableAmenities;
       'reusable.business-hours': ReusableBusinessHours;
       'reusable.contact-info': ReusableContactInfo;

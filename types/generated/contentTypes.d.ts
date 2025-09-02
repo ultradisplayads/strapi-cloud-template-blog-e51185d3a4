@@ -1367,6 +1367,7 @@ export interface ApiRadioStationRadioStation
     draftAndPublish: true;
   };
   attributes: {
+    AudioPreRollAd: Schema.Attribute.Media<'audios'>;
     CoverImage: Schema.Attribute.Media<'images' | 'files', true>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -1388,6 +1389,7 @@ export interface ApiRadioStationRadioStation
     Genre: Schema.Attribute.String;
     Instagram: Schema.Attribute.String;
     IsLive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    IsSponsored: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     Listeners: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -1397,7 +1399,21 @@ export interface ApiRadioStationRadioStation
       Schema.Attribute.Private;
     Logo: Schema.Attribute.Media<'images', true>;
     Name: Schema.Attribute.String & Schema.Attribute.Required;
+    PreRollAdActive: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
+    PreRollAdDuration: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 15;
+          min: 3;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<5>;
+    PreRollAdText: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    SponsoredLabel: Schema.Attribute.String;
+    SponsoredUntil: Schema.Attribute.Date;
     StreamURL: Schema.Attribute.String & Schema.Attribute.Required;
     Twitter: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
