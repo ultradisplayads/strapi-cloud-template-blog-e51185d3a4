@@ -1,0 +1,48 @@
+{
+  "kind": "collectionType",
+  "collectionName": "global_sponsorships",
+  "info": {
+    "singularName": "global-sponsorship",
+    "pluralName": "global-sponsorships",
+    "displayName": "Global Sponsorship",
+    "description": "Manage global sponsorship for homepage widgets"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "description": "Sponsorship title (e.g., 'Sponsored by Singha Beer')"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this sponsorship is currently active"
+    },
+    "sponsoredWidgets": {
+      "type": "enumeration",
+      "enum": [
+        "radio",
+        "weather",
+        "news",
+        "events",
+        "deals",
+        "business",
+        "social",
+        "traffic",
+        "youtube",
+        "photos"
+      ],
+      "repeatable": true,
+      "description": "Which widgets should show this sponsorship"
+    },
+    "sponsorColor": {
+      "type": "string",
+      "default": "#1e40af",
+      "description": "Color for the sponsorship text"
+    }
+  }
+}

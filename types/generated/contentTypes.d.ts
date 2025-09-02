@@ -1063,6 +1063,53 @@ export interface ApiForumActivityForumActivity
   };
 }
 
+export interface ApiGlobalSponsorshipGlobalSponsorship
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'global_sponsorships';
+  info: {
+    description: 'Manage global sponsorship for homepage widgets';
+    displayName: 'Global Sponsorship';
+    pluralName: 'global-sponsorships';
+    singularName: 'global-sponsorship';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    isActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::global-sponsorship.global-sponsorship'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    sponsorColor: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'#1e40af'>;
+    sponsoredWidgets: Schema.Attribute.Enumeration<
+      [
+        'radio',
+        'weather',
+        'news',
+        'events',
+        'deals',
+        'business',
+        'social',
+        'traffic',
+        'youtube',
+        'photos',
+      ]
+    >;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
   collectionName: 'globals';
   info: {
@@ -1367,6 +1414,7 @@ export interface ApiRadioStationRadioStation
     draftAndPublish: true;
   };
   attributes: {
+    AudioPreRollAd: Schema.Attribute.Media<'audios'>;
     CoverImage: Schema.Attribute.Media<'images' | 'files', true>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -1388,6 +1436,7 @@ export interface ApiRadioStationRadioStation
     Genre: Schema.Attribute.String;
     Instagram: Schema.Attribute.String;
     IsLive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    IsSponsored: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     Listeners: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -1395,9 +1444,23 @@ export interface ApiRadioStationRadioStation
       'api::radio-station.radio-station'
     > &
       Schema.Attribute.Private;
-    Logo: Schema.Attribute.Media<'images', true>;
+    Logo: Schema.Attribute.Media<'images'>;
     Name: Schema.Attribute.String & Schema.Attribute.Required;
+    PreRollAdActive: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
+    PreRollAdDuration: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 15;
+          min: 3;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<5>;
+    PreRollAdText: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    SponsoredLabel: Schema.Attribute.String;
+    SponsoredUntil: Schema.Attribute.Date;
     StreamURL: Schema.Attribute.String & Schema.Attribute.Required;
     Twitter: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
@@ -2286,6 +2349,7 @@ declare module '@strapi/strapi' {
       'api::event-calendar.event-calendar': ApiEventCalendarEventCalendar;
       'api::event.event': ApiEventEvent;
       'api::forum-activity.forum-activity': ApiForumActivityForumActivity;
+      'api::global-sponsorship.global-sponsorship': ApiGlobalSponsorshipGlobalSponsorship;
       'api::global.global': ApiGlobalGlobal;
       'api::google-review.google-review': ApiGoogleReviewGoogleReview;
       'api::live-event.live-event': ApiLiveEventLiveEvent;
