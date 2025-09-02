@@ -46,6 +46,49 @@
     },
     "PublishedTimestamp": {
       "type": "datetime"
+    },
+    "isPinned": {
+      "type": "boolean",
+      "default": false
+    },
+    "pinnedAt": {
+      "type": "datetime"
+    },
+    "voteScore": {
+      "type": "integer",
+      "default": 0
+    },
+    "upvotes": {
+      "type": "integer",
+      "default": 0
+    },
+    "downvotes": {
+      "type": "integer",
+      "default": 0
+    },
+    "moderationStatus": {
+      "type": "enumeration",
+      "enum": [
+        "approved",
+        "pending",
+        "rejected",
+        "needs_review"
+      ],
+      "default": "approved"
+    },
+    "isHidden": {
+      "type": "boolean",
+      "default": false
+    },
+    "fetchedFromAPI": {
+      "type": "boolean",
+      "default": false
+    },
+    "apiSource": {
+      "type": "string"
+    },
+    "originalAPIData": {
+      "type": "json"
     }
   }
 }
