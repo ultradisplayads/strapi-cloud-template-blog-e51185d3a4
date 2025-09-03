@@ -75,6 +75,7 @@ module.exports = {
       path: '/breaking-news/live',
       handler: 'breaking-news.live',
       config: {
+        auth: false,
         middlewares: [],
       }
     }
