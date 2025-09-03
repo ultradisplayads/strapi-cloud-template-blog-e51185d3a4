@@ -287,4 +287,41 @@ module.exports = async ({ strapi }) => {
   }
   
   await seedExampleApp();
+  
+  // Start the news scheduler automatically when Strapi starts
+  console.log('🚀 Starting news scheduler...');
+  
+  // Wait a bit for Strapi to fully initialize before starting scheduler
+  setTimeout(async () => {
+    try {
+      const NewsScheduler = require('../scripts/alternative-scheduler');
+      const scheduler = new NewsScheduler();
+      
+      // Store scheduler instance globally for potential cleanup
+      strapi.newsScheduler = scheduler;
+      
+      // Start the scheduler (runs immediately and then every 5 minutes)
+      scheduler.start(5);
+      
+      console.log('✅ News scheduler started successfully - fetching initial data');
+      
+    } catch (error) {
+      console.error('❌ Failed to start news scheduler:', error.message);
+    }
+  }, 3000); // Wait 3 seconds for Strapi to fully initialize
+  
+  // Handle graceful shutdown
+  process.on('SIGINT', () => {
+    console.log('🛑 Shutting down news scheduler...');
+    if (strapi.newsScheduler) {
+      strapi.newsScheduler.stop();
+    }
+  });
+  
+  process.on('SIGTERM', () => {
+    console.log('🛑 Shutting down news scheduler...');
+    if (strapi.newsScheduler) {
+      strapi.newsScheduler.stop();
+    }
+  });
 };
