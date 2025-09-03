@@ -89,6 +89,13 @@
     },
     "originalAPIData": {
       "type": "json"
+    },
+    "sponsorName": {
+      "type": "string"
+    },
+    "SponsoredPost": {
+      "type": "boolean",
+      "default": false
     }
   }
 }
