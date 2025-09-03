@@ -1,0 +1,96 @@
+{
+  "kind": "collectionType",
+  "collectionName": "sponsored_posts",
+  "info": {
+    "singularName": "sponsored-post",
+    "pluralName": "sponsored-posts",
+    "displayName": "Sponsored Post",
+    "description": "Sponsored content for monetization"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Title": {
+      "type": "string",
+      "required": true
+    },
+    "Summary": {
+      "type": "text",
+      "required": true
+    },
+    "SponsorName": {
+      "type": "string",
+      "required": true
+    },
+    "SponsorLogo": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "TargetURL": {
+      "type": "string",
+      "required": true
+    },
+    "Image": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "Logo": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"],
+      "description": "Additional logo for sponsored content display"
+    },
+    "IsActive": {
+      "type": "boolean",
+      "default": true
+    },
+    "Priority": {
+      "type": "integer",
+      "default": 1,
+      "min": 1,
+      "max": 10
+    },
+    "DisplayPosition": {
+      "type": "enumeration",
+      "enum": [
+        "top",
+        "position-3",
+        "position-5",
+        "bottom"
+      ],
+      "default": "position-3"
+    },
+    "CampaignStartDate": {
+      "type": "datetime"
+    },
+    "CampaignEndDate": {
+      "type": "datetime"
+    },
+    "ClickCount": {
+      "type": "integer",
+      "default": 0
+    },
+    "ImpressionCount": {
+      "type": "integer",
+      "default": 0
+    },
+    "Budget": {
+      "type": "decimal"
+    },
+    "CostPerClick": {
+      "type": "decimal"
+    },
+    "SourceBreakingNewsId": {
+      "type": "integer",
+      "required": false,
+      "description": "ID of the breaking news item this sponsored post was created from"
+    }
+  }
+}

@@ -9,7 +9,9 @@
     "develop": "strapi develop",
     "seed:example": "node ./scripts/seed.js",
     "start": "strapi start",
-    "strapi": "strapi"
+    "strapi": "strapi",
+    "news:start": "node ./scripts/start-news-system.js",
+    "news:scheduler": "node ./scripts/alternative-scheduler.js"
   },
   "dependencies": {
     "@strapi/plugin-cloud": "5.15.0",
@@ -24,11 +26,18 @@
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-router-dom": "^6.0.0",
+    "rss-parser": "^3.13.0",
     "stripe": "^18.5.0",
     "styled-components": "^6.0.0"
   },
   "engines": {
     "node": ">=18.0.0 <=22.x.x",
     "npm": ">=6.0.0"
+  },
+  "packageManager": "pnpm@10.15.1",
+  "pnpm": {
+    "overrides": {
+      "node-schedule": "2.1.0"
+    }
   }
 }

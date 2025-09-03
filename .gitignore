@@ -123,7 +123,7 @@ coverage
 
 .env
 license.txt
-exports
+exports 
 .strapi
 dist
 build

@@ -1,0 +1,9 @@
+{
+  "fetchIntervalMinutes": 30,
+  "moderationKeywords": "spam,adult,gambling,casino,xxx,porn",
+  "autoModerationEnabled": true,
+  "maxArticlesPerFetch": 10,
+  "cronJobEnabled": true,
+  "newsApiCountry": "th",
+  "newsApiCategory": "general"
+}
