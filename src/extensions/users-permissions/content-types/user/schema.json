@@ -78,7 +78,17 @@
       "mappedBy": "owner"
     },
     "fcm_tokens": {
-      "type": "json"
+      "type": "json",
+      "description": "Array of FCM device tokens for push notifications"
+    },
+    "notification_preferences": {
+      "type": "json",
+      "default": {
+        "email": true,
+        "push": true,
+        "sms": false
+      },
+      "description": "User's notification preferences"
     },
     "bookings": {
       "type": "relation",

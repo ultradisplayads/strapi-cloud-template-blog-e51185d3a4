@@ -549,6 +549,11 @@ export interface ApiBookingBooking extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     notes: Schema.Attribute.Text;
+    paid_at: Schema.Attribute.DateTime;
+    payment_status: Schema.Attribute.Enumeration<
+      ['pending', 'paid', 'failed', 'refunded', 'cancelled']
+    > &
+      Schema.Attribute.DefaultTo<'pending'>;
     publishedAt: Schema.Attribute.DateTime;
     purchase_date: Schema.Attribute.DateTime & Schema.Attribute.Required;
     qr_code_data: Schema.Attribute.Text;
@@ -561,6 +566,7 @@ export interface ApiBookingBooking extends Struct.CollectionTypeSchema {
         number
       > &
       Schema.Attribute.DefaultTo<1>;
+    refunded_at: Schema.Attribute.DateTime;
     special_requests: Schema.Attribute.Text;
     status: Schema.Attribute.Enumeration<
       [
@@ -2302,6 +2308,12 @@ export interface PluginUsersPermissionsUser
       'plugin::users-permissions.user'
     > &
       Schema.Attribute.Private;
+    notification_preferences: Schema.Attribute.JSON &
+      Schema.Attribute.DefaultTo<{
+        email: true;
+        push: true;
+        sms: false;
+      }>;
     password: Schema.Attribute.Password &
       Schema.Attribute.Private &
       Schema.Attribute.SetMinMaxLength<{

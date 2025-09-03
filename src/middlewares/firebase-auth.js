@@ -12,6 +12,20 @@ module.exports = (config, { strapi }) => {
       return next();
     }
     
+    // Skip Firebase auth for Firebase auth endpoints (they need to be public)
+    if (ctx.request.url.includes('/api/firebase-auth/')) {
+      console.log('🔥 Firebase Auth Middleware: Skipping authentication for Firebase auth endpoint:', ctx.request.url);
+      return next();
+    }
+    
+    // Also skip for the exact paths
+    if (ctx.request.url === '/api/firebase-auth/login' || 
+        ctx.request.url === '/api/firebase-auth/register' || 
+        ctx.request.url === '/api/firebase-auth/forgot-password') {
+      console.log('🔥 Firebase Auth Middleware: Skipping authentication for exact Firebase auth path:', ctx.request.url);
+      return next();
+    }
+    
     console.log('🔥 Firebase Auth Middleware: Request to', ctx.request.url);
     const token = ctx.request.header.authorization?.replace('Bearer ', '');
     
