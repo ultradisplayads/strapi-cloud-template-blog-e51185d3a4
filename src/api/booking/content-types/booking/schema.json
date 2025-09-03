@@ -70,6 +70,23 @@
     "stripe_refund_id": {
       "type": "string"
     },
+    "payment_status": {
+      "type": "enumeration",
+      "enum": [
+        "pending",
+        "paid",
+        "failed",
+        "refunded",
+        "cancelled"
+      ],
+      "default": "pending"
+    },
+    "paid_at": {
+      "type": "datetime"
+    },
+    "refunded_at": {
+      "type": "datetime"
+    },
     "notes": {
       "type": "text"
     },
