@@ -26,6 +26,27 @@ module.exports = (config, { strapi }) => {
       return next();
     }
     
+    // Skip Firebase auth for public news endpoints
+    const publicEndpoints = [
+      '/api/breaking-news',
+      '/api/news-articles', 
+      '/api/trending-topics',
+      '/api/traffic-routes',
+      '/api/traffic-incidents',
+      '/api/deals',
+      '/api/google-reviews',
+      '/api/quick-links'
+    ];
+    
+    const isPublicEndpoint = publicEndpoints.some(endpoint => 
+      ctx.request.url.startsWith(endpoint)
+    );
+    
+    if (isPublicEndpoint) {
+      console.log('🔥 Public endpoint, skipping authentication');
+      return next();
+    }
+    
     console.log('🔥 Firebase Auth Middleware: Request to', ctx.request.url);
     const token = ctx.request.header.authorization?.replace('Bearer ', '');
     
