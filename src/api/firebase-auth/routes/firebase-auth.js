@@ -8,6 +8,7 @@ module.exports = {
       handler: 'firebase-auth.register',
       config: {
         prefix: '',
+        auth: false, // Make this route public
       },
     },
     {
@@ -16,6 +17,7 @@ module.exports = {
       handler: 'firebase-auth.login',
       config: {
         prefix: '',
+        auth: false, // Make this route public
       },
     },
     {
@@ -24,6 +26,7 @@ module.exports = {
       handler: 'firebase-auth.forgotPassword',
       config: {
         prefix: '',
+        auth: false, // Make this route public
       },
     },
   ],
