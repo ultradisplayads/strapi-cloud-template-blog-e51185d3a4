@@ -27,7 +27,7 @@ module.exports = [
         'http://localhost:8080', // Vue dev server
         'http://localhost:3002', // Additional React port
         'http://localhost:5000', // Additional dev port
-        'https://your-frontend-domain.com', // Production domain
+        'https://pattaya1-ten.vercel.app', // Production domain
         '*' // Allow all origins in development (remove in production)
       ],
       credentials: true,
