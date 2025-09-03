@@ -181,7 +181,6 @@ module.exports = createCoreController('api::breaking-news.breaking-news', ({ str
       // Get active sponsored posts
       const sponsoredPosts = await strapi.entityService.findMany('api::sponsored-post.sponsored-post', {
         filters: {
-          publishedAt: { $notNull: true },
           IsActive: true,
           $or: [
             { CampaignEndDate: { $null: true } },
@@ -191,6 +190,8 @@ module.exports = createCoreController('api::breaking-news.breaking-news', ({ str
         populate: '*',
         sort: [{ Priority: 'asc' }]
       });
+
+      console.log(`Found ${sponsoredPosts.length} active sponsored posts`);
 
       // Separate breaking news into regular news and sponsored posts
       const regularNews = [];
