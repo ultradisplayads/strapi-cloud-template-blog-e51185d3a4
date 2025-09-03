@@ -50,7 +50,13 @@ class NewsScheduler {
                 // Check if article contains breaking news keywords
                 const title = (item.title || '').toLowerCase();
                 const content = (item.contentSnippet || item.content || '').toLowerCase();
-                const breakingKeywords = ['breaking news', 'breaking:', 'urgent:', 'alert:', 'emergency', 'developing story', 'just in:', 'live update'];
+                const breakingKeywords = [
+                  'breaking news', 'breaking:', 'urgent:', 'alert:', 'emergency', 
+                  'developing story', 'just in:', 'live update', 'bombshell', 
+                  'crisis', 'dissolve parliament', 'parliament dissolution', 
+                  'urgent action', 'immediate', 'critical', 'major announcement',
+                  'shocking', 'unprecedented', 'explosive', 'scandal'
+                ];
                 
                 const isBreaking = breakingKeywords.some(keyword => 
                   title.includes(keyword) || content.includes(keyword)
