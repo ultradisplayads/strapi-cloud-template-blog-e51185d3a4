@@ -63,6 +63,13 @@
     "CurrentTrack": {
       "type": "string"
     },
+    "DisplayOrder": {
+      "type": "integer",
+      "default": 999,
+      "min": 1,
+      "max": 999,
+      "description": "Priority order for display (1 = highest priority, 999 = lowest priority)"
+    },
     "Website": {
       "type": "string"
     },
@@ -74,6 +81,43 @@
     },
     "Twitter": {
       "type": "string"
+    },
+    "IsSponsored": {
+      "type": "boolean",
+      "default": false,
+      "description": "Sponsored station slot - appears at top of list with sponsored label"
+    },
+    "SponsoredLabel": {
+      "type": "string",
+      "description": "Custom label for sponsored station (e.g., 'Sponsored by Singha Beer')"
+    },
+    "SponsoredUntil": {
+      "type": "date",
+      "description": "Date until which the station sponsorship is valid"
+    },
+    "AudioPreRollAd": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "audios"
+      ],
+      "description": "Audio ad clip to play before radio stream starts"
+    },
+    "PreRollAdText": {
+      "type": "string",
+      "description": "Text to display during pre-roll ad (e.g., 'This music break is brought to you by The Rock Bar')"
+    },
+    "PreRollAdDuration": {
+      "type": "integer",
+      "default": 5,
+      "min": 3,
+      "max": 15,
+      "description": "Duration of pre-roll ad in seconds"
+    },
+    "PreRollAdActive": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the pre-roll ad is currently active"
     }
   }
 }

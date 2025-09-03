@@ -362,25 +362,25 @@
   ],
   "radio-stations": [
     {
-      "Name": "Pattaya FM",
-      "Frequency": "103.5",
-      "Genre": "Pop/Rock",
-      "StreamURL": "https://stream.example.com/pattaya-fm",
+      "Name": "Radio Mirchi",
+      "Frequency": "98.3",
+      "Genre": "International",
+      "StreamURL": "https://stream.radiojar.com/4ywdgup3bnzuv",
       "IsLive": true,
       "Listeners": 1250,
-      "CurrentTrack": "Summer Vibes Mix",
+      "CurrentTrack": "Live Stream",
       "Featured": true,
       "Verified": true,
-      "Description": "Pattaya's premier radio station playing the best pop and rock hits",
-      "Website": "https://pattayafm.com",
-      "Facebook": "pattayafm",
-      "Instagram": "pattayafm_official"
+      "Description": "Popular international radio station with great music",
+      "Website": "https://radiomirchi.com",
+      "Facebook": "radiomirchi",
+      "Instagram": "radiomirchi_official"
     },
     {
       "Name": "Beach Radio",
       "Frequency": "95.7",
       "Genre": "Chill/Lounge",
-      "StreamURL": "https://stream.example.com/beach-radio",
+      "StreamURL": "http://163.172.158.94:8048/;stream.mp3",
       "IsLive": true,
       "Listeners": 890,
       "CurrentTrack": "Sunset Sessions",
@@ -390,41 +390,41 @@
       "Website": "https://beachradio.co.th"
     },
     {
-      "Name": "Thai Hits",
-      "Frequency": "101.2",
-      "Genre": "Thai Pop",
-      "StreamURL": "https://stream.example.com/thai-hits",
+      "Name": "SomaFM Groove Salad",
+      "Frequency": "103.1",
+      "Genre": "Ambient/Chill",
+      "StreamURL": "https://ice1.somafm.com/groovesalad-128-mp3",
       "IsLive": true,
       "Listeners": 2100,
-      "CurrentTrack": "ลูกทุ่งใหม่",
+      "CurrentTrack": "Ambient Groove Mix",
       "Featured": true,
       "Verified": true,
-      "Description": "The best of Thai pop and traditional music",
-      "Facebook": "thaihitsradio"
+      "Description": "Ambient electronic music for relaxation and focus",
+      "Website": "https://somafm.com/groovesalad"
     },
     {
-      "Name": "Expat Radio",
-      "Frequency": "88.9",
-      "Genre": "International",
-      "StreamURL": "https://stream.example.com/expat-radio",
+      "Name": "SomaFM Drone Zone",
+      "Frequency": "107.5",
+      "Genre": "Drone/Ambient",
+      "StreamURL": "https://ice1.somafm.com/dronezone-128-mp3",
       "IsLive": true,
       "Listeners": 650,
-      "CurrentTrack": "International News Hour",
+      "CurrentTrack": "Atmospheric Drone",
       "Featured": false,
       "Verified": false,
-      "Description": "News, music and entertainment for the international community"
+      "Description": "Atmospheric drone music for deep listening"
     },
     {
-      "Name": "Dance FM",
-      "Frequency": "107.1",
-      "Genre": "Electronic/Dance",
-      "StreamURL": "https://stream.example.com/dance-fm",
+      "Name": "Radio Paradise",
+      "Frequency": "101.9",
+      "Genre": "Eclectic",
+      "StreamURL": "https://stream.radioparadise.com/aac-128",
       "IsLive": true,
       "Listeners": 1800,
-      "CurrentTrack": "Club Anthems 2024",
+      "CurrentTrack": "Eclectic Mix",
       "Featured": false,
       "Verified": true,
-      "Description": "Non-stop electronic dance music and club hits"
+      "Description": "Eclectic mix of rock, jazz, classical and world music"
     }
   ],
   "deals": [
