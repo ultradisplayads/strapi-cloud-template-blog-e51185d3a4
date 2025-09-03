@@ -445,46 +445,6 @@ export interface ApiAdvertisementAdvertisement
   };
 }
 
-export interface ApiArticleArticle extends Struct.CollectionTypeSchema {
-  collectionName: 'articles';
-  info: {
-    description: 'Create your blog content';
-    displayName: 'Article';
-    pluralName: 'articles';
-    singularName: 'article';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    author: Schema.Attribute.Relation<'manyToOne', 'api::author.author'>;
-    blocks: Schema.Attribute.DynamicZone<
-      ['shared.media', 'shared.quote', 'shared.rich-text', 'shared.slider']
-    >;
-    category: Schema.Attribute.Relation<'manyToOne', 'api::category.category'>;
-    cover: Schema.Attribute.Media<'images' | 'files' | 'videos'>;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    description: Schema.Attribute.Text &
-      Schema.Attribute.SetMinMaxLength<{
-        maxLength: 80;
-      }>;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::article.article'
-    > &
-      Schema.Attribute.Private;
-    publishedAt: Schema.Attribute.DateTime;
-    slug: Schema.Attribute.UID<'title'>;
-    title: Schema.Attribute.String;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
 export interface ApiAuthorAuthor extends Struct.CollectionTypeSchema {
   collectionName: 'authors';
   info: {
@@ -497,7 +457,6 @@ export interface ApiAuthorAuthor extends Struct.CollectionTypeSchema {
     draftAndPublish: false;
   };
   attributes: {
-    articles: Schema.Attribute.Relation<'oneToMany', 'api::article.article'>;
     avatar: Schema.Attribute.Media<'images' | 'files' | 'videos'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -626,6 +585,8 @@ export interface ApiBreakingNewsBreakingNews
       ['low', 'medium', 'high', 'critical']
     >;
     Source: Schema.Attribute.String & Schema.Attribute.Required;
+    SponsoredPost: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    sponsorName: Schema.Attribute.String;
     Summary: Schema.Attribute.Text & Schema.Attribute.Required;
     Title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
@@ -793,7 +754,6 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
   };
   attributes: {
     active: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
-    articles: Schema.Attribute.Relation<'oneToMany', 'api::article.article'>;
     businesses: Schema.Attribute.Relation<
       'manyToMany',
       'api::business.business'
@@ -1685,6 +1645,63 @@ export interface ApiSocialMediaPostSocialMediaPost
   };
 }
 
+export interface ApiSponsoredPostSponsoredPost
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'sponsored_posts';
+  info: {
+    description: 'Sponsored content for monetization';
+    displayName: 'Sponsored Post';
+    pluralName: 'sponsored-posts';
+    singularName: 'sponsored-post';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    Budget: Schema.Attribute.Decimal;
+    CampaignEndDate: Schema.Attribute.DateTime;
+    CampaignStartDate: Schema.Attribute.DateTime;
+    ClickCount: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    CostPerClick: Schema.Attribute.Decimal;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    DisplayPosition: Schema.Attribute.Enumeration<
+      ['top', 'position-3', 'position-5', 'bottom']
+    > &
+      Schema.Attribute.DefaultTo<'position-3'>;
+    Image: Schema.Attribute.Media<'images'>;
+    ImpressionCount: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    IsActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::sponsored-post.sponsored-post'
+    > &
+      Schema.Attribute.Private;
+    Logo: Schema.Attribute.Media<'images'>;
+    Priority: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 10;
+          min: 1;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<1>;
+    publishedAt: Schema.Attribute.DateTime;
+    SourceBreakingNewsId: Schema.Attribute.Integer;
+    SponsorLogo: Schema.Attribute.Media<'images'>;
+    SponsorName: Schema.Attribute.String & Schema.Attribute.Required;
+    Summary: Schema.Attribute.Text & Schema.Attribute.Required;
+    TargetURL: Schema.Attribute.String & Schema.Attribute.Required;
+    Title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiTrafficIncidentTrafficIncident
   extends Struct.CollectionTypeSchema {
   collectionName: 'traffic_incidents';
@@ -1984,6 +2001,64 @@ export interface ApiWeatherWeather extends Struct.CollectionTypeSchema {
     UvIndex: Schema.Attribute.Integer;
     Visibility: Schema.Attribute.Decimal;
     Windspeed: Schema.Attribute.Decimal;
+  };
+}
+
+export interface ApiWidgetControlWidgetControl extends Struct.SingleTypeSchema {
+  collectionName: 'widget_controls';
+  info: {
+    description: 'Controls for Breaking News widget display and behavior';
+    displayName: 'Widget Control';
+    pluralName: 'widget-controls';
+    singularName: 'widget-control';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    EnableAutoRefresh: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<true>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::widget-control.widget-control'
+    > &
+      Schema.Attribute.Private;
+    NumberOfArticles: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 20;
+          min: 1;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<5>;
+    publishedAt: Schema.Attribute.DateTime;
+    ShowSourceNames: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<true>;
+    ShowTimestamps: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    ShowVotingButtons: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<true>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    UpdateFrequencyMinutes: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 60;
+          min: 1;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<5>;
+    WidgetTheme: Schema.Attribute.Enumeration<['light', 'dark', 'auto']> &
+      Schema.Attribute.DefaultTo<'light'>;
+    WidgetTitle: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'Pattaya Breaking News'>;
   };
 }
 
@@ -2562,7 +2637,6 @@ declare module '@strapi/strapi' {
       'admin::user': AdminUser;
       'api::about.about': ApiAboutAbout;
       'api::advertisement.advertisement': ApiAdvertisementAdvertisement;
-      'api::article.article': ApiArticleArticle;
       'api::author.author': ApiAuthorAuthor;
       'api::booking.booking': ApiBookingBooking;
       'api::breaking-news.breaking-news': ApiBreakingNewsBreakingNews;
@@ -2584,6 +2658,7 @@ declare module '@strapi/strapi' {
       'api::radio-station.radio-station': ApiRadioStationRadioStation;
       'api::review.review': ApiReviewReview;
       'api::social-media-post.social-media-post': ApiSocialMediaPostSocialMediaPost;
+      'api::sponsored-post.sponsored-post': ApiSponsoredPostSponsoredPost;
       'api::traffic-incident.traffic-incident': ApiTrafficIncidentTrafficIncident;
       'api::traffic-route.traffic-route': ApiTrafficRouteTrafficRoute;
       'api::trending-topic.trending-topic': ApiTrendingTopicTrendingTopic;
@@ -2591,6 +2666,7 @@ declare module '@strapi/strapi' {
       'api::weather-cache.weather-cache': ApiWeatherCacheWeatherCache;
       'api::weather-setting.weather-setting': ApiWeatherSettingWeatherSetting;
       'api::weather.weather': ApiWeatherWeather;
+      'api::widget-control.widget-control': ApiWidgetControlWidgetControl;
       'api::youtube-video.youtube-video': ApiYoutubeVideoYoutubeVideo;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
