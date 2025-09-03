@@ -7,9 +7,9 @@
     "build": "strapi build",
     "deploy": "strapi deploy",
     "develop": "strapi develop",
-    "seed:example": "node ./scripts/seed.js",
     "start": "strapi start",
     "strapi": "strapi",
+    "seed:example": "node ./scripts/seed.js",
     "news:start": "node ./scripts/start-news-system.js",
     "news:scheduler": "node ./scripts/alternative-scheduler.js"
   },
@@ -30,10 +30,10 @@
     "stripe": "^18.5.0",
     "styled-components": "^6.0.0"
   },
+  "devDependencies": {},
   "engines": {
     "node": ">=18.0.0 <=22.x.x",
     "npm": ">=6.0.0"
-  },
-  "packageManager": "pnpm@10.15.1"
+  }
 }
 
