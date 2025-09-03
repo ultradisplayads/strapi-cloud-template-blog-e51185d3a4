@@ -27,6 +27,7 @@
     "react-dom": "^18.0.0",
     "react-router-dom": "^6.0.0",
     "rss-parser": "^3.13.0",
+    "stripe": "^18.5.0",
     "styled-components": "^6.0.0"
   },
   "engines": {
@@ -35,3 +36,4 @@
   },
   "packageManager": "pnpm@10.15.1"
 }
+

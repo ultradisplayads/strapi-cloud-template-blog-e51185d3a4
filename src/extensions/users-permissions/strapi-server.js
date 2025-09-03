@@ -1,95 +1,158 @@
 'use strict';
 
 module.exports = (plugin) => {
-  // Store the original authenticate function
-  const originalAuthenticate = plugin.controllers.auth.callback;
-
-  // Override the callback method to handle Firebase tokens
-  plugin.controllers.auth.callback = async (ctx) => {
-    try {
-      // Try the original Strapi authentication first
-      return await originalAuthenticate(ctx);
-    } catch (error) {
-      // If Strapi auth fails, try Firebase authentication
-      const token = ctx.request.header.authorization?.replace('Bearer ', '');
-      
-      if (!token) {
-        return ctx.badRequest('No token provided');
-      }
-
-      try {
-        // Verify Firebase token
-        const decodedToken = await strapi.firebase.auth().verifyIdToken(token);
-        
-        if (decodedToken && decodedToken.uid) {
-          // Find user by Firebase UID
-          const users = await strapi.entityService.findMany('plugin::users-permissions.user', {
-            filters: { firebaseUid: decodedToken.uid },
-            populate: { role: true },
-          });
-          
-          if (users && users.length > 0 && !users[0].blocked) {
-            const user = users[0];
-            
-            // Set user in context
-            ctx.state.user = user;
-            
-            // Return user data like Strapi does
-            ctx.send({
-              jwt: token, // Use Firebase token as JWT
-              user: await strapi.plugins['users-permissions'].services.user.sanitizeUser(user),
-            });
-            return;
-          } else {
-            return ctx.badRequest('User not found or blocked');
-          }
+  // Add custom routes for FCM token management
+  plugin.routes['content-api'].routes.push(
+    {
+      method: 'POST',
+      path: '/users/me/add-fcm-token',
+      handler: 'user.addFcmToken',
+      config: {
+        auth: {
+          scope: ['authenticated']
         }
-      } catch (firebaseError) {
-        console.error('Firebase token verification failed:', firebaseError);
-        return ctx.badRequest('Invalid Firebase token');
+      }
+    },
+    {
+      method: 'POST',
+      path: '/users/me/remove-fcm-token',
+      handler: 'user.removeFcmToken',
+      config: {
+        auth: {
+          scope: ['authenticated']
+        }
+      }
+    },
+    {
+      method: 'GET',
+      path: '/users/me/fcm-tokens',
+      handler: 'user.getFcmTokens',
+      config: {
+        auth: {
+          scope: ['authenticated']
+        }
+      }
+    }
+  );
+
+  // Add custom controller methods
+  plugin.controllers.user.addFcmToken = async (ctx) => {
+    try {
+      const user = ctx.state.user;
+      if (!user) {
+        return ctx.unauthorized('User not authenticated');
+      }
+
+      const { fcm_token, device_id } = ctx.request.body;
+      
+      if (!fcm_token) {
+        return ctx.badRequest('FCM token is required');
+      }
+
+      // Get current user
+      const currentUser = await strapi.entityService.findOne('plugin::users-permissions.user', user.id);
+      
+      // Initialize fcm_tokens if it doesn't exist
+      let fcmTokens = currentUser.fcm_tokens || [];
+      if (!Array.isArray(fcmTokens)) {
+        fcmTokens = [];
       }
       
-      // If both authentications fail, return the original error
-      throw error;
+      // Check if token already exists for this device
+      const existingTokenIndex = fcmTokens.findIndex(token => 
+        token && typeof token === 'object' && token.device_id === device_id
+      );
+      
+      if (existingTokenIndex !== -1) {
+        // Update existing token
+        fcmTokens[existingTokenIndex] = {
+          fcm_token,
+          device_id: device_id || 'unknown',
+          added_at: new Date().toISOString()
+        };
+      } else {
+        // Add new token
+        fcmTokens.push({
+          fcm_token,
+          device_id: device_id || 'unknown',
+          added_at: new Date().toISOString()
+        });
+      }
+
+      // Update user with new FCM tokens
+      const updatedUser = await strapi.entityService.update('plugin::users-permissions.user', user.id, {
+        data: {
+          fcm_tokens: fcmTokens
+        }
+      });
+
+      return ctx.send({
+        message: 'FCM token added successfully',
+        fcm_tokens: updatedUser.fcm_tokens
+      });
+    } catch (error) {
+      return ctx.badRequest('Error adding FCM token', { error: error.message });
     }
   };
 
-  // Add custom routes for Firebase auth
-  plugin.routes['content-api'].routes.push({
-    method: 'POST',
-    path: '/auth/firebase/register',
-    handler: 'firebase.register',
-    config: {
-      middlewares: ['plugin::users-permissions.rateLimit'],
-      prefix: '',
-      policies: [],
-    },
-  });
+  plugin.controllers.user.removeFcmToken = async (ctx) => {
+    try {
+      const user = ctx.state.user;
+      if (!user) {
+        return ctx.unauthorized('User not authenticated');
+      }
 
-  plugin.routes['content-api'].routes.push({
-    method: 'POST',
-    path: '/auth/firebase/login',
-    handler: 'firebase.login',
-    config: {
-      middlewares: ['plugin::users-permissions.rateLimit'],
-      prefix: '',
-      policies: [],
-    },
-  });
+      const { device_id } = ctx.request.body;
+      
+      if (!device_id) {
+        return ctx.badRequest('Device ID is required');
+      }
 
-  plugin.routes['content-api'].routes.push({
-    method: 'POST',
-    path: '/auth/firebase/forgot-password',
-    handler: 'firebase.forgotPassword',
-    config: {
-      middlewares: ['plugin::users-permissions.rateLimit'],
-      prefix: '',
-      policies: [],
-    },
-  });
+      // Get current user
+      const currentUser = await strapi.entityService.findOne('plugin::users-permissions.user', user.id);
+      
+      let fcmTokens = currentUser.fcm_tokens || [];
+      if (!Array.isArray(fcmTokens)) {
+        fcmTokens = [];
+      }
+      
+      // Remove token for this device
+      fcmTokens = fcmTokens.filter(token => 
+        token && typeof token === 'object' && token.device_id !== device_id
+      );
 
-  // Add Firebase controller
-  plugin.controllers.firebase = require('./controllers/firebase');
+      // Update user
+      const updatedUser = await strapi.entityService.update('plugin::users-permissions.user', user.id, {
+        data: {
+          fcm_tokens: fcmTokens
+        }
+      });
+
+      return ctx.send({
+        message: 'FCM token removed successfully',
+        fcm_tokens: updatedUser.fcm_tokens
+      });
+    } catch (error) {
+      return ctx.badRequest('Error removing FCM token', { error: error.message });
+    }
+  };
+
+  plugin.controllers.user.getFcmTokens = async (ctx) => {
+    try {
+      const user = ctx.state.user;
+      if (!user) {
+        return ctx.unauthorized('User not authenticated');
+      }
+
+      const currentUser = await strapi.entityService.findOne('plugin::users-permissions.user', user.id);
+      
+      return ctx.send({
+        fcm_tokens: currentUser.fcm_tokens || []
+      });
+    } catch (error) {
+      return ctx.badRequest('Error fetching FCM tokens', { error: error.message });
+    }
+  };
 
   return plugin;
 }; 

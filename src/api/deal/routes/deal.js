@@ -31,5 +31,31 @@ module.exports = customRouter(defaultRouter, [
         scope: ['authenticated']
       }
     }
+  },
+  {
+    method: 'POST',
+    path: '/deals/:id/confirm-payment',
+    handler: 'deal.confirmPayment',
+    config: {
+      auth: {
+        scope: ['authenticated']
+      }
+    }
+  },
+  {
+    method: 'POST',
+    path: '/deals/webhook',
+    handler: 'deal.handleWebhook',
+    config: {
+      auth: false
+    }
+  },
+  {
+    method: 'POST',
+    path: '/deals/test-payment',
+    handler: 'deal.testPayment',
+    config: {
+      auth: false
+    }
   }
 ]);

@@ -508,6 +508,11 @@ export interface ApiBookingBooking extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     notes: Schema.Attribute.Text;
+    paid_at: Schema.Attribute.DateTime;
+    payment_status: Schema.Attribute.Enumeration<
+      ['pending', 'paid', 'failed', 'refunded', 'cancelled']
+    > &
+      Schema.Attribute.DefaultTo<'pending'>;
     publishedAt: Schema.Attribute.DateTime;
     purchase_date: Schema.Attribute.DateTime & Schema.Attribute.Required;
     qr_code_data: Schema.Attribute.Text;
@@ -520,6 +525,7 @@ export interface ApiBookingBooking extends Struct.CollectionTypeSchema {
         number
       > &
       Schema.Attribute.DefaultTo<1>;
+    refunded_at: Schema.Attribute.DateTime;
     special_requests: Schema.Attribute.Text;
     status: Schema.Attribute.Enumeration<
       [
@@ -1037,6 +1043,53 @@ export interface ApiForumActivityForumActivity
   };
 }
 
+export interface ApiGlobalSponsorshipGlobalSponsorship
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'global_sponsorships';
+  info: {
+    description: 'Manage global sponsorship for homepage widgets';
+    displayName: 'Global Sponsorship';
+    pluralName: 'global-sponsorships';
+    singularName: 'global-sponsorship';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    isActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::global-sponsorship.global-sponsorship'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    sponsorColor: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'#1e40af'>;
+    sponsoredWidgets: Schema.Attribute.Enumeration<
+      [
+        'radio',
+        'weather',
+        'news',
+        'events',
+        'deals',
+        'business',
+        'social',
+        'traffic',
+        'youtube',
+        'photos',
+      ]
+    >;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
   collectionName: 'globals';
   info: {
@@ -1509,7 +1562,7 @@ export interface ApiRadioStationRadioStation
       'api::radio-station.radio-station'
     > &
       Schema.Attribute.Private;
-    Logo: Schema.Attribute.Media<'images', true>;
+    Logo: Schema.Attribute.Media<'images'>;
     Name: Schema.Attribute.String & Schema.Attribute.Required;
     PreRollAdActive: Schema.Attribute.Boolean &
       Schema.Attribute.DefaultTo<false>;
@@ -2601,6 +2654,12 @@ export interface PluginUsersPermissionsUser
       'plugin::users-permissions.user'
     > &
       Schema.Attribute.Private;
+    notification_preferences: Schema.Attribute.JSON &
+      Schema.Attribute.DefaultTo<{
+        email: true;
+        push: true;
+        sms: false;
+      }>;
     password: Schema.Attribute.Password &
       Schema.Attribute.Private &
       Schema.Attribute.SetMinMaxLength<{
@@ -2647,6 +2706,7 @@ declare module '@strapi/strapi' {
       'api::event-calendar.event-calendar': ApiEventCalendarEventCalendar;
       'api::event.event': ApiEventEvent;
       'api::forum-activity.forum-activity': ApiForumActivityForumActivity;
+      'api::global-sponsorship.global-sponsorship': ApiGlobalSponsorshipGlobalSponsorship;
       'api::global.global': ApiGlobalGlobal;
       'api::google-review.google-review': ApiGoogleReviewGoogleReview;
       'api::live-event.live-event': ApiLiveEventLiveEvent;
