@@ -96,6 +96,15 @@
     "SponsoredPost": {
       "type": "boolean",
       "default": false
+    },
+    "FeaturedImage": {
+      "type": "string"
+    },
+    "ImageAlt": {
+      "type": "string"
+    },
+    "ImageCaption": {
+      "type": "text"
     }
   }
 }

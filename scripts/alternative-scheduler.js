@@ -20,15 +20,22 @@ class NewsScheduler {
       console.log(`🔄 [${new Date().toLocaleTimeString()}] News fetch #${this.fetchCount} starting...`);
       
       // Get active sources
-      const sourcesResponse = await axios.get('http://localhost:1337/api/news-sources');
+      const sourcesResponse = await axios.get('https://api.pattaya1.com/api/news-sources');
       const activeSources = sourcesResponse.data.data.filter(s => s.isActive === true);
       
       console.log(`   📡 Found ${activeSources.length} active news sources`);
       
-      const RSS = require('rss-parser');
-      const parser = new RSS({
+      const Parser = require('rss-parser');
+      const parser = new Parser({
         customFields: {
-          item: ['dc:creator', 'creator']
+          item: [
+            'dc:creator', 
+            'creator',
+            ['media:content', 'mediaContent'],
+            ['media:thumbnail', 'mediaThumbnail'],
+            ['content:encoded', 'contentEncoded'],
+            'description'
+          ]
         }
       });
       
@@ -44,55 +51,94 @@ class NewsScheduler {
             for (const item of articles) {
               try {
                 // Check for duplicates
-                const existing = await axios.get(`http://localhost:1337/api/breaking-news-plural?filters[URL][$eq]=${encodeURIComponent(item.link)}`);
-                if (existing.data.data && existing.data.data.length > 0) continue;
+                const existing = await axios.get(`https://api.pattaya1.com/api/breaking-news-plural?filters[URL][$eq]=${encodeURIComponent(item.link)}`);
                 
-                // Check if article contains breaking news keywords
-                const title = (item.title || '').toLowerCase();
-                const content = (item.contentSnippet || item.content || '').toLowerCase();
-                const breakingKeywords = [
-                  'breaking news', 'breaking:', 'urgent:', 'alert:', 'emergency', 
-                  'developing story', 'just in:', 'live update', 'bombshell', 
-                  'crisis', 'dissolve parliament', 'parliament dissolution', 
-                  'urgent action', 'immediate', 'critical', 'major announcement',
-                  'shocking', 'unprecedented', 'explosive', 'scandal'
-                ];
-                
-                const isBreaking = breakingKeywords.some(keyword => 
-                  title.includes(keyword) || content.includes(keyword)
-                );
-                
-                // Log keyword detection for debugging
-                if (isBreaking) {
-                  console.log(`     🚨 BREAKING NEWS detected: ${item.title?.substring(0, 50)}...`);
+                if (existing.data.data.length === 0) {
+                  // Clean content
+                  let cleanContent = item.contentSnippet || item.content || item.summary || '';
+                  cleanContent = cleanContent.replace(/<[^>]*>/g, '').substring(0, 500);
+                  
+                  // Extract featured image
+                  let featuredImage = null;
+                  let imageAlt = '';
+                  let imageCaption = '';
+                  
+                  // Method 1: Check media fields
+                  if (item.mediaContent && item.mediaContent.url) {
+                    featuredImage = item.mediaContent.url;
+                  } else if (item.mediaThumbnail && item.mediaThumbnail.url) {
+                    featuredImage = item.mediaThumbnail.url;
+                  } else if (item.enclosure && item.enclosure.url && item.enclosure.type && item.enclosure.type.startsWith('image/')) {
+                    featuredImage = item.enclosure.url;
+                  }
+                  
+                  // Method 2: Extract from content
+                  if (!featuredImage) {
+                    const contentToSearch = item.contentEncoded || item.content || item.description || '';
+                    const imgRegex = /<img[^>]+src="([^">]+)"/i;
+                    const match = imgRegex.exec(contentToSearch);
+                    if (match) {
+                      featuredImage = match[1];
+                      
+                      // Extract alt text
+                      const altRegex = /<img[^>]+alt="([^">]*)"/i;
+                      const altMatch = altRegex.exec(contentToSearch);
+                      if (altMatch) {
+                        imageAlt = altMatch[1];
+                      }
+                    }
+                  }
+                  
+                  // Ensure full URL for relative paths
+                  if (featuredImage && !featuredImage.startsWith('http')) {
+                    const sourceUrl = new URL(source.url);
+                    featuredImage = `${sourceUrl.protocol}//${sourceUrl.hostname}${featuredImage.startsWith('/') ? '' : '/'}${featuredImage}`;
+                  }
+                  
+                  // Check for breaking news keywords
+                  const breakingKeywords = ['breaking', 'urgent', 'alert', 'emergency', 'developing', 'just in'];
+                  const isBreaking = breakingKeywords.some(keyword => 
+                    item.title.toLowerCase().includes(keyword) || 
+                    cleanContent.toLowerCase().includes(keyword)
+                  );
+                  
+                  if (isBreaking) {
+                    console.log(`     🚨 BREAKING NEWS detected: ${item.title}...`);
+                  }
+                  
+                  if (featuredImage) {
+                    console.log(`     🖼️  Image found: ${featuredImage.substring(0, 60)}...`);
+                  }
+
+                  const breakingNewsData = {
+                    Title: item.title,
+                    Summary: cleanContent,
+                    Severity: isBreaking ? 'high' : 'medium',
+                    Category: item.categories?.[0] || 'General',
+                    Source: source.name,
+                    URL: item.link,
+                    IsBreaking: isBreaking,
+                    PublishedTimestamp: item.pubDate ? new Date(item.pubDate) : new Date(),
+                    isPinned: false,
+                    voteScore: 0,
+                    upvotes: 0,
+                    downvotes: 0,
+                    moderationStatus: 'approved',
+                    isHidden: false,
+                    fetchedFromAPI: true,
+                    apiSource: source.name,
+                    originalAPIData: item,
+                    FeaturedImage: featuredImage,
+                    ImageAlt: imageAlt,
+                    ImageCaption: imageCaption,
+                    publishedAt: new Date()
+                  };
+
+                  await axios.post('https://api.pattaya1.com/api/breaking-news-plural', {
+                    data: breakingNewsData
+                  });
+                  totalCreated++;
                 }
-
-                // Create breaking news entry
-                const breakingNewsData = {
-                  Title: item.title || 'Untitled',
-                  Summary: (item.contentSnippet || item.content || '').substring(0, 200),
-                  Category: 'General',
-                  Source: source.name,
-                  URL: item.link || '#',
-                  IsBreaking: isBreaking,
-                  PublishedTimestamp: item.pubDate ? new Date(item.pubDate) : new Date(),
-                  isPinned: false,
-                  voteScore: 0,
-                  upvotes: 0,
-                  downvotes: 0,
-                  moderationStatus: 'approved',
-                  isHidden: false,
-                  fetchedFromAPI: true,
-                  apiSource: source.name,
-                  originalAPIData: item,
-                  publishedAt: new Date()
-                };
-
-                await axios.post('http://localhost:1337/api/breaking-news-plural', {
-                  data: breakingNewsData
-                });
-                totalCreated++;
-                console.log(`     ✅ Created: ${item.title?.substring(0, 50)}...`);
               } catch (createError) {
                 continue;
               }

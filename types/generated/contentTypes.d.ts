@@ -568,8 +568,11 @@ export interface ApiBreakingNewsBreakingNews
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     downvotes: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    FeaturedImage: Schema.Attribute.String;
     fetchedFromAPI: Schema.Attribute.Boolean &
       Schema.Attribute.DefaultTo<false>;
+    ImageAlt: Schema.Attribute.String;
+    ImageCaption: Schema.Attribute.Text;
     IsBreaking: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     isHidden: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     isPinned: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
