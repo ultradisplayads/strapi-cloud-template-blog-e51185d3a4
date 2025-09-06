@@ -12,10 +12,12 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "title": {
-      "type": "string",
+    "sponsorshipTitles": {
+      "type": "component",
+      "repeatable": true,
+      "component": "sponsorship.sponsorship-title",
       "required": true,
-      "description": "Sponsorship title (e.g., 'Sponsored by Singha Beer')"
+      "description": "Multiple sponsorship titles that can be displayed"
     },
     "isActive": {
       "type": "boolean",
@@ -23,26 +25,44 @@
       "description": "Whether this sponsorship is currently active"
     },
     "sponsoredWidgets": {
-      "type": "enumeration",
-      "enum": [
-        "radio",
-        "weather",
-        "news",
-        "events",
-        "deals",
-        "business",
-        "social",
-        "traffic",
-        "youtube",
-        "photos"
-      ],
-      "repeatable": true,
-      "description": "Which widgets should show this sponsorship"
+      "type": "json",
+      "default": [],
+      "description": "Array of widget types that should show this sponsorship. Example: [\"radio\", \"news\", \"events\"]. Available options: radio, weather, news, events, deals, business, social, traffic, youtube, photos, quick-links, trending, breaking-news, live-events, business-spotlight, hot-deals"
     },
-    "sponsorColor": {
+    "defaultColor": {
       "type": "string",
       "default": "#1e40af",
-      "description": "Color for the sponsorship text"
+      "description": "Default color for sponsorship text when individual titles don't specify colors"
+    },
+    "animationSpeed": {
+      "type": "enumeration",
+      "enum": [
+        "slow",
+        "normal",
+        "fast"
+      ],
+      "default": "normal",
+      "description": "Speed of marquee animation for multiple titles"
+    },
+    "sponsorWebsite": {
+      "type": "string",
+      "description": "Website URL of the sponsoring brand"
+    },
+    "sponsorLogo": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ],
+      "description": "Logo of the sponsoring brand"
+    },
+    "sponsorStartDate": {
+      "type": "date",
+      "description": "Start date of the sponsorship"
+    },
+    "sponsorEndDate": {
+      "type": "date",
+      "description": "End date of the sponsorship"
     }
   }
 }
