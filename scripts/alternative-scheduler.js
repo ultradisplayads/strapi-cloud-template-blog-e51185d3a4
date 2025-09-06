@@ -1,10 +1,23 @@
 const axios = require('axios');
+const Parser = require('rss-parser');
+const DynamicCleanupManager = require('./dynamic-cleanup-manager');
+
+const parser = new Parser({
+  customFields: {
+    item: [
+      ['media:content', 'mediaContent'],
+      ['media:thumbnail', 'mediaThumbnail'],
+      ['enclosure', 'enclosure'],
+      ['description', 'fullDescription']
+    ]
+  }
+});
 
 class NewsScheduler {
   constructor() {
-    this.isRunning = false;
-    this.interval = null;
     this.fetchCount = 0;
+    this.isRunning = false;
+    this.cleanupManager = new DynamicCleanupManager();
   }
 
   async fetchNews() {
@@ -20,24 +33,12 @@ class NewsScheduler {
       console.log(`🔄 [${new Date().toLocaleTimeString()}] News fetch #${this.fetchCount} starting...`);
       
       // Get active sources
-      const sourcesResponse = await axios.get('https://api.pattaya1.com/api/news-sources');
+      const sourcesResponse = await axios.get('http://localhost:1337/api/news-sources');
       const activeSources = sourcesResponse.data.data.filter(s => s.isActive === true);
       
       console.log(`   📡 Found ${activeSources.length} active news sources`);
       
-      const Parser = require('rss-parser');
-      const parser = new Parser({
-        customFields: {
-          item: [
-            'dc:creator', 
-            'creator',
-            ['media:content', 'mediaContent'],
-            ['media:thumbnail', 'mediaThumbnail'],
-            ['content:encoded', 'contentEncoded'],
-            'description'
-          ]
-        }
-      });
+      // Use the global parser instance
       
       let totalCreated = 0;
       
@@ -51,7 +52,7 @@ class NewsScheduler {
             for (const item of articles) {
               try {
                 // Check for duplicates
-                const existing = await axios.get(`https://api.pattaya1.com/api/breaking-news-plural?filters[URL][$eq]=${encodeURIComponent(item.link)}`);
+                const existing = await axios.get(`http://localhost:1337/api/breaking-news-plural?filters[URL][$eq]=${encodeURIComponent(item.link)}`);
                 
                 if (existing.data.data.length === 0) {
                   // Clean content
@@ -134,7 +135,7 @@ class NewsScheduler {
                     publishedAt: new Date()
                   };
 
-                  await axios.post('https://api.pattaya1.com/api/breaking-news-plural', {
+                  await axios.post('http://localhost:1337/api/breaking-news-plural', {
                     data: breakingNewsData
                   });
                   totalCreated++;
@@ -149,6 +150,9 @@ class NewsScheduler {
         }
       }
       
+      // Trigger dynamic cleanup after successful fetch
+      await this.cleanupManager.trigger();
+      
       console.log(`✅ [${new Date().toLocaleTimeString()}] Fetch #${this.fetchCount} completed: ${totalCreated} new articles`);
       
     } catch (error) {
@@ -158,18 +162,67 @@ class NewsScheduler {
     }
   }
 
+  async cleanupOldArticles() {
+    try {
+      console.log('   🧹 Checking article count and cleaning up old articles...');
+      
+      // Get the dynamic article limit from settings
+      let maxArticleLimit = 21; // Default fallback
+      try {
+        const settingsResponse = await axios.get('http://localhost:1337/api/news-settings');
+        if (settingsResponse.data.data && settingsResponse.data.data.maxArticleLimit) {
+          maxArticleLimit = settingsResponse.data.data.maxArticleLimit;
+          console.log(`   ⚙️  Using configured article limit: ${maxArticleLimit}`);
+        } else {
+          console.log(`   ⚙️  Using default article limit: ${maxArticleLimit}`);
+        }
+      } catch (settingsError) {
+        console.log(`   ⚠️  Could not fetch settings, using default limit: ${maxArticleLimit}`);
+      }
+      
+      // Get all breaking news articles ordered by creation date (newest first)
+      const allArticles = await axios.get('http://localhost:1337/api/breaking-news-plural?sort=createdAt:desc&pagination[limit]=200');
+      const articles = allArticles.data.data;
+      
+      console.log(`   📊 Found ${articles.length} total articles`);
+      
+      // If we have more than the configured limit, delete the oldest ones
+      if (articles.length > maxArticleLimit) {
+        const articlesToDelete = articles.slice(maxArticleLimit); // Get articles beyond the limit
+        console.log(`   🗑️  Deleting ${articlesToDelete.length} oldest articles to maintain limit of ${maxArticleLimit}`);
+        
+        for (const article of articlesToDelete) {
+          try {
+            await axios.delete(`http://localhost:1337/api/breaking-news-plural/${article.id}`);
+            console.log(`   ✅ Deleted article: ${article.Title.substring(0, 50)}...`);
+          } catch (deleteError) {
+            console.log(`   ❌ Failed to delete article ${article.id}: ${deleteError.message}`);
+          }
+        }
+        
+        console.log(`   ✅ Cleanup completed. Maintained limit of ${maxArticleLimit} articles.`);
+      } else {
+        console.log(`   ✅ Article count (${articles.length}) is within limit of ${maxArticleLimit}. No cleanup needed.`);
+      }
+      
+    } catch (error) {
+      console.log(`   ❌ Cleanup failed: ${error.message}`);
+    }
+  }
+
   start(intervalMinutes = 5) {
     console.log(`🚀 Starting news scheduler (every ${intervalMinutes} minute(s))...`);
     
-    // Run immediately
+    // Start the dynamic cleanup manager
+    this.cleanupManager.start();
+    
+    // Initial fetch
     this.fetchNews();
     
-    // Then run on interval
-    this.interval = setInterval(() => {
+    // Set up interval
+    setInterval(() => {
       this.fetchNews();
-    }, 5 * 60 * 1000); // 5 minutes
-    
-    console.log('✅ News scheduler started successfully');
+    }, intervalMinutes * 60 * 1000);
   }
 
   stop() {

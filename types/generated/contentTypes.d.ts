@@ -1314,6 +1314,16 @@ export interface ApiNewsSettingsNewsSettings extends Struct.SingleTypeSchema {
       'api::news-settings.news-settings'
     > &
       Schema.Attribute.Private;
+    maxArticleLimit: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 100;
+          min: 5;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<21>;
     maxArticlesPerFetch: Schema.Attribute.Integer &
       Schema.Attribute.SetMinMax<
         {
