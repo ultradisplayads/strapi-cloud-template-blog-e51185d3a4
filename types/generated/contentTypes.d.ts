@@ -568,8 +568,11 @@ export interface ApiBreakingNewsBreakingNews
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     downvotes: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    FeaturedImage: Schema.Attribute.String;
     fetchedFromAPI: Schema.Attribute.Boolean &
       Schema.Attribute.DefaultTo<false>;
+    ImageAlt: Schema.Attribute.String;
+    ImageCaption: Schema.Attribute.Text;
     IsBreaking: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     isHidden: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     isPinned: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
@@ -1056,9 +1059,13 @@ export interface ApiGlobalSponsorshipGlobalSponsorship
     draftAndPublish: true;
   };
   attributes: {
+    animationSpeed: Schema.Attribute.Enumeration<['slow', 'normal', 'fast']> &
+      Schema.Attribute.DefaultTo<'normal'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    defaultColor: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'#1e40af'>;
     isActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -1067,23 +1074,16 @@ export interface ApiGlobalSponsorshipGlobalSponsorship
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
-    sponsorColor: Schema.Attribute.String &
-      Schema.Attribute.DefaultTo<'#1e40af'>;
-    sponsoredWidgets: Schema.Attribute.Enumeration<
-      [
-        'radio',
-        'weather',
-        'news',
-        'events',
-        'deals',
-        'business',
-        'social',
-        'traffic',
-        'youtube',
-        'photos',
-      ]
-    >;
-    title: Schema.Attribute.String & Schema.Attribute.Required;
+    sponsoredWidgets: Schema.Attribute.JSON & Schema.Attribute.DefaultTo<[]>;
+    sponsorEndDate: Schema.Attribute.Date;
+    sponsorLogo: Schema.Attribute.Media<'images'>;
+    sponsorshipTitles: Schema.Attribute.Component<
+      'sponsorship.sponsorship-title',
+      true
+    > &
+      Schema.Attribute.Required;
+    sponsorStartDate: Schema.Attribute.Date;
+    sponsorWebsite: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
