@@ -7,13 +7,15 @@
  */
 
 const axios = require('axios');
+const SQLCleanupManager = require('./sql-cleanup-manager');
 
 class DynamicCleanupManager {
   constructor() {
-    this.lastKnownLimit = null;
+    this.currentLimit = null;
     this.isRunning = false;
-    this.checkInterval = 30000; // Check every 30 seconds
+    this.checkInterval = 30000; // 30 seconds
     this.intervalId = null;
+    this.sqlCleanup = new SQLCleanupManager();
   }
 
   async getCurrentSettings() {
@@ -33,6 +35,28 @@ class DynamicCleanupManager {
     } catch (error) {
       console.log(`❌ Failed to fetch articles: ${error.message}`);
       return [];
+    }
+  }
+
+  async cleanupOldArticles(maxArticles) {
+    try {
+      console.log(`🗑️  Starting SQL-based cleanup to maintain ${maxArticles} articles...`);
+      
+      // Use SQL cleanup manager instead of broken API
+      const result = await this.sqlCleanup.enforceLimit();
+      
+      if (result.success) {
+        console.log(`✅ SQL cleanup successful: ${result.deleted} articles deleted`);
+        console.log(`📊 Final count: ${result.finalCount}/${result.maxLimit}`);
+      } else {
+        console.log(`❌ SQL cleanup failed: ${result.error || result.message}`);
+      }
+      
+      return result;
+      
+    } catch (error) {
+      console.error('❌ Cleanup failed:', error.message);
+      return { success: false, error: error.message };
     }
   }
 
