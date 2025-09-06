@@ -47,17 +47,29 @@ module.exports = createCoreController('api::breaking-news.breaking-news', ({ str
     const { id } = ctx.params;
     
     try {
-      const article = await strapi.entityService.findOne('api::breaking-news.breaking-news', id);
+      // Try to find by documentId first, then by id
+      let article = await strapi.db.query('api::breaking-news.breaking-news').findOne({
+        where: { documentId: id }
+      });
       
-      const updatedArticle = await strapi.entityService.update('api::breaking-news.breaking-news', id, {
+      if (!article) {
+        article = await strapi.entityService.findOne('api::breaking-news.breaking-news', id);
+      }
+      
+      if (!article) {
+        return ctx.throw(404, 'Article not found');
+      }
+      
+      const updatedArticle = await strapi.entityService.update('api::breaking-news.breaking-news', article.id, {
         data: {
-          upvotes: article.upvotes + 1,
-          voteScore: (article.upvotes + 1) - article.downvotes
+          upvotes: (article.upvotes || 0) + 1,
+          voteScore: ((article.upvotes || 0) + 1) - (article.downvotes || 0)
         }
       });
       
       ctx.body = { data: updatedArticle, message: 'Article upvoted' };
     } catch (error) {
+      strapi.log.error('Upvote error:', error);
       ctx.throw(400, error.message);
     }
   },
@@ -66,17 +78,29 @@ module.exports = createCoreController('api::breaking-news.breaking-news', ({ str
     const { id } = ctx.params;
     
     try {
-      const article = await strapi.entityService.findOne('api::breaking-news.breaking-news', id);
+      // Try to find by documentId first, then by id
+      let article = await strapi.db.query('api::breaking-news.breaking-news').findOne({
+        where: { documentId: id }
+      });
       
-      const updatedArticle = await strapi.entityService.update('api::breaking-news.breaking-news', id, {
+      if (!article) {
+        article = await strapi.entityService.findOne('api::breaking-news.breaking-news', id);
+      }
+      
+      if (!article) {
+        return ctx.throw(404, 'Article not found');
+      }
+      
+      const updatedArticle = await strapi.entityService.update('api::breaking-news.breaking-news', article.id, {
         data: {
-          downvotes: article.downvotes + 1,
-          voteScore: article.upvotes - (article.downvotes + 1)
+          downvotes: (article.downvotes || 0) + 1,
+          voteScore: (article.upvotes || 0) - ((article.downvotes || 0) + 1)
         }
       });
       
       ctx.body = { data: updatedArticle, message: 'Article downvoted' };
     } catch (error) {
+      strapi.log.error('Downvote error:', error);
       ctx.throw(400, error.message);
     }
   },
@@ -158,6 +182,17 @@ module.exports = createCoreController('api::breaking-news.breaking-news', ({ str
   // Get live articles for frontend (approved, not hidden, sorted by pinned first)
   async live(ctx) {
     try {
+      // Get the dynamic article limit from settings
+      let maxArticleLimit = 21; // Default fallback
+      try {
+        const settingsResponse = await strapi.entityService.findOne('api::news-settings.news-settings', 1);
+        if (settingsResponse && settingsResponse.maxArticleLimit) {
+          maxArticleLimit = settingsResponse.maxArticleLimit;
+        }
+      } catch (settingsError) {
+        console.log('Could not fetch settings, using default limit:', maxArticleLimit);
+      }
+
       // Get all breaking news articles (include both published and draft for now)
       const entries = await strapi.entityService.findMany('api::breaking-news.breaking-news', {
         filters: {
@@ -172,7 +207,7 @@ module.exports = createCoreController('api::breaking-news.breaking-news', ({ str
           { IsBreaking: 'desc' },  // Breaking news first
           { createdAt: 'desc' }    // Then by newest
         ],
-        limit: 50
+        limit: maxArticleLimit
       });
 
       // Debug logging (can be removed in production)
@@ -193,8 +228,9 @@ module.exports = createCoreController('api::breaking-news.breaking-news', ({ str
 
       console.log(`Found ${sponsoredPosts.length} active sponsored posts`);
 
-      // Separate breaking news into regular news and sponsored posts
+      // Separate breaking news into regular news, pinned news, and sponsored posts
       const regularNews = [];
+      const pinnedNews = [];
       const sponsoredFromBreaking = [];
 
       entries.forEach(entry => {
@@ -225,7 +261,7 @@ module.exports = createCoreController('api::breaking-news.breaking-news', ({ str
             type: 'sponsored'
           });
         } else {
-          regularNews.push({
+          const newsItem = {
             id: entry.id,
             documentId: entry.documentId,
             title: entry.Title,
@@ -244,7 +280,14 @@ module.exports = createCoreController('api::breaking-news.breaking-news', ({ str
             downvotes: entry.downvotes || 0,
             isPinned: entry.isPinned || false,
             type: 'news'
-          });
+          };
+          
+          // Separate pinned and regular news
+          if (entry.isPinned) {
+            pinnedNews.push(newsItem);
+          } else {
+            regularNews.push(newsItem);
+          }
         }
       });
 
@@ -304,11 +347,13 @@ module.exports = createCoreController('api::breaking-news.breaking-news', ({ str
 
       ctx.body = {
         data: finalEntries,
+        pinnedNews: pinnedNews,
         meta: {
           total: finalEntries.length,
           newsCount: transformedEntries.length,
           sponsoredCount: allSponsoredPosts.length,
-          breakingCount: transformedEntries.filter(entry => entry.isBreaking).length
+          breakingCount: transformedEntries.filter(entry => entry.isBreaking).length,
+          pinnedCount: pinnedNews.length
         }
       };
     } catch (error) {
