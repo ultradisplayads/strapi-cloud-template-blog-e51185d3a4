@@ -267,6 +267,20 @@ export interface SharedSlider extends Struct.ComponentSchema {
   };
 }
 
+export interface SponsorshipSponsorshipTitle extends Struct.ComponentSchema {
+  collectionName: 'components_sponsorship_sponsorship_titles';
+  info: {
+    description: 'Individual sponsorship title with styling options';
+    displayName: 'Sponsorship Title';
+  };
+  attributes: {
+    color: Schema.Attribute.String & Schema.Attribute.DefaultTo<'#1e40af'>;
+    displayOrder: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<1>;
+    isActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
@@ -286,6 +300,7 @@ declare module '@strapi/strapi' {
       'shared.rich-text': SharedRichText;
       'shared.seo': SharedSeo;
       'shared.slider': SharedSlider;
+      'sponsorship.sponsorship-title': SponsorshipSponsorshipTitle;
     }
   }
 }

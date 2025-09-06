@@ -1,0 +1,30 @@
+{
+  "collectionName": "components_sponsorship_sponsorship_titles",
+  "info": {
+    "displayName": "Sponsorship Title",
+    "description": "Individual sponsorship title with styling options"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "description": "The sponsorship title text"
+    },
+    "color": {
+      "type": "string",
+      "default": "#1e40af",
+      "description": "Color for this specific title"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this title is currently active"
+    },
+    "displayOrder": {
+      "type": "integer",
+      "default": 1,
+      "description": "Order in which titles should be displayed"
+    }
+  }
+}
