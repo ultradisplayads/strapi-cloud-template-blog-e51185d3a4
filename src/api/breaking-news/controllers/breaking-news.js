@@ -14,8 +14,7 @@ module.exports = createCoreController('api::breaking-news.breaking-news', ({ str
     try {
       const article = await strapi.entityService.update('api::breaking-news.breaking-news', id, {
         data: {
-          isPinned: true,
-          pinnedAt: new Date()
+          isPinned: true
         }
       });
       
@@ -31,8 +30,7 @@ module.exports = createCoreController('api::breaking-news.breaking-news', ({ str
     try {
       const article = await strapi.entityService.update('api::breaking-news.breaking-news', id, {
         data: {
-          isPinned: false,
-          pinnedAt: null
+          isPinned: false
         }
       });
       
