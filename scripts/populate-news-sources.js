@@ -90,7 +90,7 @@ async function populateNewsSources() {
     for (const source of newsSources) {
       try {
         // Check if source already exists
-        const existing = await axios.get(`http://localhost:1337/api/news-sources?filters[name][$eq]=${encodeURIComponent(source.name)}`);
+        const existing = await axios.get(`https://api.pattaya1.com/api/news-sources?filters[name][$eq]=${encodeURIComponent(source.name)}`);
         
         if (existing.data.data && existing.data.data.length > 0) {
           console.log(`   ⏭️  Skipped: ${source.name} (already exists)`);
@@ -99,7 +99,7 @@ async function populateNewsSources() {
         }
         
         // Create new source
-        await axios.post('http://localhost:1337/api/news-sources', {
+        await axios.post('https://api.pattaya1.com/api/news-sources', {
           data: source
         });
         
@@ -117,7 +117,7 @@ async function populateNewsSources() {
     console.log(`   📡 Total sources: ${created + skipped}`);
     
     // Verify the population
-    const allSources = await axios.get('http://localhost:1337/api/news-sources');
+    const allSources = await axios.get('https://api.pattaya1.com/api/news-sources');
     console.log(`\n🔍 Verification: ${allSources.data.data.length} sources in database`);
     
   } catch (error) {

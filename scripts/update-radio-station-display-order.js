@@ -8,7 +8,7 @@ const updateRadioStationDisplayOrder = async () => {
     console.log('🔄 Starting radio station display order update...')
     
     // Get all radio stations
-    const response = await fetch('http://localhost:1337/api/radio-stations')
+    const response = await fetch('https://api.pattaya1.com/api/radio-stations')
     if (!response.ok) {
       throw new Error(`Failed to fetch radio stations: ${response.status}`)
     }
@@ -30,7 +30,7 @@ const updateRadioStationDisplayOrder = async () => {
       
       console.log(`📝 Updating ${station.attributes.Name} (ID: ${station.id}) with display order: ${displayOrder}`)
       
-      const updateResponse = await fetch(`http://localhost:1337/api/radio-stations/${station.id}`, {
+        const updateResponse = await fetch(`https://api.pattaya1.com/api/radio-stations/${station.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
