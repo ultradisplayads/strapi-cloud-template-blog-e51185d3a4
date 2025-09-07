@@ -149,6 +149,12 @@ class DynamicCleanupManager {
       
       console.log(`🎉 Cleanup result: ${result.message || result.action}`);
       
+      // If limit increased and we have space, trigger news fetch to populate
+      if (result.action === 'space_available' && result.count > 0) {
+        console.log(`🚀 Limit increased - triggering news fetch to populate ${result.count} available slots...`);
+        await this.triggerNewsFetch();
+      }
+      
     } catch (error) {
       console.log(`❌ Dynamic cleanup failed: ${error.message}`);
     } finally {
@@ -181,6 +187,24 @@ class DynamicCleanupManager {
   async trigger() {
     console.log('🔧 Manual trigger activated...');
     await this.checkAndAdjust();
+  }
+
+  // Trigger news fetch to populate articles when limit increases
+  async triggerNewsFetch() {
+    try {
+      console.log('📡 Triggering news fetch to populate available slots...');
+      
+      // Import and run the news scheduler fetch
+      const NewsScheduler = require('./alternative-scheduler');
+      const scheduler = new NewsScheduler();
+      
+      // Run a single fetch cycle
+      await scheduler.fetchNews();
+      
+      console.log('✅ News fetch completed to populate new slots');
+    } catch (error) {
+      console.log(`❌ Failed to trigger news fetch: ${error.message}`);
+    }
   }
 }
 

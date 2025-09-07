@@ -51,9 +51,6 @@
       "type": "boolean",
       "default": false
     },
-    "pinnedAt": {
-      "type": "datetime"
-    },
     "voteScore": {
       "type": "integer",
       "default": 0
