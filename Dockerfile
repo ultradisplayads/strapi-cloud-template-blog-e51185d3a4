@@ -42,9 +42,10 @@ COPY package.json package-lock.json ./
 # Install dependencies
 RUN npm install -g node-gyp
 RUN npm config set registry https://registry.npmjs.org/
-# Install sharp first with platform-specific binaries
-RUN npm install --platform=linux --arch=x64 sharp
+# Install dependencies first
 RUN npm ci --include=optional
+# Force rebuild sharp for the correct platform
+RUN npm rebuild sharp --verbose
 
 # Copy application files
 COPY . .
@@ -63,6 +64,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gnupg \
     bash \
     libvips \
+    libvips-dev \
+    libjpeg-dev \
+    libpng-dev \
+    libwebp-dev \
+    libtiff-dev \
+    libgif-dev \
+    libheif-dev \
   && rm -rf /var/lib/apt/lists/* \
   && mkdir -p /etc/apt/keyrings \
   && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
@@ -92,9 +100,9 @@ COPY --from=builder /opt/app ./
 
 # Remove development files and reinstall production dependencies
 RUN rm -rf node_modules
-# Install sharp first with platform-specific binaries for Linux
-RUN npm install --platform=linux --arch=x64 sharp
 RUN npm install --omit=dev --include=optional
+# Force rebuild sharp for the correct platform in production
+RUN npm rebuild sharp --verbose
 
 # Create public/uploads directory for file uploads
 RUN mkdir -p ./public/uploads
