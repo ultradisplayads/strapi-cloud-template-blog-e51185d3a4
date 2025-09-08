@@ -66,6 +66,10 @@
       "type": "integer",
       "default": 0
     },
+    "userVotes": {
+      "type": "json",
+      "default": {}
+    },
     "moderationStatus": {
       "type": "enumeration",
       "enum": [

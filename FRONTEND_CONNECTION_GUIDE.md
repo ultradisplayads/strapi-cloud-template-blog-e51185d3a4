@@ -9,7 +9,7 @@ Your frontend shows "No news available" because:
 ## Quick Fix Steps
 
 ### 1. Access Strapi Admin
-Open: http://localhost:1337/admin
+Open: https://api.pattaya1.com/admin
 - Create admin user if needed
 - Login to admin panel
 
@@ -48,7 +48,7 @@ In admin panel:
 ### 5. Test Connection
 ```bash
 # Test in terminal
-curl "http://localhost:1337/api/breaking-news"
+curl "https://api.pattaya1.com/api/breaking-news"
 
 # Should return JSON data instead of 404
 ```
@@ -57,7 +57,7 @@ curl "http://localhost:1337/api/breaking-news"
 In your frontend, use:
 ```javascript
 // Replace your current API call with:
-const response = await fetch('http://localhost:1337/api/breaking-news');
+const response = await fetch('https://api.pattaya1.com/api/breaking-news');
 const data = await response.json();
 console.log('News data:', data.data);
 ```
@@ -65,14 +65,14 @@ console.log('News data:', data.data);
 ## Alternative: Manual News Fetch
 If no data exists, trigger manual fetch:
 ```bash
-curl -X POST "http://localhost:1337/api/breaking-news/fetch-news"
+curl -X POST "https://api.pattaya1.com/api/breaking-news/fetch-news"
 ```
 
 ## Debug Your Frontend
 Add this to your frontend component:
 ```javascript
 useEffect(() => {
-  fetch('http://localhost:1337/api/breaking-news')
+  fetch('https://api.pattaya1.com/api/breaking-news')
     .then(res => {
       console.log('Response status:', res.status);
       return res.json();

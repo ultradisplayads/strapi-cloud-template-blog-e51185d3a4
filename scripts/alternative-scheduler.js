@@ -1,3 +1,4 @@
+
 const axios = require('axios');
 const Parser = require('rss-parser');
 const DynamicCleanupManager = require('./dynamic-cleanup-manager');
@@ -33,7 +34,7 @@ class NewsScheduler {
       console.log(`🔄 [${new Date().toLocaleTimeString()}] News fetch #${this.fetchCount} starting...`);
       
       // Get active sources
-      const sourcesResponse = await axios.get('http://localhost:1337/api/news-sources');
+      const sourcesResponse = await axios.get('https://api.pattaya1.com/api/news-sources');
       const activeSources = sourcesResponse.data.data.filter(s => s.isActive === true);
       
       console.log(`   📡 Found ${activeSources.length} active news sources`);
@@ -52,7 +53,7 @@ class NewsScheduler {
             for (const item of articles) {
               try {
                 // Check for duplicates
-                const existing = await axios.get(`http://localhost:1337/api/breaking-news-plural?filters[URL][$eq]=${encodeURIComponent(item.link)}`);
+                const existing = await axios.get(`https://api.pattaya1.com/api/breaking-news-plural?filters[URL][$eq]=${encodeURIComponent(item.link)}`);
                 
                 if (existing.data.data.length === 0) {
                   // Clean content
@@ -135,7 +136,7 @@ class NewsScheduler {
                     publishedAt: new Date()
                   };
 
-                  await axios.post('http://localhost:1337/api/breaking-news-plural', {
+                  await axios.post('https://api.pattaya1.com/api/breaking-news-plural', {
                     data: breakingNewsData
                   });
                   totalCreated++;
@@ -169,7 +170,7 @@ class NewsScheduler {
       // Get the dynamic article limit from settings
       let maxArticleLimit = 21; // Default fallback
       try {
-        const settingsResponse = await axios.get('http://localhost:1337/api/news-settings');
+        const settingsResponse = await axios.get('https://api.pattaya1.com/api/news-settings');
         if (settingsResponse.data.data && settingsResponse.data.data.maxArticleLimit) {
           maxArticleLimit = settingsResponse.data.data.maxArticleLimit;
           console.log(`   ⚙️  Using configured article limit: ${maxArticleLimit}`);
@@ -181,7 +182,7 @@ class NewsScheduler {
       }
       
       // Get all breaking news articles ordered by creation date (newest first)
-      const allArticles = await axios.get('http://localhost:1337/api/breaking-news-plural?sort=createdAt:desc&pagination[limit]=200');
+      const allArticles = await axios.get('https://api.pattaya1.com/api/breaking-news-plural?sort=createdAt:desc&pagination[limit]=200');
       const articles = allArticles.data.data;
       
       console.log(`   📊 Found ${articles.length} total articles`);
@@ -193,7 +194,7 @@ class NewsScheduler {
         
         for (const article of articlesToDelete) {
           try {
-            await axios.delete(`http://localhost:1337/api/breaking-news-plural/${article.id}`);
+            await axios.delete(`https://api.pattaya1.com/api/breaking-news-plural/${article.id}`);
             console.log(`   ✅ Deleted article: ${article.Title.substring(0, 50)}...`);
           } catch (deleteError) {
             console.log(`   ❌ Failed to delete article ${article.id}: ${deleteError.message}`);

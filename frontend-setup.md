@@ -5,18 +5,18 @@
 ### Add to your frontend `.env` file:
 ```env
 # React/Next.js
-REACT_APP_API_URL=http://localhost:1337/api
-NEXT_PUBLIC_API_URL=http://localhost:1337/api
+REACT_APP_API_URL=https://api.pattaya1.com/api
+NEXT_PUBLIC_API_URL=https://api.pattaya1.com/api
 
 # Vue/Nuxt
-VUE_APP_API_URL=http://localhost:1337/api
-NUXT_PUBLIC_API_URL=http://localhost:1337/api
+VUE_APP_API_URL=https://api.pattaya1.com/api
+NUXT_PUBLIC_API_URL=https://api.pattaya1.com/api
 
 # Vite
-VITE_API_URL=http://localhost:1337/api
+VITE_API_URL=https://api.pattaya1.com/api
 
 # Angular
-NG_APP_API_URL=http://localhost:1337/api
+NG_APP_API_URL=https://api.pattaya1.com/api
 ```
 
 ## Step 2: Install HTTP Client (if needed)
@@ -35,7 +35,7 @@ npm install axios
 // services/newsService.js
 import axios from 'axios';
 
-const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:1337/api';
+const API_BASE = process.env.REACT_APP_API_URL || 'https://api.pattaya1.com/api';
 
 const api = axios.create({
   baseURL: API_BASE,
@@ -84,7 +84,7 @@ export const newsService = {
 import { ref, computed } from 'vue'
 import axios from 'axios'
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:1337/api'
+const API_BASE = import.meta.env.VITE_API_URL || 'https://api.pattaya1.com/api'
 
 export function useNews() {
   const articles = ref([])
@@ -219,18 +219,18 @@ Run this in your frontend project:
 
 ```javascript
 // Quick connection test
-fetch('http://localhost:1337/api/breaking-news/live')
+fetch('https://api.pattaya1.com/api/breaking-news/live')
   .then(response => response.json())
   .then(data => console.log('Backend connected:', data))
   .catch(error => console.error('Connection failed:', error));
 ```
 
 ## Backend URLs Available:
-- **Strapi Admin**: http://localhost:1337/admin
-- **API Base**: http://localhost:1337/api
-- **Breaking News**: http://localhost:1337/api/breaking-news
-- **Live Feed**: http://localhost:1337/api/breaking-news/live
-- **Dashboard**: http://localhost:1337/api/breaking-news/dashboard
+- **Strapi Admin**: https://api.pattaya1.com/admin
+- **API Base**: https://api.pattaya1.com/api
+- **Breaking News**: https://api.pattaya1.com/api/breaking-news
+- **Live Feed**: https://api.pattaya1.com/api/breaking-news/live
+- **Dashboard**: https://api.pattaya1.com/api/breaking-news/dashboard
 
 ## Next Steps:
 1. Start your frontend development server

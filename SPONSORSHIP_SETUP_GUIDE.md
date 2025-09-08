@@ -15,7 +15,7 @@ The global sponsorship system allows you to display sponsorship text across mult
 ## Setup Instructions
 
 ### 1. Set Up Permissions
-1. Go to http://localhost:1337/admin
+1. Go to https://api.pattaya1.com/admin
 2. Navigate to **Settings** → **Users & Permissions Plugin** → **Roles**
 3. Click on **Public** role
 4. Under **Global Sponsorship**, check the **find** permission
@@ -100,7 +100,7 @@ The global sponsorship system allows you to display sponsorship text across mult
 4. Check if the current date is within the start/end date range
 
 ### API Errors
-1. Make sure Strapi is running on http://localhost:1337
+1. Make sure Strapi is running on https://api.pattaya1.com
 2. Verify permissions are set for the Public role
 3. Check the browser console for any JavaScript errors
 

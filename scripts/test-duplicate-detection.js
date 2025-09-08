@@ -23,7 +23,7 @@ async function testDuplicateDetection() {
     console.log('🔍 Testing duplicate detection logic...\n');
     
     // Get existing articles
-    const existingResponse = await axios.get('http://localhost:1337/api/breaking-news-plural?pagination[limit]=50');
+    const existingResponse = await axios.get('https://api.pattaya1.com/api/breaking-news-plural?pagination[limit]=50');
     const existingArticles = existingResponse.data.data;
     console.log(`📊 Found ${existingArticles.length} existing articles\n`);
     

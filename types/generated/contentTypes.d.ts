@@ -603,6 +603,7 @@ export interface ApiBreakingNewsBreakingNews
       Schema.Attribute.Private;
     upvotes: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
     URL: Schema.Attribute.String & Schema.Attribute.Required;
+    userVotes: Schema.Attribute.JSON & Schema.Attribute.DefaultTo<{}>;
     voteScore: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
   };
 }

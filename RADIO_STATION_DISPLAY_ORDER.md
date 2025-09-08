@@ -45,7 +45,7 @@ DisplayOrder: 999  → "Country Roads" (Lowest priority - appears last)
 
 ### Option 3: API Update
 ```bash
-curl -X PUT http://localhost:1337/api/radio-stations/1 \
+curl -X PUT https://api.pattaya1.com/api/radio-stations/1 \
   -H "Content-Type: application/json" \
   -d '{"data": {"DisplayOrder": 1}}'
 ```

@@ -13,7 +13,7 @@ module.exports = ({ env }) => ({
           // Add your custom validation logic here
           const allowedOrigins = [
             env('CLIENT_URL', 'http://localhost:3000'),
-            env('ADMIN_URL', 'http://localhost:1337'),
+            env('ADMIN_URL', 'https://api.pattaya1.com'),
           ];
           
           const isValidOrigin = allowedOrigins.some(origin => 

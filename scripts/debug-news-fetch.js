@@ -26,7 +26,7 @@ async function debugNewsFetch() {
     // Check if news sources API is accessible
     console.log('1️⃣ Testing news sources API...');
     try {
-      const sourcesResponse = await axios.get('http://localhost:1337/api/news-sources');
+      const sourcesResponse = await axios.get('https://api.pattaya1.com/api/news-sources');
       const sources = sourcesResponse.data.data;
       console.log(`   ✅ Found ${sources.length} total sources`);
       
@@ -46,7 +46,7 @@ async function debugNewsFetch() {
     console.log('\n2️⃣ Testing RSS feed parsing...');
     
     // Test first few RSS sources
-    const sourcesResponse = await axios.get('http://localhost:1337/api/news-sources');
+    const sourcesResponse = await axios.get('https://api.pattaya1.com/api/news-sources');
     const activeSources = sourcesResponse.data.data.filter(s => s.isActive === true);
     
     for (const source of activeSources.slice(0, 3)) {
@@ -74,7 +74,7 @@ async function debugNewsFetch() {
     
     // Get existing articles to test duplicate detection
     try {
-      const existingResponse = await axios.get('http://localhost:1337/api/breaking-news-plural?pagination[limit]=50');
+      const existingResponse = await axios.get('https://api.pattaya1.com/api/breaking-news-plural?pagination[limit]=50');
       const existingArticles = existingResponse.data.data;
       console.log(`   📊 Found ${existingArticles.length} existing articles in database`);
       
@@ -108,12 +108,12 @@ async function debugNewsFetch() {
     };
     
     try {
-      const createResponse = await axios.post('http://localhost:1337/api/breaking-news-plural', testArticle);
+      const createResponse = await axios.post('https://api.pattaya1.com/api/breaking-news-plural', testArticle);
       console.log(`   ✅ Test article created successfully`);
       console.log(`   📄 Title: ${createResponse.data.data.Title}`);
       
       // Clean up test article
-      await axios.delete(`http://localhost:1337/api/breaking-news-plural/${createResponse.data.data.id}`);
+      await axios.delete(`https://api.pattaya1.com/api/breaking-news-plural/${createResponse.data.data.id}`);
       console.log(`   🗑️  Test article cleaned up`);
       
     } catch (createError) {

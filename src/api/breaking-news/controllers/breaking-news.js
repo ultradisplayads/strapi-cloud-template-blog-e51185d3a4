@@ -42,9 +42,10 @@ module.exports = createCoreController('api::breaking-news.breaking-news', ({ str
     }
   },
 
-  // Voting system
+  // Simple voting system with user tracking
   async upvote(ctx) {
     const { id } = ctx.params;
+    const userId = ctx.state.user?.id || 'anonymous';
     
     try {
       // Try to find by documentId first, then by id
@@ -60,14 +61,43 @@ module.exports = createCoreController('api::breaking-news.breaking-news', ({ str
         return ctx.throw(404, 'Article not found');
       }
       
+      // Get current user votes
+      const userVotes = article.userVotes || {};
+      const currentUserVote = userVotes[userId];
+      
+      let newUpvotes = article.upvotes || 0;
+      let newDownvotes = article.downvotes || 0;
+      let newUserVotes = { ...userVotes };
+      
+      if (currentUserVote === 'upvote') {
+        // Already upvoted, remove vote
+        newUpvotes = Math.max(0, newUpvotes - 1);
+        delete newUserVotes[userId];
+      } else if (currentUserVote === 'downvote') {
+        // Switch from downvote to upvote
+        newDownvotes = Math.max(0, newDownvotes - 1);
+        newUpvotes = newUpvotes + 1;
+        newUserVotes[userId] = 'upvote';
+      } else {
+        // First time voting up
+        newUpvotes = newUpvotes + 1;
+        newUserVotes[userId] = 'upvote';
+      }
+      
       const updatedArticle = await strapi.entityService.update('api::breaking-news.breaking-news', article.id, {
         data: {
-          upvotes: (article.upvotes || 0) + 1,
-          voteScore: ((article.upvotes || 0) + 1) - (article.downvotes || 0)
+          upvotes: newUpvotes,
+          downvotes: newDownvotes,
+          voteScore: newUpvotes - newDownvotes,
+          userVotes: newUserVotes
         }
       });
       
-      ctx.body = { data: updatedArticle, message: 'Article upvoted' };
+      ctx.body = { 
+        data: updatedArticle, 
+        message: currentUserVote === 'upvote' ? 'Vote removed' : 'Article upvoted',
+        userVote: newUserVotes[userId] || null
+      };
     } catch (error) {
       strapi.log.error('Upvote error:', error);
       ctx.throw(400, error.message);
@@ -76,6 +106,7 @@ module.exports = createCoreController('api::breaking-news.breaking-news', ({ str
 
   async downvote(ctx) {
     const { id } = ctx.params;
+    const userId = ctx.state.user?.id || 'anonymous';
     
     try {
       // Try to find by documentId first, then by id
@@ -91,14 +122,43 @@ module.exports = createCoreController('api::breaking-news.breaking-news', ({ str
         return ctx.throw(404, 'Article not found');
       }
       
+      // Get current user votes
+      const userVotes = article.userVotes || {};
+      const currentUserVote = userVotes[userId];
+      
+      let newUpvotes = article.upvotes || 0;
+      let newDownvotes = article.downvotes || 0;
+      let newUserVotes = { ...userVotes };
+      
+      if (currentUserVote === 'downvote') {
+        // Already downvoted, remove vote
+        newDownvotes = Math.max(0, newDownvotes - 1);
+        delete newUserVotes[userId];
+      } else if (currentUserVote === 'upvote') {
+        // Switch from upvote to downvote
+        newUpvotes = Math.max(0, newUpvotes - 1);
+        newDownvotes = newDownvotes + 1;
+        newUserVotes[userId] = 'downvote';
+      } else {
+        // First time voting down
+        newDownvotes = newDownvotes + 1;
+        newUserVotes[userId] = 'downvote';
+      }
+      
       const updatedArticle = await strapi.entityService.update('api::breaking-news.breaking-news', article.id, {
         data: {
-          downvotes: (article.downvotes || 0) + 1,
-          voteScore: (article.upvotes || 0) - ((article.downvotes || 0) + 1)
+          upvotes: newUpvotes,
+          downvotes: newDownvotes,
+          voteScore: newUpvotes - newDownvotes,
+          userVotes: newUserVotes
         }
       });
       
-      ctx.body = { data: updatedArticle, message: 'Article downvoted' };
+      ctx.body = { 
+        data: updatedArticle, 
+        message: currentUserVote === 'downvote' ? 'Vote removed' : 'Article downvoted',
+        userVote: newUserVotes[userId] || null
+      };
     } catch (error) {
       strapi.log.error('Downvote error:', error);
       ctx.throw(400, error.message);
@@ -182,15 +242,22 @@ module.exports = createCoreController('api::breaking-news.breaking-news', ({ str
   // Get live articles for frontend (approved, not hidden, sorted by pinned first)
   async live(ctx) {
     try {
-      // Get the dynamic article limit from settings
+      // Get the dynamic article settings from news-settings
       let maxArticleLimit = 21; // Default fallback
+      let maxArticleAgeHours = 24; // Default fallback
+      let preservePinned = true;
+      let preserveBreaking = true;
+      
       try {
         const settingsResponse = await strapi.entityService.findOne('api::news-settings.news-settings', 1);
-        if (settingsResponse && settingsResponse.maxArticleLimit) {
-          maxArticleLimit = settingsResponse.maxArticleLimit;
+        if (settingsResponse) {
+          maxArticleLimit = settingsResponse.maxArticleLimit || 21;
+          maxArticleAgeHours = settingsResponse.maxArticleAgeHours || 24;
+          preservePinned = settingsResponse.preservePinnedArticles !== false;
+          preserveBreaking = settingsResponse.preserveBreakingNews !== false;
         }
       } catch (settingsError) {
-        console.log('Could not fetch settings, using default limit:', maxArticleLimit);
+        console.log('Could not fetch settings, using defaults:', { maxArticleLimit, maxArticleAgeHours });
       }
 
       // Get all breaking news articles (include both published and draft for now)
@@ -279,10 +346,11 @@ module.exports = createCoreController('api::breaking-news.breaking-news', ({ str
             upvotes: entry.upvotes || 0,
             downvotes: entry.downvotes || 0,
             isPinned: entry.isPinned || false,
+            userVote: entry.userVotes?.[ctx.state.user?.id || 'anonymous'] || null,
             type: 'news'
           };
           
-          // Separate pinned and regular news
+          // Separate pinned and regular news - CRITICAL: Don't duplicate items
           if (entry.isPinned) {
             pinnedNews.push(newsItem);
           } else {
@@ -291,6 +359,7 @@ module.exports = createCoreController('api::breaking-news.breaking-news', ({ str
         }
       });
 
+      // Return ONLY regular news in the main data array
       const transformedEntries = regularNews;
 
       // Transform dedicated sponsored posts
@@ -353,7 +422,13 @@ module.exports = createCoreController('api::breaking-news.breaking-news', ({ str
           newsCount: transformedEntries.length,
           sponsoredCount: allSponsoredPosts.length,
           breakingCount: transformedEntries.filter(entry => entry.isBreaking).length,
-          pinnedCount: pinnedNews.length
+          pinnedCount: pinnedNews.length,
+          settings: {
+            maxArticleLimit,
+            maxArticleAgeHours,
+            preservePinned,
+            preserveBreaking
+          }
         }
       };
     } catch (error) {
@@ -361,5 +436,131 @@ module.exports = createCoreController('api::breaking-news.breaking-news', ({ str
       ctx.throw(500, 'Failed to fetch live breaking news');
     }
   },
+
+  // Admin endpoint to manually trigger cleanup based on settings
+  async cleanup(ctx) {
+    try {
+      // Get cleanup settings
+      const settings = await strapi.entityService.findOne('api::news-settings.news-settings', 1);
+      if (!settings) {
+        return ctx.throw(404, 'News settings not found');
+      }
+
+      const {
+        maxArticleLimit = 21,
+        maxArticleAgeHours = 24,
+        cleanupMode = 'both_count_and_age',
+        preservePinnedArticles = true,
+        preserveBreakingNews = true
+      } = settings;
+
+      let deletedCount = 0;
+      const deletedArticles = [];
+
+      // Calculate cutoff date for age-based cleanup
+      const cutoffDate = new Date(Date.now() - (maxArticleAgeHours * 60 * 60 * 1000));
+
+      // Build filters based on cleanup mode and preservation settings
+      let filters = {
+        $or: [
+          { isHidden: { $null: true } },
+          { isHidden: false }
+        ]
+      };
+
+      // Add preservation filters
+      if (preservePinnedArticles) {
+        filters.isPinned = { $ne: true };
+      }
+      if (preserveBreakingNews) {
+        filters.IsBreaking = { $ne: true };
+      }
+
+      // Get articles to potentially delete
+      const allArticles = await strapi.entityService.findMany('api::breaking-news.breaking-news', {
+        filters,
+        sort: [{ createdAt: 'asc' }], // Oldest first
+        populate: '*'
+      });
+
+      let articlesToDelete = [];
+
+      if (cleanupMode === 'count_only') {
+        // Delete oldest articles if we exceed the limit
+        if (allArticles.length > maxArticleLimit) {
+          articlesToDelete = allArticles.slice(0, allArticles.length - maxArticleLimit);
+        }
+      } else if (cleanupMode === 'age_only') {
+        // Delete articles older than the specified hours
+        articlesToDelete = allArticles.filter(article => 
+          new Date(article.createdAt) < cutoffDate
+        );
+      } else if (cleanupMode === 'both_count_and_age') {
+        // Delete articles that are either too old OR if we exceed the count limit
+        const tooOld = allArticles.filter(article => 
+          new Date(article.createdAt) < cutoffDate
+        );
+        
+        if (allArticles.length > maxArticleLimit) {
+          const excessCount = allArticles.length - maxArticleLimit;
+          const oldestArticles = allArticles.slice(0, excessCount);
+          articlesToDelete = [...new Set([...tooOld, ...oldestArticles])];
+        } else {
+          articlesToDelete = tooOld;
+        }
+      }
+
+      // Delete the articles
+      for (const article of articlesToDelete) {
+        try {
+          await strapi.entityService.delete('api::breaking-news.breaking-news', article.id);
+          deletedCount++;
+          deletedArticles.push({
+            id: article.id,
+            title: article.Title,
+            createdAt: article.createdAt,
+            isPinned: article.isPinned,
+            IsBreaking: article.IsBreaking
+          });
+        } catch (deleteError) {
+          strapi.log.error(`Failed to delete article ${article.id}:`, deleteError);
+        }
+      }
+
+      // Update cleanup stats
+      const currentStats = settings.cleanupStats || { totalDeleted: 0, lastDeletedCount: 0, lastCleanupDate: null };
+      const updatedStats = {
+        totalDeleted: currentStats.totalDeleted + deletedCount,
+        lastDeletedCount: deletedCount,
+        lastCleanupDate: new Date().toISOString()
+      };
+
+      await strapi.entityService.update('api::news-settings.news-settings', 1, {
+        data: {
+          lastCleanupRun: new Date(),
+          cleanupStats: updatedStats
+        }
+      });
+
+      ctx.body = {
+        success: true,
+        message: `Cleanup completed: ${deletedCount} articles deleted`,
+        deletedCount,
+        deletedArticles,
+        settings: {
+          maxArticleLimit,
+          maxArticleAgeHours,
+          cleanupMode,
+          preservePinnedArticles,
+          preserveBreakingNews
+        },
+        stats: updatedStats
+      };
+
+    } catch (error) {
+      strapi.log.error('Cleanup error:', error);
+      ctx.throw(500, error.message);
+    }
+  }
 
 }));

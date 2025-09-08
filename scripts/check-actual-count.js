@@ -13,7 +13,7 @@ async function checkActualCount() {
     // Method 1: Check via breaking-news-plural API
     console.log('1️⃣ Via breaking-news-plural API:');
     try {
-      const pluralResponse = await axios.get('http://localhost:1337/api/breaking-news-plural?pagination[limit]=100&sort=createdAt:desc');
+      const pluralResponse = await axios.get('https://api.pattaya1.com/api/breaking-news-plural?pagination[limit]=100&sort=createdAt:desc');
       const pluralArticles = pluralResponse.data.data;
       console.log(`   📊 Found ${pluralArticles.length} articles`);
       
@@ -28,7 +28,7 @@ async function checkActualCount() {
     // Method 2: Check via live API
     console.log('\n2️⃣ Via live API:');
     try {
-      const liveResponse = await axios.get('http://localhost:1337/api/breaking-news/live');
+      const liveResponse = await axios.get('https://api.pattaya1.com/api/breaking-news/live');
       console.log(`   📊 Total items: ${liveResponse.data.meta.total}`);
       console.log(`   📰 News count: ${liveResponse.data.meta.newsCount}`);
       console.log(`   📌 Pinned count: ${liveResponse.data.meta.pinnedCount}`);
@@ -40,7 +40,7 @@ async function checkActualCount() {
     // Method 3: Direct database query simulation
     console.log('\n3️⃣ Checking for cleanup issues:');
     try {
-      const allResponse = await axios.get('http://localhost:1337/api/breaking-news-plural?pagination[limit]=100');
+      const allResponse = await axios.get('https://api.pattaya1.com/api/breaking-news-plural?pagination[limit]=100');
       const allArticles = allResponse.data.data;
       
       console.log(`   📊 Total database entries: ${allArticles.length}`);
@@ -64,7 +64,7 @@ async function checkActualCount() {
     // Method 4: Check settings
     console.log('\n4️⃣ Current settings:');
     try {
-      const settingsResponse = await axios.get('http://localhost:1337/api/news-settings');
+      const settingsResponse = await axios.get('https://api.pattaya1.com/api/news-settings');
       if (settingsResponse.data.data) {
         console.log(`   ⚙️  Max Article Limit: ${settingsResponse.data.data.maxArticleLimit}`);
       } else {

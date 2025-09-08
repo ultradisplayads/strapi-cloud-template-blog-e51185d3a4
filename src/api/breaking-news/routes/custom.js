@@ -78,6 +78,15 @@ module.exports = {
         auth: false,
         middlewares: [],
       }
+    },
+    {
+      method: 'POST',
+      path: '/breaking-news/cleanup',
+      handler: 'breaking-news.cleanup',
+      config: {
+        auth: false,
+        middlewares: [],
+      }
     }
   ]
 };
