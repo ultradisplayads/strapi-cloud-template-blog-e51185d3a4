@@ -14,7 +14,7 @@ async function manualCleanup() {
     // Get the dynamic article limit from settings
     let maxArticleLimit = 10; // Default to 10 as requested
     try {
-      const settingsResponse = await axios.get('http://localhost:1337/api/news-settings');
+      const settingsResponse = await axios.get('https://api.pattaya1.com/api/news-settings');
       if (settingsResponse.data.data && settingsResponse.data.data.maxArticleLimit) {
         maxArticleLimit = settingsResponse.data.data.maxArticleLimit;
         console.log(`⚙️  Using configured article limit: ${maxArticleLimit}`);
@@ -26,7 +26,7 @@ async function manualCleanup() {
     }
     
     // Get all breaking news articles ordered by creation date (newest first)
-    const allArticles = await axios.get('http://localhost:1337/api/breaking-news-plural?sort=createdAt:desc&pagination[limit]=200');
+    const allArticles = await axios.get('https://api.pattaya1.com/api/breaking-news-plural?sort=createdAt:desc&pagination[limit]=200');
     const articles = allArticles.data.data;
     
     console.log(`📊 Found ${articles.length} total articles`);
@@ -46,7 +46,7 @@ async function manualCleanup() {
       
       for (const article of articlesToDelete) {
         try {
-          await axios.delete(`http://localhost:1337/api/breaking-news-plural/${article.id}`);
+          await axios.delete(`https://api.pattaya1.com/api/breaking-news-plural/${article.id}`);
           console.log(`✅ Deleted: ${article.Title.substring(0, 50)}... ${article.IsBreaking ? '(BREAKING)' : ''}`);
           deletedCount++;
           if (article.IsBreaking) deletedBreaking++;

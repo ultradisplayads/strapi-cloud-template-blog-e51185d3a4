@@ -13,14 +13,14 @@ async function testSchedulerWithLimit() {
     
     // Check current article count
     console.log('📊 Current state:');
-    const currentResponse = await axios.get('http://localhost:1337/api/breaking-news/live');
+    const currentResponse = await axios.get('https://api.pattaya1.com/api/breaking-news/live');
     console.log(`   Total items: ${currentResponse.data.meta.total}`);
     console.log(`   News articles: ${currentResponse.data.meta.newsCount}`);
     console.log(`   Breaking news: ${currentResponse.data.meta.breakingCount}`);
     console.log(`   Pinned: ${currentResponse.data.meta.pinnedCount}\n`);
     
     // Get actual article count from database
-    const articlesResponse = await axios.get('http://localhost:1337/api/breaking-news-plural?sort=createdAt:desc&pagination[limit]=50');
+    const articlesResponse = await axios.get('https://api.pattaya1.com/api/breaking-news-plural?sort=createdAt:desc&pagination[limit]=50');
     const articles = articlesResponse.data.data;
     console.log(`📰 Database articles: ${articles.length}\n`);
     
@@ -43,11 +43,11 @@ async function testSchedulerWithLimit() {
       }
     };
     
-    const createResponse = await axios.post('http://localhost:1337/api/breaking-news-plural', testArticle);
+    const createResponse = await axios.post('https://api.pattaya1.com/api/breaking-news-plural', testArticle);
     console.log(`   ✅ Created test article: ${createResponse.data.data.Title}\n`);
     
     // Check count after adding
-    const afterAddResponse = await axios.get('http://localhost:1337/api/breaking-news-plural?sort=createdAt:desc&pagination[limit]=50');
+    const afterAddResponse = await axios.get('https://api.pattaya1.com/api/breaking-news-plural?sort=createdAt:desc&pagination[limit]=50');
     const afterAddArticles = afterAddResponse.data.data;
     console.log(`📈 After adding: ${afterAddArticles.length} articles`);
     
@@ -59,12 +59,12 @@ async function testSchedulerWithLimit() {
     
     // Check final count
     console.log('\n📊 Final state:');
-    const finalResponse = await axios.get('http://localhost:1337/api/breaking-news/live');
+    const finalResponse = await axios.get('https://api.pattaya1.com/api/breaking-news/live');
     console.log(`   Total items: ${finalResponse.data.meta.total}`);
     console.log(`   News articles: ${finalResponse.data.meta.newsCount}`);
     console.log(`   Breaking news: ${finalResponse.data.meta.breakingCount}`);
     
-    const finalArticlesResponse = await axios.get('http://localhost:1337/api/breaking-news-plural?sort=createdAt:desc&pagination[limit]=50');
+    const finalArticlesResponse = await axios.get('https://api.pattaya1.com/api/breaking-news-plural?sort=createdAt:desc&pagination[limit]=50');
     const finalArticles = finalArticlesResponse.data.data;
     console.log(`   Database articles: ${finalArticles.length}`);
     

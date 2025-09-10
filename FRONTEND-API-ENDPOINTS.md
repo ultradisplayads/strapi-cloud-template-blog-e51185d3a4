@@ -175,7 +175,7 @@ GET /api/sponsored-posts?filters[placement][$eq]=top
 // Fetch breaking news for homepage
 const fetchBreakingNews = async () => {
   try {
-    const response = await fetch('http://localhost:1337/api/breaking-news/live?limit=10');
+    const response = await fetch('https://api.pattaya1.com/api/breaking-news/live?limit=10');
     const data = await response.json();
     return data.data;
   } catch (error) {
@@ -187,7 +187,7 @@ const fetchBreakingNews = async () => {
 // Vote on article
 const voteOnArticle = async (articleId, voteType) => {
   try {
-    const response = await fetch(`http://localhost:1337/api/breaking-news/${articleId}/${voteType}`, {
+    const response = await fetch(`https://api.pattaya1.com/api/breaking-news/${articleId}/${voteType}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -212,7 +212,7 @@ export const useBreakingNews = () => {
     loading.value = true;
     try {
       const params = new URLSearchParams(filters);
-      const response = await fetch(`http://localhost:1337/api/breaking-news/live?${params}`);
+      const response = await fetch(`https://api.pattaya1.com/api/breaking-news/live?${params}`);
       const data = await response.json();
       news.value = data.data;
     } catch (error) {

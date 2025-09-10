@@ -22,12 +22,12 @@ async function checkSchedulerStatus() {
     }
     
     // Check API connectivity
-    const response = await axios.get('http://localhost:1337/api/breaking-news/live');
+    const response = await axios.get('https://api.pattaya1.com/api/breaking-news/live');
     console.log('✅ API is accessible');
     console.log('📊 Current articles:', response.data?.meta?.total || 0);
     
     // Check news sources
-    const sourcesResponse = await axios.get('http://localhost:1337/api/news-sources');
+    const sourcesResponse = await axios.get('https://api.pattaya1.com/api/news-sources');
     const activeSources = sourcesResponse.data?.data?.filter(s => s.isActive) || [];
     console.log('📡 Active news sources:', activeSources.length);
     

@@ -2,7 +2,7 @@ const axios = require('axios');
 
 async function createTestSponsorship() {
   try {
-    const response = await axios.post('http://localhost:1337/api/global-sponsorships', {
+    const response = await axios.post('https://api.pattaya1.com/api/global-sponsorships', {
       data: {
         title: "Sponsored by Singha Beer",
         isActive: true,

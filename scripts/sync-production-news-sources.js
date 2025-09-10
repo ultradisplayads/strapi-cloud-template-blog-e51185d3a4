@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 const PRODUCTION_URL = 'https://accessible-prize-23fea45f9e.strapiapp.com';
-const LOCAL_URL = 'http://localhost:1337';
+const LOCAL_URL = 'https://api.pattaya1.com';
 
 async function syncProductionNewsSources() {
   try {

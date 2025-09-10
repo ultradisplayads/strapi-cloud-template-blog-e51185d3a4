@@ -16,5 +16,5 @@ echo "🚀 Starting Strapi..."
 pnpm develop
 
 echo "✅ Strapi should now be running with updated schema!"
-echo "📝 Go to http://localhost:1337/admin to test the new widget selection"
+echo "📝 Go to https://api.pattaya1.com/admin to test the new widget selection"
 echo "📖 Check WIDGET_SELECTION_GUIDE.md for instructions on how to use the JSON field"
