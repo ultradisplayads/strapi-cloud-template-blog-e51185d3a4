@@ -1,6 +1,17 @@
+const OptimizedAlgoliaService = require('../../../../../scripts/optimized-algolia-service');
+
 module.exports = {
   async afterUpdate(event) {
     const { result, params } = event;
+    
+    // Index updated breaking news in Algolia
+    try {
+      const algoliaService = new OptimizedAlgoliaService();
+      await algoliaService.addItem('breaking-news', result);
+      strapi.log.info(`Updated breaking news ${result.id} in Algolia search index`);
+    } catch (error) {
+      strapi.log.error('Error updating breaking news in Algolia:', error);
+    }
     
     // Only proceed if this is actually being marked as sponsored for the first time
     if (result.SponsoredPost && result.sponsorName && params.data.SponsoredPost === true) {
@@ -57,6 +68,15 @@ module.exports = {
   async afterCreate(event) {
     const { result } = event;
     
+    // Index new breaking news in Algolia
+    try {
+      const algoliaService = new OptimizedAlgoliaService();
+      await algoliaService.addItem('breaking-news', result);
+      strapi.log.info(`Indexed new breaking news ${result.id} in Algolia search index`);
+    } catch (error) {
+      strapi.log.error('Error indexing new breaking news in Algolia:', error);
+    }
+    
     // Check if this new breaking news item is marked as sponsored
     if (result.SponsoredPost && result.sponsorName) {
       try {
@@ -88,6 +108,19 @@ module.exports = {
       } catch (error) {
         strapi.log.error('Error auto-creating sponsored post:', error);
       }
+    }
+  },
+
+  async afterDelete(event) {
+    const { result } = event;
+    
+    // Remove deleted breaking news from Algolia
+    try {
+      const algoliaService = new OptimizedAlgoliaService();
+      await algoliaService.deleteItem('breaking-news', result.documentId);
+      strapi.log.info(`Removed breaking news ${result.id} from Algolia search index`);
+    } catch (error) {
+      strapi.log.error('Error removing breaking news from Algolia:', error);
     }
   }
 };
