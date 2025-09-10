@@ -1,5 +1,8 @@
 const axios = require('axios');
 
+const BASE_URL = process.env.STRAPI_BASE_URL || 'https://api.pattaya1.com';
+const API_TOKEN = process.env.STRAPI_API_TOKEN || '';
+
 const newsSources = [
   {
     name: "Pattaya Mail",
@@ -11,6 +14,26 @@ const newsSources = [
     priority: 1,
     fetchInterval: 30,
     keyValue: "Longest-running and established source for detailed local news, columns, and community events"
+  },
+  {
+    name: "PR Pattaya (ประชาสัมพันธ์เมืองพัทยา)",
+    description: "Official City Hall public relations page for Pattaya (announcements, events, road closures)",
+    url: "https://www.facebook.com/PRPattayacity",
+    sourceType: "facebook_page",
+    isActive: true,
+    priority: 4,
+    fetchInterval: 60,
+    keyValue: "The official public relations channel for Pattaya City Hall. The most reliable source for official city news."
+  },
+  {
+    name: "Chonburi Provincial PR Office",
+    description: "Official announcements for Chonburi province impacting Pattaya",
+    url: "https://www.facebook.com/PR.Chonburi",
+    sourceType: "facebook_page",
+    isActive: true,
+    priority: 5,
+    fetchInterval: 60,
+    keyValue: "Official news and announcements for Chonburi province"
   },
   {
     name: "The Pattaya News",
@@ -145,7 +168,7 @@ async function populateNewsSources() {
     for (const source of newsSources) {
       try {
         // Check if source already exists
-        const existing = await axios.get(`https://api.pattaya1.com/api/news-sources?filters[name][$eq]=${encodeURIComponent(source.name)}`);
+        const existing = await axios.get(`${BASE_URL}/api/news-sources?filters[name][$eq]=${encodeURIComponent(source.name)}`);
         
         if (existing.data.data && existing.data.data.length > 0) {
           console.log(`   ⏭️  Skipped: ${source.name} (already exists)`);
@@ -154,15 +177,24 @@ async function populateNewsSources() {
         }
         
         // Create new source
-        await axios.post('https://api.pattaya1.com/api/news-sources', {
+        const headers = API_TOKEN
+          ? { Authorization: `Bearer ${API_TOKEN}` }
+          : {};
+
+        if (!API_TOKEN) {
+          console.warn('   ⚠️  No STRAPI_API_TOKEN set. Attempting unauthenticated create (likely to fail on production).');
+        }
+
+        await axios.post(`${BASE_URL}/api/news-sources`, {
           data: source
-        });
+        }, { headers });
         
         console.log(`   ✅ Created: ${source.name}`);
         created++;
         
       } catch (error) {
-        console.log(`   ❌ Failed to create ${source.name}: ${error.message}`);
+        const msg = error?.response?.data || error?.message;
+        console.log(`   ❌ Failed to create ${source.name}: ${JSON.stringify(msg)}`);
       }
     }
     
@@ -172,7 +204,7 @@ async function populateNewsSources() {
     console.log(`   📡 Total sources: ${created + skipped}`);
     
     // Verify the population
-    const allSources = await axios.get('https://api.pattaya1.com/api/news-sources');
+    const allSources = await axios.get(`${BASE_URL}/api/news-sources`);
     console.log(`\n🔍 Verification: ${allSources.data.data.length} sources in database`);
     
   } catch (error) {
