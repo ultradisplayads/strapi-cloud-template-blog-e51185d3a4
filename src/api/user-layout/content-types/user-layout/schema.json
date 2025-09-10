@@ -1,0 +1,33 @@
+{
+  "kind": "collectionType",
+  "collectionName": "user_layouts",
+  "info": {
+    "singularName": "user-layout",
+    "pluralName": "user-layouts",
+    "displayName": "User Layout",
+    "description": "User's custom widget layout configurations"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "userId": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "layout": {
+      "type": "json",
+      "required": true
+    },
+    "createdAt": {
+      "type": "datetime",
+      "required": true
+    },
+    "updatedAt": {
+      "type": "datetime",
+      "required": true
+    }
+  }
+}
