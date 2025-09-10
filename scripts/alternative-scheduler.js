@@ -43,7 +43,7 @@ class NewsScheduler {
       
       let totalCreated = 0;
       
-      for (const source of activeSources.slice(0, 3)) {
+      for (const source of activeSources) {
         try {
           if (source.sourceType === 'rss_feed' && source.url) {
             console.log(`   🔍 Fetching from ${source.name}...`);
@@ -151,8 +151,24 @@ class NewsScheduler {
         }
       }
       
-      // Trigger dynamic cleanup after successful fetch
-      await this.cleanupManager.trigger();
+      // Check current article count and limit before cleanup
+      const currentCountResponse = await axios.get('http://localhost:1337/api/breaking-news-plural');
+      const currentCount = currentCountResponse.data.data.length;
+      
+      const settingsResponse = await axios.get('http://localhost:1337/api/news-settings');
+      const maxLimit = settingsResponse.data.data.maxArticleLimit || 21;
+      
+      console.log(`📊 Current articles: ${currentCount}/${maxLimit}`);
+      
+      // Only trigger cleanup if we exceed the limit
+      if (currentCount > maxLimit) {
+        console.log(`⚠️  Exceeded limit by ${currentCount - maxLimit} articles - triggering cleanup`);
+        await this.cleanupManager.trigger();
+      } else if (currentCount < maxLimit) {
+        console.log(`📈 ${maxLimit - currentCount} slots available for more articles`);
+      } else {
+        console.log(`✅ At optimal limit of ${maxLimit} articles`);
+      }
       
       console.log(`✅ [${new Date().toLocaleTimeString()}] Fetch #${this.fetchCount} completed: ${totalCreated} new articles`);
       

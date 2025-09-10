@@ -48,7 +48,7 @@ module.exports = createCoreService('api::widget-control.widget-control', ({ stra
           moderationStatus: 'approved',
           isHidden: false
         },
-        sort: ['-isPinned', '-pinnedAt', '-voteScore', '-PublishedTimestamp'],
+        sort: ['-isPinned', '-voteScore', '-PublishedTimestamp'],
         limit: config.NumberOfArticles,
         populate: '*'
       });

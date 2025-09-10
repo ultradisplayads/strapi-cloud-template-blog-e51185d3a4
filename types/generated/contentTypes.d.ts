@@ -587,7 +587,6 @@ export interface ApiBreakingNewsBreakingNews
     > &
       Schema.Attribute.DefaultTo<'approved'>;
     originalAPIData: Schema.Attribute.JSON;
-    pinnedAt: Schema.Attribute.DateTime;
     publishedAt: Schema.Attribute.DateTime;
     PublishedTimestamp: Schema.Attribute.DateTime;
     Severity: Schema.Attribute.Enumeration<
