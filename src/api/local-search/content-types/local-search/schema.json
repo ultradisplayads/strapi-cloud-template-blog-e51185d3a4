@@ -1,0 +1,32 @@
+{
+  "kind": "singleType",
+  "collectionName": "local_searches",
+  "info": {
+    "singularName": "local-search",
+    "pluralName": "local-searches",
+    "displayName": "Local Search",
+    "description": "Local search configuration and indexing"
+  },
+  "options": {
+    "draftAndPublish": false,
+    "comment": ""
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "isEnabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "lastIndexed": {
+      "type": "datetime"
+    },
+    "totalIndexedItems": {
+      "type": "integer",
+      "default": 0
+    },
+    "searchableContentTypes": {
+      "type": "json",
+      "default": []
+    }
+  }
+}

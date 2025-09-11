@@ -1,0 +1,94 @@
+{
+  "kind": "collectionType",
+  "collectionName": "travel_widgets",
+  "info": {
+    "singularName": "travel-widget",
+    "pluralName": "travel-widgets",
+    "displayName": "Travel Widget",
+    "description": "Travel search widget configuration for flights and hotels"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Title": {
+      "type": "string",
+      "required": true,
+      "default": "Travel Search"
+    },
+    "Description": {
+      "type": "text",
+      "default": "Find the best flights and hotels for your next trip"
+    },
+    "IsActive": {
+      "type": "boolean",
+      "default": true
+    },
+    "DisplayOrder": {
+      "type": "integer",
+      "default": 1
+    },
+    "WidgetType": {
+      "type": "enumeration",
+      "enum": ["full", "flights_only", "hotels_only"],
+      "default": "full"
+    },
+    "DefaultOrigin": {
+      "type": "string",
+      "default": "Bangkok"
+    },
+    "DefaultDestination": {
+      "type": "string",
+      "default": "Pattaya"
+    },
+    "PopularDestinations": {
+      "type": "json",
+      "default": [
+        {"name": "Bangkok", "code": "BKK", "country": "Thailand"},
+        {"name": "Pattaya", "code": "UTP", "country": "Thailand"},
+        {"name": "Phuket", "code": "HKT", "country": "Thailand"},
+        {"name": "Chiang Mai", "code": "CNX", "country": "Thailand"}
+      ]
+    },
+    "SkyscannerConfig": {
+      "type": "json",
+      "default": {
+        "AffiliateId": "",
+        "DefaultCurrency": "THB",
+        "DefaultLocale": "en-US",
+        "DefaultCabinClass": "economy"
+      }
+    },
+    "TrivagoConfig": {
+      "type": "json",
+      "default": {
+        "ScriptUrl": "https://emrldco.com/NDU4MjI0.js?t=458224",
+        "AffiliateId": "458224",
+        "DefaultCurrency": "THB"
+      }
+    },
+    "Styling": {
+      "type": "json",
+      "default": {
+        "Theme": "light",
+        "PrimaryColor": "#007bff",
+        "BackgroundColor": "#ffffff"
+      }
+    },
+    "Analytics": {
+      "type": "json",
+      "default": {
+        "TrackClicks": true,
+        "TrackSearches": true
+      }
+    },
+    "CreatedBy": {
+      "type": "string",
+      "default": "admin"
+    },
+    "LastModified": {
+      "type": "datetime"
+    }
+  }
+}
