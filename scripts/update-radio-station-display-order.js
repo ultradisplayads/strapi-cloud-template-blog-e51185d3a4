@@ -30,7 +30,7 @@ const updateRadioStationDisplayOrder = async () => {
       
       console.log(`📝 Updating ${station.attributes.Name} (ID: ${station.id}) with display order: ${displayOrder}`)
       
-        const updateResponse = await fetch(`https://api.pattaya1.com/api/radio-stations/${station.id}`, {
+      const updateResponse = await fetch(`https://api.pattaya1.com/api/radio-stations/${station.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

@@ -3,8 +3,6 @@
 FROM ubuntu:22.04 AS builder
 
 ENV DEBIAN_FRONTEND=noninteractive
-ENV BETTER_SQLITE3_DISABLE_PREBUILD=1
-ENV npm_config_build_from_source=true
 WORKDIR /opt/app
 
 # Install Node.js 20 and system dependencies for building
@@ -25,8 +23,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     make \
     g++ \
     pkg-config \
-    libsqlite3-dev \
-    sqlite3 \
     libcairo2-dev \
     libpango1.0-dev \
     libjpeg-dev \
@@ -41,41 +37,40 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && corepack enable
 
 # Copy package files
-COPY package.json pnpm-lock.yaml ./
+COPY package.json package-lock.json ./
 
 # Install dependencies
-RUN corepack enable pnpm
-RUN pnpm config set network-timeout 1200000
-RUN pnpm config set registry https://registry.npmjs.org/
-RUN pnpm install --frozen-lockfile
+RUN npm install -g node-gyp
+RUN npm config set registry https://registry.npmjs.org/
+# Install dependencies first
+RUN npm ci --include=optional
+# Force rebuild sharp for the correct platform
+RUN npm rebuild sharp --verbose
 
 # Copy application files
 COPY . .
 
 # Set production environment and build the application
 ENV NODE_ENV=production
-RUN pnpm build
+RUN npm run build
 
 # Stage 2: Production (Ubuntu-based)
 FROM ubuntu:22.04 AS production
 
 ENV DEBIAN_FRONTEND=noninteractive
-ENV BETTER_SQLITE3_DISABLE_PREBUILD=1
-ENV npm_config_build_from_source=true
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     curl \
     gnupg \
     bash \
     libvips \
-    build-essential \
-    gcc \
-    g++ \
-    make \
-    python3 \
-    pkg-config \
-    libsqlite3-dev \
-    sqlite3 \
+    libvips-dev \
+    libjpeg-dev \
+    libpng-dev \
+    libwebp-dev \
+    libtiff-dev \
+    libgif-dev \
+    libheif-dev \
   && rm -rf /var/lib/apt/lists/* \
   && mkdir -p /etc/apt/keyrings \
   && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
@@ -95,24 +90,25 @@ ENV NODE_ENV=${NODE_ENV}
 WORKDIR /opt/app
 
 # Copy package files
-COPY package.json pnpm-lock.yaml ./
+COPY package.json package-lock.json ./
 
 # Install production dependencies only
-RUN corepack enable pnpm
-RUN pnpm install --frozen-lockfile --prod
+RUN npm ci --omit=dev
 
 # Copy all built application files from builder stage
 COPY --from=builder /opt/app ./
 
 # Remove development files and reinstall production dependencies
 RUN rm -rf node_modules
-RUN pnpm install --frozen-lockfile --prod
-
-# Rebuild native modules for the production environment
-RUN pnpm rebuild better-sqlite3
+RUN npm install --omit=dev --include=optional
+# Force rebuild sharp for the correct platform in production
+RUN npm rebuild sharp --verbose
 
 # Create public/uploads directory for file uploads
 RUN mkdir -p ./public/uploads
+
+# Copy health check
+COPY healthcheck.js ./
 
 # Set proper permissions
 RUN chown -R node:node /opt/app
@@ -121,5 +117,10 @@ USER node
 # Expose port
 EXPOSE 1337
 
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD node healthcheck.js
+
 # Start the application
-CMD ["pnpm", "start"]
+CMD ["npm", "start"]

@@ -3,7 +3,7 @@
 ## Quick Setup Steps
 
 1. **Open Strapi Admin Panel**
-   - Go to: http://localhost:1337/admin
+   - Go to: https://api.pattaya1.com/admin
    - Login with your admin credentials
 
 2. **Navigate to Permissions**
@@ -30,7 +30,7 @@ After saving, test the API:
 
 ```bash
 # Test basic access
-curl "http://localhost:1337/api/breaking-news-plural"
+curl "https://api.pattaya1.com/api/breaking-news-plural"
 
 # Should return: {"data": [], "meta": {...}}
 # Instead of: {"error": {"status": 403, "name": "ForbiddenError"}}
