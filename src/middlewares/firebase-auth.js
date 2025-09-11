@@ -35,7 +35,9 @@ module.exports = (config, { strapi }) => {
       '/api/traffic-incidents',
       '/api/deals',
       '/api/google-reviews',
-      '/api/quick-links'
+      '/api/quick-links',
+      '/api/flight-tracker',
+      '/api/travel-widget'
     ];
     
     const isPublicEndpoint = publicEndpoints.some(endpoint => 

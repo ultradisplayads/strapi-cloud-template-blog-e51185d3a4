@@ -4,7 +4,6 @@ const fs = require('fs-extra');
 const path = require('path');
 const mime = require('mime-types');
 const admin = require('../config/firebase');
-const { categories, authors, articles, global, about } = require('../data/data.json');
 
 async function seedExampleApp() {
   const shouldImportSeedData = await isFirstRun();
@@ -167,92 +166,13 @@ async function updateBlocks(blocks) {
   return updatedBlocks;
 }
 
-async function importArticles() {
-  for (const article of articles) {
-    const cover = await checkFileExistsBeforeUpload([`${article.slug}.jpg`]);
-    const updatedBlocks = await updateBlocks(article.blocks);
-
-    await createEntry({
-      model: 'article',
-      entry: {
-        ...article,
-        cover,
-        blocks: updatedBlocks,
-        // Make sure it's not a draft
-        publishedAt: Date.now(),
-      },
-    });
-  }
-}
-
-async function importGlobal() {
-  const favicon = await checkFileExistsBeforeUpload(['favicon.png']);
-  const shareImage = await checkFileExistsBeforeUpload(['default-image.png']);
-  return createEntry({
-    model: 'global',
-    entry: {
-      ...global,
-      favicon,
-      // Make sure it's not a draft
-      publishedAt: Date.now(),
-      defaultSeo: {
-        ...global.defaultSeo,
-        shareImage,
-      },
-    },
-  });
-}
-
-async function importAbout() {
-  const updatedBlocks = await updateBlocks(about.blocks);
-
-  await createEntry({
-    model: 'about',
-    entry: {
-      ...about,
-      blocks: updatedBlocks,
-      // Make sure it's not a draft
-      publishedAt: Date.now(),
-    },
-  });
-}
-
-async function importCategories() {
-  for (const category of categories) {
-    await createEntry({ model: 'category', entry: category });
-  }
-}
-
-async function importAuthors() {
-  for (const author of authors) {
-    const avatar = await checkFileExistsBeforeUpload([author.avatar]);
-
-    await createEntry({
-      model: 'author',
-      entry: {
-        ...author,
-        avatar,
-      },
-    });
-  }
-}
-
 async function importSeedData() {
   // Allow read of application content types
   await setPublicPermissions({
-    article: ['find', 'findOne'],
-    category: ['find', 'findOne'],
-    author: ['find', 'findOne'],
-    global: ['find', 'findOne'],
-    about: ['find', 'findOne'],
+    'flight-tracker': ['find', 'findOne'],
   });
 
-  // Create all entries
-  await importCategories();
-  await importAuthors();
-  await importArticles();
-  await importGlobal();
-  await importAbout();
+  console.log('Flight Tracker Widget permissions set up successfully');
 }
 
 async function main() {
@@ -288,40 +208,5 @@ module.exports = async ({ strapi }) => {
   
   await seedExampleApp();
   
-  // Start the news scheduler automatically when Strapi starts
-  console.log('🚀 Starting news scheduler...');
-  
-  // Wait a bit for Strapi to fully initialize before starting scheduler
-  setTimeout(async () => {
-    try {
-      const NewsScheduler = require('../scripts/alternative-scheduler');
-      const scheduler = new NewsScheduler();
-      
-      // Store scheduler instance globally for potential cleanup
-      strapi.newsScheduler = scheduler;
-      
-      // Start the scheduler (runs immediately and then every 5 minutes)
-      scheduler.start(5);
-      
-      console.log('✅ News scheduler started successfully - fetching initial data');
-      
-    } catch (error) {
-      console.error('❌ Failed to start news scheduler:', error.message);
-    }
-  }, 3000); // Wait 3 seconds for Strapi to fully initialize
-  
-  // Handle graceful shutdown
-  process.on('SIGINT', () => {
-    console.log('🛑 Shutting down news scheduler...');
-    if (strapi.newsScheduler) {
-      strapi.newsScheduler.stop();
-    }
-  });
-  
-  process.on('SIGTERM', () => {
-    console.log('🛑 Shutting down news scheduler...');
-    if (strapi.newsScheduler) {
-      strapi.newsScheduler.stop();
-    }
-  });
+  console.log('✅ Flight Tracker Widget backend initialized successfully');
 };

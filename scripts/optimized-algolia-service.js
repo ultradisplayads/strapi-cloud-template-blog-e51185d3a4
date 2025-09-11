@@ -90,6 +90,13 @@ class OptimizedAlgoliaService {
         endpoint: 'photo-galleries',
         searchableFields: ['title', 'description', 'photographer', 'location'],
         facetFields: ['category', 'location', 'photographer', 'featured']
+      },
+      
+      // Flight Tracking
+      'flight-tracker': { 
+        endpoint: 'flight-trackers',
+        searchableFields: ['FlightNumber', 'Airline', 'AirportName', 'OriginAirport', 'DestinationAirport', 'Terminal', 'Gate'],
+        facetFields: ['Airport', 'FlightType', 'FlightStatus', 'Airline', 'Terminal']
       }
     };
   }
@@ -250,21 +257,37 @@ class OptimizedAlgoliaService {
   }
 
   // Add or update single item in unified index
-  async addItem(contentType, item) {
+  async addItem(item) {
     try {
+      // Handle both old and new calling patterns
+      let contentType, itemData;
+      
+      if (typeof item === 'object' && item.type) {
+        // New pattern: item object with type property
+        contentType = item.type;
+        itemData = item;
+      } else if (arguments.length === 2) {
+        // Old pattern: addItem(contentType, item)
+        contentType = arguments[0];
+        itemData = arguments[1];
+      } else {
+        console.log(`⚠️  Invalid addItem call pattern`);
+        return false;
+      }
+
       const config = this.contentTypes[contentType];
       if (!config) {
         console.log(`⚠️  Unknown content type: ${contentType}`);
         return false;
       }
 
-      const normalizedItem = this.normalizeItemForSearch(item, contentType, config);
+      const normalizedItem = this.normalizeItemForSearch(itemData, contentType, config);
       await this.unifiedIndex.saveObject(normalizedItem);
       
-      console.log(`✅ Added/updated ${contentType} item: ${normalizedItem.title}`);
+      console.log(`✅ Added/updated ${contentType} item: ${normalizedItem.title || normalizedItem.objectID}`);
       return true;
     } catch (error) {
-      console.log(`❌ Error adding ${contentType} item:`, error.message);
+      console.log(`❌ Error adding item:`, error.message);
       return false;
     }
   }
@@ -287,7 +310,7 @@ class OptimizedAlgoliaService {
   async search(query, options = {}) {
     try {
       const searchOptions = {
-        hitsPerPage: options.limit || 20,
+        hitsPerPage: options.hitsPerPage || options.limit || 20,
         page: options.page || 0,
         filters: options.filters || '',
         facetFilters: options.facetFilters || [],

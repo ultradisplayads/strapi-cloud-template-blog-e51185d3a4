@@ -984,6 +984,77 @@ export interface ApiEventEvent extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiFlightTrackerFlightTracker
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'flight_trackers';
+  info: {
+    description: 'Live flight tracking data for BKK, DMK, and UTP airports';
+    displayName: 'Flight Tracker';
+    pluralName: 'flight-trackers';
+    singularName: 'flight-tracker';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    ActualTime: Schema.Attribute.DateTime;
+    Aircraft: Schema.Attribute.String;
+    Airline: Schema.Attribute.String & Schema.Attribute.Required;
+    AirlineIATA: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 3;
+      }>;
+    AirlineICAO: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 4;
+      }>;
+    Airport: Schema.Attribute.Enumeration<['BKK', 'DMK', 'UTP']> &
+      Schema.Attribute.Required;
+    AirportName: Schema.Attribute.String & Schema.Attribute.DefaultTo<''>;
+    AviationStackData: Schema.Attribute.JSON;
+    Baggage: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    DelayMinutes: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    DestinationAirport: Schema.Attribute.String;
+    DestinationAirportIATA: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 3;
+      }>;
+    EstimatedTime: Schema.Attribute.DateTime;
+    FlightDate: Schema.Attribute.Date & Schema.Attribute.Required;
+    FlightNumber: Schema.Attribute.String & Schema.Attribute.Required;
+    FlightStatus: Schema.Attribute.Enumeration<
+      ['scheduled', 'active', 'landed', 'cancelled', 'incident', 'diverted']
+    > &
+      Schema.Attribute.DefaultTo<'scheduled'>;
+    FlightType: Schema.Attribute.Enumeration<['arrival', 'departure']> &
+      Schema.Attribute.Required;
+    Gate: Schema.Attribute.String;
+    IsActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    LastUpdated: Schema.Attribute.DateTime;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::flight-tracker.flight-tracker'
+    > &
+      Schema.Attribute.Private;
+    OriginAirport: Schema.Attribute.String;
+    OriginAirportIATA: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 3;
+      }>;
+    Priority: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<1>;
+    publishedAt: Schema.Attribute.DateTime;
+    ScheduledTime: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    Terminal: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiForumActivityForumActivity
   extends Struct.CollectionTypeSchema {
   collectionName: 'forum_activities';
@@ -1225,6 +1296,40 @@ export interface ApiLiveEventLiveEvent extends Struct.CollectionTypeSchema {
     Tags: Schema.Attribute.JSON;
     Time: Schema.Attribute.String & Schema.Attribute.Required;
     Title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiLocalSearchLocalSearch extends Struct.SingleTypeSchema {
+  collectionName: 'local_searches';
+  info: {
+    description: 'Local search configuration and indexing';
+    displayName: 'Local Search';
+    pluralName: 'local-searches';
+    singularName: 'local-search';
+  };
+  options: {
+    comment: '';
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    isEnabled: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    lastIndexed: Schema.Attribute.DateTime;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::local-search.local-search'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    searchableContentTypes: Schema.Attribute.JSON &
+      Schema.Attribute.DefaultTo<[]>;
+    totalIndexedItems: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1848,6 +1953,101 @@ export interface ApiTrafficRouteTrafficRoute
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+  };
+}
+
+export interface ApiTravelWidgetTravelWidget
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'travel_widgets';
+  info: {
+    description: 'Travel search widget configuration for flights and hotels';
+    displayName: 'Travel Widget';
+    pluralName: 'travel-widgets';
+    singularName: 'travel-widget';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    Analytics: Schema.Attribute.JSON &
+      Schema.Attribute.DefaultTo<{
+        TrackClicks: true;
+        TrackSearches: true;
+      }>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    CreatedBy: Schema.Attribute.String & Schema.Attribute.DefaultTo<'admin'>;
+    DefaultDestination: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'Pattaya'>;
+    DefaultOrigin: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'Bangkok'>;
+    Description: Schema.Attribute.Text &
+      Schema.Attribute.DefaultTo<'Find the best flights and hotels for your next trip'>;
+    DisplayOrder: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<1>;
+    IsActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    LastModified: Schema.Attribute.DateTime;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::travel-widget.travel-widget'
+    > &
+      Schema.Attribute.Private;
+    PopularDestinations: Schema.Attribute.JSON &
+      Schema.Attribute.DefaultTo<
+        [
+          {
+            code: 'BKK';
+            country: 'Thailand';
+            name: 'Bangkok';
+          },
+          {
+            code: 'UTP';
+            country: 'Thailand';
+            name: 'Pattaya';
+          },
+          {
+            code: 'HKT';
+            country: 'Thailand';
+            name: 'Phuket';
+          },
+          {
+            code: 'CNX';
+            country: 'Thailand';
+            name: 'Chiang Mai';
+          },
+        ]
+      >;
+    publishedAt: Schema.Attribute.DateTime;
+    SkyscannerConfig: Schema.Attribute.JSON &
+      Schema.Attribute.DefaultTo<{
+        AffiliateId: '';
+        DefaultCabinClass: 'economy';
+        DefaultCurrency: 'THB';
+        DefaultLocale: 'en-US';
+      }>;
+    Styling: Schema.Attribute.JSON &
+      Schema.Attribute.DefaultTo<{
+        BackgroundColor: '#ffffff';
+        PrimaryColor: '#007bff';
+        Theme: 'light';
+      }>;
+    Title: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'Travel Search'>;
+    TrivagoConfig: Schema.Attribute.JSON &
+      Schema.Attribute.DefaultTo<{
+        AffiliateId: '458224';
+        DefaultCurrency: 'THB';
+        ScriptUrl: 'https://emrldco.com/NDU4MjI0.js?t=458224';
+      }>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    WidgetType: Schema.Attribute.Enumeration<
+      ['full', 'flights_only', 'hotels_only']
+    > &
+      Schema.Attribute.DefaultTo<'full'>;
   };
 }
 
@@ -2714,11 +2914,13 @@ declare module '@strapi/strapi' {
       'api::deal.deal': ApiDealDeal;
       'api::event-calendar.event-calendar': ApiEventCalendarEventCalendar;
       'api::event.event': ApiEventEvent;
+      'api::flight-tracker.flight-tracker': ApiFlightTrackerFlightTracker;
       'api::forum-activity.forum-activity': ApiForumActivityForumActivity;
       'api::global-sponsorship.global-sponsorship': ApiGlobalSponsorshipGlobalSponsorship;
       'api::global.global': ApiGlobalGlobal;
       'api::google-review.google-review': ApiGoogleReviewGoogleReview;
       'api::live-event.live-event': ApiLiveEventLiveEvent;
+      'api::local-search.local-search': ApiLocalSearchLocalSearch;
       'api::news-article.news-article': ApiNewsArticleNewsArticle;
       'api::news-settings.news-settings': ApiNewsSettingsNewsSettings;
       'api::news-source.news-source': ApiNewsSourceNewsSource;
@@ -2730,6 +2932,7 @@ declare module '@strapi/strapi' {
       'api::sponsored-post.sponsored-post': ApiSponsoredPostSponsoredPost;
       'api::traffic-incident.traffic-incident': ApiTrafficIncidentTrafficIncident;
       'api::traffic-route.traffic-route': ApiTrafficRouteTrafficRoute;
+      'api::travel-widget.travel-widget': ApiTravelWidgetTravelWidget;
       'api::trending-topic.trending-topic': ApiTrendingTopicTrendingTopic;
       'api::weather-activity-suggestion.weather-activity-suggestion': ApiWeatherActivitySuggestionWeatherActivitySuggestion;
       'api::weather-cache.weather-cache': ApiWeatherCacheWeatherCache;

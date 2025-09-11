@@ -1,0 +1,111 @@
+{
+  "kind": "collectionType",
+  "collectionName": "flight_trackers",
+  "info": {
+    "singularName": "flight-tracker",
+    "pluralName": "flight-trackers",
+    "displayName": "Flight Tracker",
+    "description": "Live flight tracking data for BKK, DMK, and UTP airports"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "FlightNumber": {
+      "type": "string",
+      "required": true
+    },
+    "Airline": {
+      "type": "string",
+      "required": true
+    },
+    "AirlineIATA": {
+      "type": "string",
+      "maxLength": 3
+    },
+    "AirlineICAO": {
+      "type": "string",
+      "maxLength": 4
+    },
+    "Aircraft": {
+      "type": "string"
+    },
+    "FlightStatus": {
+      "type": "enumeration",
+      "enum": ["scheduled", "active", "landed", "cancelled", "incident", "diverted"],
+      "default": "scheduled"
+    },
+    "FlightType": {
+      "type": "enumeration",
+      "enum": ["arrival", "departure"],
+      "required": true
+    },
+    "Airport": {
+      "type": "enumeration",
+      "enum": ["BKK", "DMK", "UTP"],
+      "required": true
+    },
+    "AirportName": {
+      "type": "string",
+      "default": ""
+    },
+    "OriginAirport": {
+      "type": "string"
+    },
+    "OriginAirportIATA": {
+      "type": "string",
+      "maxLength": 3
+    },
+    "DestinationAirport": {
+      "type": "string"
+    },
+    "DestinationAirportIATA": {
+      "type": "string",
+      "maxLength": 3
+    },
+    "ScheduledTime": {
+      "type": "datetime",
+      "required": true
+    },
+    "EstimatedTime": {
+      "type": "datetime"
+    },
+    "ActualTime": {
+      "type": "datetime"
+    },
+    "DelayMinutes": {
+      "type": "integer",
+      "default": 0
+    },
+    "Terminal": {
+      "type": "string"
+    },
+    "Gate": {
+      "type": "string"
+    },
+    "Baggage": {
+      "type": "string"
+    },
+    "FlightDate": {
+      "type": "date",
+      "required": true
+    },
+    "AviationStackData": {
+      "type": "json",
+      "description": "Raw data from AviationStack API"
+    },
+    "LastUpdated": {
+      "type": "datetime"
+    },
+    "IsActive": {
+      "type": "boolean",
+      "default": true
+    },
+    "Priority": {
+      "type": "integer",
+      "default": 1,
+      "description": "Display priority (1 = highest)"
+    }
+  }
+}
