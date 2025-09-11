@@ -6,129 +6,15 @@ module.exports = {
     try {
       strapi.log.info('🔄 Running 1-minute news fetch...');
       
-      // Get all active news sources
-      const sources = await strapi.entityService.findMany('api::news-source.news-source', {
-        filters: { isActive: true }
-      });
+      // Use the breaking news service to fetch from News API
+      const breakingNewsService = strapi.service('api::breaking-news.breaking-news');
+      const result = await breakingNewsService.fetchAndProcessNews();
       
-      strapi.log.info(`📡 Found ${sources.length} active news sources`);
-      
-      let totalArticles = 0;
-      
-      // Use RSS parser directly for better reliability
-      const RSS = require('rss-parser');
-      const parser = new RSS({
-        customFields: {
-          item: ['creator', 'dc:creator']
-        }
-      });
-      
-      for (const source of sources) {
-        try {
-          strapi.log.info(`📰 Fetching from ${source.name}...`);
-          
-          if (source.sourceType === 'rss_feed') {
-            const feed = await parser.parseURL(source.url);
-            const articles = feed.items.slice(0, 3); // Limit to 3 per source
-            
-            for (const item of articles) {
-              try {
-                // Create unique slug with timestamp
-                const slug = `${item.title.toLowerCase()
-                  .replace(/[^a-z0-9]+/g, '-')
-                  .replace(/^-+|-+$/g, '')
-                  .substring(0, 50)}-${Date.now()}`;
-                
-                await strapi.entityService.create('api::breaking-news.breaking-news', {
-                  data: {
-                    Title: item.title || 'Untitled',
-                    Summary: (item.contentSnippet || item.content || '').substring(0, 200),
-                    Category: 'General',
-                    Source: source.name,
-                    URL: item.link || '#',
-                    IsBreaking: false,
-                    PublishedTimestamp: item.pubDate ? new Date(item.pubDate) : new Date(),
-                    isPinned: false,
-                    voteScore: 0,
-                    upvotes: 0,
-                    downvotes: 0,
-                    userVotes: {},
-                    moderationStatus: 'approved',
-                    isHidden: false,
-                    fetchedFromAPI: true,
-                    apiSource: source.name,
-                    originalAPIData: item,
-                    publishedAt: new Date()
-                  }
-                });
-                totalArticles++;
-                strapi.log.info(`✅ Created: ${item.title}`);
-              } catch (createError) {
-                // Skip duplicates or validation errors
-                strapi.log.debug(`Skipped article: ${createError.message}`);
-                continue;
-              }
-            }
-          } else if (source.sourceType === 'news_api') {
-            // Handle NewsAPI.org and GNews.io
-            let apiUrl = source.url;
-            let params = {};
-            
-            if (source.name.includes('NewsAPI')) {
-              // NewsAPI.org format
-              apiUrl = `${source.url}?country=th&apiKey=${source.apiKey}`;
-            } else if (source.name.includes('GNews')) {
-              // GNews.io format
-              apiUrl = `${source.url}?country=th&apikey=${source.apiKey}`;
-            }
-            
-            const response = await fetch(apiUrl);
-            const data = await response.json();
-            
-            let articles = [];
-            if (data.articles) {
-              articles = data.articles.slice(0, 3); // Limit to 3 per source
-            }
-            
-            for (const item of articles) {
-              try {
-                await strapi.entityService.create('api::breaking-news.breaking-news', {
-                  data: {
-                    Title: item.title || 'Untitled',
-                    Summary: (item.description || item.content || '').substring(0, 200),
-                    Category: 'General',
-                    Source: source.name,
-                    URL: item.url || item.link || '#',
-                    IsBreaking: false,
-                    PublishedTimestamp: item.publishedAt ? new Date(item.publishedAt) : new Date(),
-                    isPinned: false,
-                    voteScore: 0,
-                    upvotes: 0,
-                    downvotes: 0,
-                    userVotes: {},
-                    moderationStatus: 'approved',
-                    isHidden: false,
-                    fetchedFromAPI: true,
-                    apiSource: source.name,
-                    originalAPIData: item,
-                    publishedAt: new Date()
-                  }
-                });
-                totalArticles++;
-                strapi.log.info(`✅ Created: ${item.title}`);
-              } catch (createError) {
-                // Skip duplicates or validation errors
-                strapi.log.debug(`Skipped article: ${createError.message}`);
-                continue;
-              }
-            }
-          }
-        } catch (sourceError) {
-          strapi.log.error(`❌ Failed to fetch from ${source.name}: ${sourceError.message}`);
-        }
+      if (result) {
+        strapi.log.info(`🎯 News fetch completed: ${result.total} new articles (${result.approved} approved, ${result.needsReview} need review)`);
+      } else {
+        strapi.log.info('🎯 News fetch completed: No new articles');
       }
-      
-      strapi.log.info(`🎯 News fetch completed: ${totalArticles} new articles added`);
     } catch (error) {
       strapi.log.error('❌ Scheduled news fetch failed:', error.message);
     }
