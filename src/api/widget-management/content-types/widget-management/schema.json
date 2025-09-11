@@ -1,0 +1,118 @@
+{
+  "kind": "collectionType",
+  "collectionName": "widget_managements",
+  "info": {
+    "singularName": "widget-management",
+    "pluralName": "widget-managements",
+    "displayName": "Widget Management",
+    "description": "Comprehensive widget management with admin controls for customization permissions"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "widgetName": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "widgetType": {
+      "type": "enumeration",
+      "enum": [
+        "weather",
+        "breaking-news",
+        "radio",
+        "hot-deals",
+        "news-hero",
+        "business-spotlight",
+        "social-feed",
+        "trending",
+        "youtube",
+        "events-calendar",
+        "quick-links",
+        "photo-gallery",
+        "forum-activity",
+        "google-reviews",
+        "curator-social",
+        "currency-converter",
+        "traffic",
+        "news-carousel",
+        "events-marquee",
+        "happening-now",
+        "recommended-picks",
+        "deals-section",
+        "enhanced-weather",
+        "enhanced-blog-marquee",
+        "enhanced-events-marquee",
+        "enhanced-happening-now",
+        "enhanced-recommended-picks",
+        "sponsorship-banner"
+      ],
+      "required": true
+    },
+    "displayName": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "category": {
+      "type": "enumeration",
+      "enum": [
+        "core",
+        "content",
+        "social",
+        "utility",
+        "advertising",
+        "entertainment",
+        "business"
+      ],
+      "default": "content"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true
+    },
+    "adminControls": {
+      "type": "component",
+      "repeatable": false,
+      "component": "widget.admin-controls"
+    },
+    "defaultPosition": {
+      "type": "component",
+      "repeatable": false,
+      "component": "widget.position"
+    },
+    "defaultSize": {
+      "type": "component",
+      "repeatable": false,
+      "component": "widget.size"
+    },
+    "widgetConfig": {
+      "type": "json"
+    },
+    "sponsorshipSettings": {
+      "type": "component",
+      "repeatable": false,
+      "component": "widget.sponsorship-settings"
+    },
+    "priority": {
+      "type": "integer",
+      "default": 0,
+      "min": 0,
+      "max": 100
+    },
+    "tags": {
+      "type": "json"
+    },
+    "version": {
+      "type": "string",
+      "default": "1.0.0"
+    },
+    "lastModified": {
+      "type": "datetime"
+    }
+  }
+}

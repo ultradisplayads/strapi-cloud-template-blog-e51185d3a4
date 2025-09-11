@@ -140,78 +140,24 @@ module.exports = createCoreService('api::breaking-news.breaking-news', ({ strapi
 
   async fetchAndProcessNews(params = {}) {
     try {
-      strapi.log.info('Starting news fetch from all active sources...');
+      strapi.log.info('Starting news fetch from News API...');
       
-      // Get all active news sources
-      const sources = await strapi.entityService.findMany('api::news-source.news-source', {
-        filters: { isActive: true }
-      });
-
       let totalProcessed = 0;
       let totalApproved = 0;
       let totalReview = 0;
 
-      // If no sources configured, fall back to News API
-      if (!sources || sources.length === 0) {
-        strapi.log.info('No news sources configured, using News API fallback');
-        const articles = await this.fetchFromNewsAPI(params);
-        
-        for (const article of articles) {
-          const processed = await this.processArticle(article, 'News API');
-          if (processed) {
-            totalProcessed++;
-            if (processed.moderationStatus === 'approved') {
-              totalApproved++;
-            } else {
-              totalReview++;
-            }
-          }
-        }
-      } else {
-        // Process each configured source
-        const newsSourceService = strapi.service('api::news-source.news-source');
-        
-        for (const source of sources) {
-          try {
-            strapi.log.info(`Fetching from source: ${source.name} (${source.sourceType})`);
-            
-            const articles = await newsSourceService.fetchFromSource(source);
-            let sourceProcessed = 0;
-            
-            for (const article of articles) {
-              const processed = await this.processArticle(article, source.name);
-              if (processed) {
-                sourceProcessed++;
-                totalProcessed++;
-                if (processed.moderationStatus === 'approved') {
-                  totalApproved++;
-                } else {
-                  totalReview++;
-                }
-              }
-            }
-
-            // Update source statistics
-            await strapi.entityService.update('api::news-source.news-source', source.id, {
-              data: {
-                lastFetchedAt: new Date(),
-                totalArticlesFetched: source.totalArticlesFetched + sourceProcessed,
-                lastFetchStatus: 'success',
-                lastError: null
-              }
-            });
-
-            strapi.log.info(`Processed ${sourceProcessed} articles from ${source.name}`);
-          } catch (error) {
-            strapi.log.error(`Failed to fetch from source ${source.name}:`, error.message);
-            
-            // Update source error status
-            await strapi.entityService.update('api::news-source.news-source', source.id, {
-              data: {
-                lastFetchStatus: 'error',
-                lastError: error.message
-              }
-            });
+      // Use News API as the primary source
+      strapi.log.info('Using News API as primary source');
+      const articles = await this.fetchFromNewsAPI(params);
+      
+      for (const article of articles) {
+        const processed = await this.processArticle(article, 'News API');
+        if (processed) {
+          totalProcessed++;
+          if (processed.moderationStatus === 'approved') {
+            totalApproved++;
+          } else {
+            totalReview++;
           }
         }
       }

@@ -6,5 +6,4 @@
 
 const { createCoreRouter } = require('@strapi/strapi').factories;
 
-// @ts-ignore
 module.exports = createCoreRouter('api::google-review.google-review');
