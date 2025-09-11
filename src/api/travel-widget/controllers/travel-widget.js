@@ -111,7 +111,8 @@ module.exports = createCoreController('api::travel-widget.travel-widget', ({ str
         adults = 2,
         children = 0,
         rooms = 1,
-        currency = 'THB'
+        currency = 'INR',
+        locationId = null
       } = ctx.query;
 
       if (!destination || !checkinDate || !checkoutDate) {
@@ -126,29 +127,59 @@ module.exports = createCoreController('api::travel-widget.travel-widget', ({ str
 
       const config = widgets[0]?.TrivagoConfig || {
         AffiliateId: '458224',
-        DefaultCurrency: 'THB'
+        DefaultCurrency: 'INR'
       };
 
-      // Build direct Trivago search URL with proper format
+      // Format dates for Trivago (YYYYMMDD format)
+      const formatDateForTrivago = (dateStr) => {
+        const date = new Date(dateStr);
+        const year = date.getFullYear();
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const day = date.getDate().toString().padStart(2, '0');
+        return `${year}${month}${day}`;
+      };
+
+      const formattedCheckinDate = formatDateForTrivago(checkinDate);
+      const formattedCheckoutDate = formatDateForTrivago(checkoutDate);
+
+      // Build Trivago search URL with proper format matching the provided example
+      // Format: https://www.trivago.in/en-IN/lm/hotels-{destination}-india?search={locationId};dr-{checkin}-{checkout}-s
       const destination_clean = String(destination).trim().toLowerCase().replace(/\s+/g, '-');
-      const searchUrl = `https://www.trivago.com/${destination_clean}-hotels?checkin=${checkinDate}&checkout=${checkoutDate}&adults=${adults}&children=${children}&rooms=${rooms}&currency=${currency}&aff=${config.AffiliateId || '458224'}`;
+      
+      if (!locationId) {
+        return ctx.badRequest('Location ID is required for hotel search');
+      }
+      
+      // Use the exact format from the provided URL
+      const searchParam = `${locationId};dr-${formattedCheckinDate}-${formattedCheckoutDate}-s`;
+      let searchUrl = `https://www.trivago.in/en-IN/lm/hotels-${destination_clean}-india?search=${searchParam}`;
+
+      // Add affiliate tracking if available
+      if (config.AffiliateId && config.AffiliateId !== '458224') {
+        const separator = searchUrl.includes('?') ? '&' : '?';
+        searchUrl += `${separator}aff=${config.AffiliateId}`;
+      }
 
       ctx.body = {
         success: true,
         data: {
           searchUrl: searchUrl,
-          scriptUrl: config.ScriptUrl,
+          scriptUrl: config.ScriptUrl || 'https://emrldco.com/NDU4MjI0.js?t=458224',
           searchParams: {
             destination,
             checkinDate,
             checkoutDate,
+            formattedCheckinDate,
+            formattedCheckoutDate,
             guests: { adults, children, rooms },
-            currency
+            currency,
+            locationId
           }
         },
         meta: {
           provider: 'Trivago',
-          affiliateId: config.AffiliateId,
+          affiliateId: config.AffiliateId || '458224',
+          urlFormat: locationId ? 'location-based' : 'search-based',
           timestamp: new Date().toISOString()
         }
       };
