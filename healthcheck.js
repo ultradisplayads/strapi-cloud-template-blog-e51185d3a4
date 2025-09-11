@@ -1,32 +1,33 @@
 const http = require('http');
 
 const options = {
-  hostname: 'localhost',
-  port: 1337,
-  path: '/api/breaking-news-plural?pagination[limit]=1',
-  method: 'GET',
-  timeout: 3000
+  host: 'localhost',
+  port: process.env.PORT || 1337,
+  path: '/_health',
+  timeout: 2000,
+  method: 'GET'
 };
 
-const req = http.request(options, (res) => {
+const request = http.request(options, (res) => {
+  console.log(`Health check status: ${res.statusCode}`);
   if (res.statusCode === 200) {
-    console.log('Health check passed');
     process.exit(0);
   } else {
-    console.log(`Health check failed with status: ${res.statusCode}`);
     process.exit(1);
   }
 });
 
-req.on('error', (err) => {
-  console.log(`Health check failed: ${err.message}`);
+request.on('error', (err) => {
+  console.log('Health check failed:', err.message);
   process.exit(1);
 });
 
-req.on('timeout', () => {
-  console.log('Health check timed out');
-  req.destroy();
+request.on('timeout', () => {
+  console.log('Health check timeout');
+  request.destroy();
   process.exit(1);
 });
 
-req.end();
+request.end();
+
+

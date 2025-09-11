@@ -65,6 +65,55 @@
       "min": 5,
       "max": 100,
       "description": "Maximum number of articles to keep in the system"
+    },
+    "maxArticleAgeHours": {
+      "type": "integer",
+      "required": true,
+      "default": 24,
+      "min": 1,
+      "max": 168,
+      "description": "Maximum age of articles in hours (1-168 hours = 1 hour to 1 week)"
+    },
+    "cleanupMode": {
+      "type": "enumeration",
+      "enum": [
+        "count_only",
+        "age_only", 
+        "both_count_and_age"
+      ],
+      "default": "both_count_and_age",
+      "description": "How to determine which articles to delete: by count only, age only, or both"
+    },
+    "cleanupFrequencyMinutes": {
+      "type": "integer",
+      "required": true,
+      "default": 60,
+      "min": 15,
+      "max": 1440,
+      "description": "How often to run cleanup (in minutes)"
+    },
+    "preservePinnedArticles": {
+      "type": "boolean",
+      "default": true,
+      "description": "Never delete pinned articles during cleanup"
+    },
+    "preserveBreakingNews": {
+      "type": "boolean",
+      "default": true,
+      "description": "Never delete breaking news during cleanup"
+    },
+    "lastCleanupRun": {
+      "type": "datetime",
+      "description": "Timestamp of last cleanup run"
+    },
+    "cleanupStats": {
+      "type": "json",
+      "default": {
+        "totalDeleted": 0,
+        "lastDeletedCount": 0,
+        "lastCleanupDate": null
+      },
+      "description": "Statistics about cleanup operations"
     }
   }
 }

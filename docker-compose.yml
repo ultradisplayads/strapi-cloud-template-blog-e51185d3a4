@@ -25,9 +25,6 @@ services:
       - TRANSFER_TOKEN_SALT=${TRANSFER_TOKEN_SALT}
       - HOST=${HOST:-0.0.0.0}
       - PORT=${PORT:-1337}
-      - DEFAULT_ARTICLE_LIMIT=${DEFAULT_ARTICLE_LIMIT}
-      - ENABLE_SQL_CLEANUP=${ENABLE_SQL_CLEANUP}
-      - DATABASE_PATH=${DATABASE_PATH}
     volumes:
       - ./public/uploads:/opt/app/public/uploads
       - ./data:/opt/app/data

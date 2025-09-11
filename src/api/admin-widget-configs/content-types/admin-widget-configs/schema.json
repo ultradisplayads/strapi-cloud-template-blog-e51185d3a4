@@ -1,0 +1,42 @@
+{
+  "kind": "singleType",
+  "collectionName": "admin_widget_configs",
+  "info": {
+    "singularName": "admin-widget-configs",
+    "pluralName": "admin-widget-configurations",
+    "displayName": "Admin Widget Configs",
+    "description": "Admin configurations for widget permissions and settings"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "widgetConfigs": {
+      "type": "json",
+      "required": true,
+      "default": {
+        "weather": { "allowResize": true, "allowDrag": true, "allowDelete": false, "isLocked": false },
+        "breaking-news": { "allowResize": true, "allowDrag": true, "allowDelete": false, "isLocked": false },
+        "radio": { "allowResize": true, "allowDrag": true, "allowDelete": true, "isLocked": false },
+        "hot-deals": { "allowResize": true, "allowDrag": true, "allowDelete": false, "isLocked": false },
+        "news-hero": { "allowResize": true, "allowDrag": true, "allowDelete": false, "isLocked": false },
+        "business-spotlight": { "allowResize": true, "allowDrag": true, "allowDelete": true, "isLocked": false },
+        "social-feed": { "allowResize": true, "allowDrag": true, "allowDelete": true, "isLocked": false },
+        "trending": { "allowResize": true, "allowDrag": true, "allowDelete": true, "isLocked": false },
+        "youtube": { "allowResize": true, "allowDrag": true, "allowDelete": true, "isLocked": false },
+        "events-calendar": { "allowResize": true, "allowDrag": true, "allowDelete": true, "isLocked": false },
+        "quick-links": { "allowResize": true, "allowDrag": true, "allowDelete": true, "isLocked": false },
+        "photo-gallery": { "allowResize": true, "allowDrag": true, "allowDelete": true, "isLocked": false },
+        "forum-activity": { "allowResize": true, "allowDrag": true, "allowDelete": true, "isLocked": false },
+        "google-reviews": { "allowResize": true, "allowDrag": true, "allowDelete": true, "isLocked": false },
+        "curator-social": { "allowResize": true, "allowDrag": true, "allowDelete": true, "isLocked": false },
+        "currency-converter": { "allowResize": true, "allowDrag": true, "allowDelete": true, "isLocked": false },
+        "traffic": { "allowResize": false, "allowDrag": false, "allowDelete": false, "isLocked": true }
+      }
+    },
+    "lastUpdated": {
+      "type": "datetime"
+    }
+  }
+}

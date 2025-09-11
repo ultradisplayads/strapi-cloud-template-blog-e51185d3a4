@@ -1,0 +1,71 @@
+{
+  "kind": "collectionType",
+  "collectionName": "currency_converters",
+  "info": {
+    "singularName": "currency-converter",
+    "pluralName": "currency-converters",
+    "displayName": "Currency Converter",
+    "description": "Currency converter widget settings and conversion logs"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "type": {
+      "type": "enumeration",
+      "enum": ["widget-settings", "conversion-log"],
+      "required": true
+    },
+    "enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "defaultFromCurrency": {
+      "type": "string",
+      "default": "THB"
+    },
+    "defaultToCurrency": {
+      "type": "string",
+      "default": "USD"
+    },
+    "updateFrequencyMinutes": {
+      "type": "integer",
+      "default": 5
+    },
+    "supportedCurrencies": {
+      "type": "json"
+    },
+    "sponsoredEnabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "sponsorName": {
+      "type": "string"
+    },
+    "sponsorLogo": {
+      "type": "string"
+    },
+    "fromCurrency": {
+      "type": "string"
+    },
+    "toCurrency": {
+      "type": "string"
+    },
+    "amount": {
+      "type": "decimal"
+    },
+    "result": {
+      "type": "decimal"
+    },
+    "timestamp": {
+      "type": "datetime"
+    },
+    "userAgent": {
+      "type": "string"
+    },
+    "ipAddress": {
+      "type": "string"
+    }
+  }
+}

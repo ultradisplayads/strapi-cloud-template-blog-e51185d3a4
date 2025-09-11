@@ -408,6 +408,142 @@ export interface ApiAboutAbout extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiAdminWidgetConfigsAdminWidgetConfigs
+  extends Struct.SingleTypeSchema {
+  collectionName: 'admin_widget_configs';
+  info: {
+    description: 'Admin configurations for widget permissions and settings';
+    displayName: 'Admin Widget Configs';
+    pluralName: 'admin-widget-configurations';
+    singularName: 'admin-widget-configs';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    lastUpdated: Schema.Attribute.DateTime;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::admin-widget-configs.admin-widget-configs'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    widgetConfigs: Schema.Attribute.JSON &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<{
+        'breaking-news': {
+          allowDelete: false;
+          allowDrag: true;
+          allowResize: true;
+          isLocked: false;
+        };
+        'business-spotlight': {
+          allowDelete: true;
+          allowDrag: true;
+          allowResize: true;
+          isLocked: false;
+        };
+        'curator-social': {
+          allowDelete: true;
+          allowDrag: true;
+          allowResize: true;
+          isLocked: false;
+        };
+        'currency-converter': {
+          allowDelete: true;
+          allowDrag: true;
+          allowResize: true;
+          isLocked: false;
+        };
+        'events-calendar': {
+          allowDelete: true;
+          allowDrag: true;
+          allowResize: true;
+          isLocked: false;
+        };
+        'forum-activity': {
+          allowDelete: true;
+          allowDrag: true;
+          allowResize: true;
+          isLocked: false;
+        };
+        'google-reviews': {
+          allowDelete: true;
+          allowDrag: true;
+          allowResize: true;
+          isLocked: false;
+        };
+        'hot-deals': {
+          allowDelete: false;
+          allowDrag: true;
+          allowResize: true;
+          isLocked: false;
+        };
+        'news-hero': {
+          allowDelete: false;
+          allowDrag: true;
+          allowResize: true;
+          isLocked: false;
+        };
+        'photo-gallery': {
+          allowDelete: true;
+          allowDrag: true;
+          allowResize: true;
+          isLocked: false;
+        };
+        'quick-links': {
+          allowDelete: true;
+          allowDrag: true;
+          allowResize: true;
+          isLocked: false;
+        };
+        radio: {
+          allowDelete: true;
+          allowDrag: true;
+          allowResize: true;
+          isLocked: false;
+        };
+        'social-feed': {
+          allowDelete: true;
+          allowDrag: true;
+          allowResize: true;
+          isLocked: false;
+        };
+        traffic: {
+          allowDelete: false;
+          allowDrag: false;
+          allowResize: false;
+          isLocked: true;
+        };
+        trending: {
+          allowDelete: true;
+          allowDrag: true;
+          allowResize: true;
+          isLocked: false;
+        };
+        weather: {
+          allowDelete: false;
+          allowDrag: true;
+          allowResize: true;
+          isLocked: false;
+        };
+        youtube: {
+          allowDelete: true;
+          allowDrag: true;
+          allowResize: true;
+          isLocked: false;
+        };
+      }>;
+  };
+}
+
 export interface ApiAdvertisementAdvertisement
   extends Struct.CollectionTypeSchema {
   collectionName: 'advertisements';
@@ -602,6 +738,7 @@ export interface ApiBreakingNewsBreakingNews
       Schema.Attribute.Private;
     upvotes: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
     URL: Schema.Attribute.String & Schema.Attribute.Required;
+    userVotes: Schema.Attribute.JSON & Schema.Attribute.DefaultTo<{}>;
     voteScore: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
   };
 }
@@ -789,6 +926,56 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+  };
+}
+
+export interface ApiCurrencyConverterCurrencyConverter
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'currency_converters';
+  info: {
+    description: 'Currency converter widget settings and conversion logs';
+    displayName: 'Currency Converter';
+    pluralName: 'currency-converters';
+    singularName: 'currency-converter';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    amount: Schema.Attribute.Decimal;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    defaultFromCurrency: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'THB'>;
+    defaultToCurrency: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'USD'>;
+    enabled: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    fromCurrency: Schema.Attribute.String;
+    ipAddress: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::currency-converter.currency-converter'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    result: Schema.Attribute.Decimal;
+    sponsoredEnabled: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
+    sponsorLogo: Schema.Attribute.String;
+    sponsorName: Schema.Attribute.String;
+    supportedCurrencies: Schema.Attribute.JSON;
+    timestamp: Schema.Attribute.DateTime;
+    toCurrency: Schema.Attribute.String;
+    type: Schema.Attribute.Enumeration<['widget-settings', 'conversion-log']> &
+      Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    updateFrequencyMinutes: Schema.Attribute.Integer &
+      Schema.Attribute.DefaultTo<5>;
+    userAgent: Schema.Attribute.String;
   };
 }
 
@@ -2106,6 +2293,38 @@ export interface ApiTrendingTopicTrendingTopic
   };
 }
 
+export interface ApiUserLayoutUserLayout extends Struct.CollectionTypeSchema {
+  collectionName: 'user_layouts';
+  info: {
+    description: "User's custom widget layout configurations";
+    displayName: 'User Layout';
+    pluralName: 'user-layouts';
+    singularName: 'user-layout';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    layout: Schema.Attribute.JSON & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::user-layout.user-layout'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    userId: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+  };
+}
+
 export interface ApiWeatherActivitySuggestionWeatherActivitySuggestion
   extends Struct.CollectionTypeSchema {
   collectionName: 'weather_activity_suggestions';
@@ -2278,6 +2497,13 @@ export interface ApiWidgetControlWidgetControl extends Struct.SingleTypeSchema {
     draftAndPublish: false;
   };
   attributes: {
+    AdminSettings: Schema.Attribute.JSON &
+      Schema.Attribute.DefaultTo<{
+        allowDelete: false;
+        allowDrag: true;
+        allowResize: true;
+        isLocked: false;
+      }>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -2904,6 +3130,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::about.about': ApiAboutAbout;
+      'api::admin-widget-configs.admin-widget-configs': ApiAdminWidgetConfigsAdminWidgetConfigs;
       'api::advertisement.advertisement': ApiAdvertisementAdvertisement;
       'api::author.author': ApiAuthorAuthor;
       'api::booking.booking': ApiBookingBooking;
@@ -2911,6 +3138,7 @@ declare module '@strapi/strapi' {
       'api::business-spotlight.business-spotlight': ApiBusinessSpotlightBusinessSpotlight;
       'api::business.business': ApiBusinessBusiness;
       'api::category.category': ApiCategoryCategory;
+      'api::currency-converter.currency-converter': ApiCurrencyConverterCurrencyConverter;
       'api::deal.deal': ApiDealDeal;
       'api::event-calendar.event-calendar': ApiEventCalendarEventCalendar;
       'api::event.event': ApiEventEvent;
@@ -2934,6 +3162,7 @@ declare module '@strapi/strapi' {
       'api::traffic-route.traffic-route': ApiTrafficRouteTrafficRoute;
       'api::travel-widget.travel-widget': ApiTravelWidgetTravelWidget;
       'api::trending-topic.trending-topic': ApiTrendingTopicTrendingTopic;
+      'api::user-layout.user-layout': ApiUserLayoutUserLayout;
       'api::weather-activity-suggestion.weather-activity-suggestion': ApiWeatherActivitySuggestionWeatherActivitySuggestion;
       'api::weather-cache.weather-cache': ApiWeatherCacheWeatherCache;
       'api::weather-setting.weather-setting': ApiWeatherSettingWeatherSetting;
