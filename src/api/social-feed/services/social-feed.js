@@ -7,14 +7,12 @@
 const { createCoreService } = require('@strapi/strapi').factories;
 
 module.exports = createCoreService('api::social-media-post.social-media-post', ({ strapi }) => ({
-  // Fetch posts from external APIs (Twitter, Instagram, etc.)
+  // Fetch posts from external APIs (Twitter, Instagram, etc.) - Direct API call, no caching
   async fetchFromTwitter(keywords = ['Pattaya']) {
     try {
-      strapi.log.info('Fetching from Twitter API...');
+      strapi.log.info('Fetching directly from Twitter API (no caching)...');
       
       // Real Twitter API v2 integration
-      const twitterApiKey = process.env.TWITTER_API_KEY;
-      const twitterApiSecret = process.env.TWITTER_API_SECRET;
       const twitterBearerToken = process.env.TWITTER_BEARER_TOKEN;
       
       if (!twitterBearerToken) {
@@ -24,11 +22,13 @@ module.exports = createCoreService('api::social-media-post.social-media-post', (
         return fallbackPosts;
       }
       
-      strapi.log.info('Twitter Bearer Token found, attempting real API call...');
+      strapi.log.info('Twitter Bearer Token found, making direct API call...');
       
-      // Search for tweets with Pattaya-related keywords
+      // Search for tweets with Pattaya-related keywords - limit to 1 result
       const query = keywords.map(k => `"${k}"`).join(' OR ');
       const twitterUrl = `https://api.twitter.com/2/tweets/search/recent?query=${encodeURIComponent(query)}&max_results=1&tweet.fields=created_at,public_metrics,author_id,context_annotations&user.fields=username,name,verified&expansions=author_id`;
+      
+      strapi.log.info(`Twitter API URL: ${twitterUrl}`);
       
       const response = await fetch(twitterUrl, {
         headers: {
@@ -44,8 +44,9 @@ module.exports = createCoreService('api::social-media-post.social-media-post', (
       }
       
       const data = await response.json();
+      strapi.log.info('Twitter API response:', JSON.stringify(data, null, 2));
       
-      if (!data.data) {
+      if (!data.data || data.data.length === 0) {
         strapi.log.warn('No tweets found, using fallback data');
         const fallbackPosts = this.getFallbackTwitterPosts(keywords);
         strapi.log.info(`Using fallback Twitter posts (no data): ${fallbackPosts.length} posts`);
@@ -73,10 +74,12 @@ module.exports = createCoreService('api::social-media-post.social-media-post', (
         };
       });
       
+      strapi.log.info(`Successfully fetched ${tweets.length} tweets from Twitter API`);
       return tweets;
       
     } catch (error) {
       strapi.log.error('Failed to fetch from Twitter:', error.message);
+      strapi.log.error('Error details:', error);
       const fallbackPosts = this.getFallbackTwitterPosts(keywords);
       strapi.log.info(`Using fallback Twitter posts due to error: ${fallbackPosts.length} posts`);
       return fallbackPosts;

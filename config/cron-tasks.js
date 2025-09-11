@@ -60,6 +60,43 @@ module.exports = {
   },
 
   /**
+   * Daily review fetch at 6 AM - Fetch new reviews from all platforms
+   */
+  '0 6 * * *': async ({ strapi }) => {
+    try {
+      strapi.log.info('🔄 Running daily review fetch...');
+      
+      const ReviewFetcherService = require('../src/api/review/services/review-fetcher');
+      const reviewFetcher = new ReviewFetcherService();
+      
+      const result = await reviewFetcher.fetchAllReviews();
+      
+      strapi.log.info(`🎯 Daily review fetch completed: ${result.total_fetched} reviews saved from ${result.platforms_processed} platforms`);
+    } catch (error) {
+      strapi.log.error('❌ Daily review fetch failed:', error.message);
+    }
+  },
+
+  /**
+   * Daily review cleanup at 3 AM - Remove expired reviews for ToS compliance
+   */
+  '0 3 * * *': async ({ strapi }) => {
+    try {
+      strapi.log.info('🧹 Running daily review cleanup...');
+      
+      const result = await strapi.service('api::google-review.google-review').cleanupExpiredReviews();
+      
+      if (result.deleted_count > 0) {
+        strapi.log.info(`✅ Review cleanup completed: ${result.deleted_count} expired reviews deleted`);
+      } else {
+        strapi.log.info('✅ Review cleanup completed: No expired reviews found');
+      }
+    } catch (error) {
+      strapi.log.error('❌ Review cleanup failed:', error.message);
+    }
+  },
+
+  /**
    * Daily cleanup at 2 AM - Remove old rejected articles (legacy)
    */
   '0 2 * * *': async ({ strapi }) => {

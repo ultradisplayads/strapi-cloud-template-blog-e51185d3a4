@@ -281,5 +281,97 @@ module.exports = createCoreController('api::social-media-post.social-media-post'
     } catch (error) {
       ctx.throw(500, error.message);
     }
+  },
+
+  // Simple endpoint to fetch 1 post from Twitter directly (no caching)
+  async fetchOne(ctx) {
+    try {
+      strapi.log.info('Fetching 1 post from Twitter API directly...');
+      
+      const socialFeedService = strapi.service('api::social-feed.social-feed');
+      
+      // Fetch directly from Twitter API without any caching
+      const twitterPosts = await socialFeedService.fetchFromTwitter(['Pattaya']);
+      
+      if (twitterPosts && twitterPosts.length > 0) {
+        // Take only the first post
+        const post = twitterPosts[0];
+        
+        // Transform to match frontend expectations
+        const transformedPost = {
+          id: post.id,
+          Platform: post.Platform,
+          Author: post.Author,
+          Handle: post.Handle,
+          Content: post.Content,
+          Timestamp: post.Timestamp,
+          Likes: post.Likes,
+          Comments: post.Comments,
+          Shares: post.Shares,
+          Location: post.Location,
+          Verified: post.Verified,
+          Hashtags: post.Hashtags,
+          URL: post.URL,
+          Category: post.Category,
+          Avatar: null, // No avatar for now
+          Image: null   // No image for now
+        };
+        
+        strapi.log.info(`Successfully fetched 1 Twitter post: ${post.Author} - ${post.Content.substring(0, 50)}...`);
+        
+        ctx.body = {
+          data: {
+            posts: [transformedPost],
+            stats: {
+              totalPosts: 1,
+              totalLikes: post.Likes,
+              totalComments: post.Comments,
+              totalShares: post.Shares
+            },
+            source: 'Twitter API',
+            timestamp: new Date().toISOString()
+          }
+        };
+      } else {
+        strapi.log.warn('No Twitter posts found, returning fallback data');
+        
+        // Return fallback data
+        const fallbackPost = {
+          id: 'fallback_' + Date.now(),
+          Platform: 'twitter',
+          Author: 'Pattaya Explorer',
+          Handle: '@pattaya_explorer',
+          Content: 'Just discovered an amazing hidden beach in Pattaya! The water is crystal clear and perfect for snorkeling 🏖️ #Pattaya #Thailand #Beach',
+          Timestamp: new Date(),
+          Likes: 45,
+          Comments: 8,
+          Shares: 12,
+          Location: 'Pattaya, Thailand',
+          Verified: true,
+          Hashtags: ['Pattaya', 'Thailand', 'Beach', 'Snorkeling'],
+          URL: 'https://twitter.com/pattaya_explorer/status/1234567890',
+          Category: 'Tourism',
+          Avatar: null,
+          Image: null
+        };
+        
+        ctx.body = {
+          data: {
+            posts: [fallbackPost],
+            stats: {
+              totalPosts: 1,
+              totalLikes: fallbackPost.Likes,
+              totalComments: fallbackPost.Comments,
+              totalShares: fallbackPost.Shares
+            },
+            source: 'Fallback Data',
+            timestamp: new Date().toISOString()
+          }
+        };
+      }
+    } catch (error) {
+      strapi.log.error('Failed to fetch Twitter post:', error.message);
+      ctx.throw(500, `Failed to fetch Twitter post: ${error.message}`);
+    }
   }
 }));

@@ -57,5 +57,13 @@ module.exports = {
         auth: false,
       },
     },
+    {
+      method: 'GET',
+      path: '/social-feed/fetch-one',
+      handler: 'social-feed.fetchOne',
+      config: {
+        auth: false,
+      },
+    },
   ],
 };
