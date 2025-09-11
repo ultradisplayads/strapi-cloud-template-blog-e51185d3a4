@@ -47,6 +47,9 @@ importers:
       rss-parser:
         specifier: ^3.13.0
         version: 3.13.0
+      sharp:
+        specifier: ^0.33.0
+        version: 0.33.5
       stripe:
         specifier: ^18.5.0
         version: 18.5.0(@types/node@24.3.1)
@@ -9819,7 +9822,7 @@ snapshots:
       postcss-modules-scope: 3.2.1(postcss@8.5.6)
       postcss-modules-values: 4.0.0(postcss@8.5.6)
       postcss-value-parser: 4.2.0
-      semver: 7.5.4
+      semver: 7.7.2
     optionalDependencies:
       webpack: 5.101.3(esbuild@0.25.9)
 
@@ -10389,7 +10392,7 @@ snapshots:
       minimatch: 3.1.2
       node-abort-controller: 3.1.1
       schema-utils: 3.3.0
-      semver: 7.5.4
+      semver: 7.7.2
       tapable: 2.2.3
       typescript: 5.4.4
       webpack: 5.101.3(esbuild@0.25.9)
@@ -10536,7 +10539,7 @@ snapshots:
       get-it: 8.6.10
       registry-auth-token: 5.1.0
       registry-url: 5.1.0
-      semver: 7.5.4
+      semver: 7.7.2
     transitivePeerDependencies:
       - debug
 
@@ -10610,7 +10613,7 @@ snapshots:
       es6-error: 4.1.1
       matcher: 3.0.0
       roarr: 2.15.4
-      semver: 7.5.4
+      semver: 7.7.2
       serialize-error: 7.0.1
 
   global-modules@1.0.0:
@@ -11821,7 +11824,7 @@ snapshots:
       ignore-by-default: 1.0.1
       minimatch: 3.1.2
       pstree.remy: 1.1.8
-      semver: 7.5.4
+      semver: 7.7.2
       simple-update-notifier: 2.0.0
       supports-color: 5.5.0
       touch: 3.1.1
@@ -11996,7 +11999,7 @@ snapshots:
       got: 11.8.6
       registry-auth-token: 4.2.2
       registry-url: 5.1.0
-      semver: 7.5.4
+      semver: 7.7.2
 
   param-case@2.1.1:
     dependencies:
@@ -12864,7 +12867,7 @@ snapshots:
 
   simple-update-notifier@2.0.0:
     dependencies:
-      semver: 7.5.4
+      semver: 7.7.2
 
   sirv@2.0.4:
     dependencies:

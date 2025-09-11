@@ -1,0 +1,45 @@
+{
+  "collectionName": "components_widget_sponsorship_settings",
+  "info": {
+    "displayName": "Sponsorship Settings",
+    "description": "Sponsorship and advertising settings for widgets"
+  },
+  "options": {},
+  "attributes": {
+    "allowsSponsorship": {
+      "type": "boolean",
+      "default": true
+    },
+    "sponsorshipType": {
+      "type": "enumeration",
+      "enum": [
+        "banner",
+        "inline",
+        "overlay",
+        "sidebar",
+        "none"
+      ],
+      "default": "banner"
+    },
+    "maxSponsors": {
+      "type": "integer",
+      "default": 1,
+      "min": 0,
+      "max": 5
+    },
+    "sponsorshipPriority": {
+      "type": "enumeration",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "premium"
+      ],
+      "default": "medium"
+    },
+    "requiresApproval": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}
