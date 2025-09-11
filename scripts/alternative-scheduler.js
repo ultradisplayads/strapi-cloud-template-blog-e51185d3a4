@@ -152,10 +152,10 @@ class NewsScheduler {
       }
       
       // Check current article count and limit before cleanup
-      const currentCountResponse = await axios.get('http://localhost:1337/api/breaking-news-plural');
+      const currentCountResponse = await axios.get('https://api.pattaya1.com/api/breaking-news-plural');
       const currentCount = currentCountResponse.data.data.length;
       
-      const settingsResponse = await axios.get('http://localhost:1337/api/news-settings');
+      const settingsResponse = await axios.get('https://api.pattaya1.com/api/news-settings');
       const maxLimit = settingsResponse.data.data.maxArticleLimit || 21;
       
       console.log(`📊 Current articles: ${currentCount}/${maxLimit}`);

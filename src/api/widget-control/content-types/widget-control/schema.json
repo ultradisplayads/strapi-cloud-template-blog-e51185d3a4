@@ -53,6 +53,15 @@
         "auto"
       ],
       "default": "light"
+    },
+    "AdminSettings": {
+      "type": "json",
+      "default": {
+        "allowResize": true,
+        "allowDrag": true,
+        "allowDelete": false,
+        "isLocked": false
+      }
     }
   }
 }
