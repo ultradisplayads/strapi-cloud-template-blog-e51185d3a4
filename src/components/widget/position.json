@@ -1,0 +1,36 @@
+{
+  "collectionName": "components_widget_position",
+  "info": {
+    "displayName": "Widget Position",
+    "description": "Default position settings for widgets"
+  },
+  "options": {},
+  "attributes": {
+    "gridColumn": {
+      "type": "integer",
+      "default": 1,
+      "min": 1,
+      "max": 12
+    },
+    "gridRow": {
+      "type": "integer",
+      "default": 1,
+      "min": 1
+    },
+    "order": {
+      "type": "integer",
+      "default": 0
+    },
+    "section": {
+      "type": "enumeration",
+      "enum": [
+        "header",
+        "hero",
+        "main",
+        "sidebar",
+        "footer"
+      ],
+      "default": "main"
+    }
+  }
+}
