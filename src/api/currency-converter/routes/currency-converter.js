@@ -9,7 +9,7 @@ module.exports = {
     {
       method: 'GET',
       path: '/currency-converter/rates',
-      handler: 'currency-converter.getRates',
+      handler: 'enhanced-currency-converter.getRates',
       config: {
         auth: false,
         policies: [],
@@ -19,7 +19,7 @@ module.exports = {
     {
       method: 'GET',
       path: '/currency-converter/convert',
-      handler: 'currency-converter.convert',
+      handler: 'enhanced-currency-converter.convert',
       config: {
         auth: false,
         policies: [],
@@ -29,7 +29,17 @@ module.exports = {
     {
       method: 'GET',
       path: '/currency-converter/currencies',
-      handler: 'currency-converter.getCurrencies',
+      handler: 'enhanced-currency-converter.getCurrencies',
+      config: {
+        auth: false,
+        policies: [],
+        middlewares: []
+      }
+    },
+    {
+      method: 'GET',
+      path: '/currency-converter/trending',
+      handler: 'enhanced-currency-converter.getTrending',
       config: {
         auth: false,
         policies: [],
@@ -39,7 +49,7 @@ module.exports = {
     {
       method: 'GET',
       path: '/currency-converter/history',
-      handler: 'currency-converter.getHistory',
+      handler: 'enhanced-currency-converter.getHistory',
       config: {
         auth: false,
         policies: [],
@@ -49,7 +59,7 @@ module.exports = {
     {
       method: 'GET',
       path: '/currency-converter/settings',
-      handler: 'currency-converter.getSettings',
+      handler: 'enhanced-currency-converter.getSettings',
       config: {
         auth: false,
         policies: [],

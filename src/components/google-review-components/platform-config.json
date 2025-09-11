@@ -1,0 +1,52 @@
+{
+  "collectionName": "components_review_platform_configs",
+  "info": {
+    "displayName": "Platform Configuration",
+    "description": "Configuration for review platform API settings"
+  },
+  "options": {},
+  "attributes": {
+    "platform_name": {
+      "type": "string",
+      "required": true
+    },
+    "is_enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "api_key": {
+      "type": "string",
+      "private": true
+    },
+    "api_secret": {
+      "type": "string",
+      "private": true
+    },
+    "daily_limit": {
+      "type": "integer",
+      "default": 20,
+      "min": 1,
+      "max": 1000
+    },
+    "rate_limit_per_minute": {
+      "type": "integer",
+      "default": 10,
+      "min": 1,
+      "max": 100
+    },
+    "last_fetch": {
+      "type": "datetime"
+    },
+    "fetch_count_today": {
+      "type": "integer",
+      "default": 0
+    },
+    "is_healthy": {
+      "type": "boolean",
+      "default": true
+    },
+    "last_error": {
+      "type": "text"
+    }
+  }
+}

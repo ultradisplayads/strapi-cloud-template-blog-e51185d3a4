@@ -1,0 +1,69 @@
+{
+  "kind": "singleType",
+  "collectionName": "review_settings",
+  "info": {
+    "singularName": "review-settings",
+    "pluralName": "review-settings-config",
+    "displayName": "Review Settings",
+    "description": "Platform management and API configuration for review fetching"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "google_places": {
+      "type": "component",
+      "component": "google-review-components.platform-config",
+      "repeatable": false
+    },
+    "yelp": {
+      "type": "component",
+      "component": "google-review-components.platform-config",
+      "repeatable": false
+    },
+    "foursquare": {
+      "type": "component",
+      "component": "google-review-components.platform-config",
+      "repeatable": false
+    },
+    "facebook": {
+      "type": "component",
+      "component": "google-review-components.platform-config",
+      "repeatable": false
+    },
+    "daily_fetch_limit": {
+      "type": "integer",
+      "default": 20,
+      "min": 1,
+      "max": 100
+    },
+    "cache_duration_days": {
+      "type": "integer",
+      "default": 30,
+      "min": 1,
+      "max": 90
+    },
+    "fetch_frequency_hours": {
+      "type": "integer",
+      "default": 24,
+      "min": 1,
+      "max": 168
+    },
+    "last_fetch_run": {
+      "type": "datetime"
+    },
+    "last_cleanup_run": {
+      "type": "datetime"
+    },
+    "fetch_stats": {
+      "type": "json",
+      "default": {
+        "total_fetched": 0,
+        "last_24h_fetched": 0,
+        "platforms_active": 0,
+        "last_error": null
+      }
+    }
+  }
+}

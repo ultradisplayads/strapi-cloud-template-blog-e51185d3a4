@@ -1,0 +1,51 @@
+{
+  "collectionName": "components_widget_size",
+  "info": {
+    "displayName": "Widget Size",
+    "description": "Default size settings for widgets"
+  },
+  "options": {},
+  "attributes": {
+    "width": {
+      "type": "enumeration",
+      "enum": [
+        "small",
+        "medium",
+        "large",
+        "full"
+      ],
+      "default": "medium"
+    },
+    "height": {
+      "type": "enumeration",
+      "enum": [
+        "auto",
+        "small",
+        "medium",
+        "large",
+        "full"
+      ],
+      "default": "auto"
+    },
+    "minWidth": {
+      "type": "integer",
+      "default": 200,
+      "min": 100
+    },
+    "maxWidth": {
+      "type": "integer",
+      "default": 800,
+      "min": 200
+    },
+    "minHeight": {
+      "type": "integer",
+      "default": 150,
+      "min": 100
+    },
+    "maxHeight": {
+      "type": "integer",
+      "default": 600,
+      "min": 150
+    }
+  }
+}
