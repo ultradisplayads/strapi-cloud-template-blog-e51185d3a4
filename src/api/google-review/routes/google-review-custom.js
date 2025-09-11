@@ -33,5 +33,23 @@ module.exports = {
         middlewares: [],
       },
     },
+    {
+      method: 'GET',
+      path: '/reviews/latest',
+      handler: 'google-review.latest',
+      config: {
+        policies: [],
+        middlewares: [],
+      },
+    },
+    {
+      method: 'GET',
+      path: '/reviews/stats',
+      handler: 'google-review.stats',
+      config: {
+        policies: [],
+        middlewares: [],
+      },
+    },
   ],
 };

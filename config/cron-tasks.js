@@ -66,12 +66,16 @@ module.exports = {
     try {
       strapi.log.info('🔄 Running daily review fetch...');
       
-      const ReviewFetcherService = require('../src/api/review/services/review-fetcher');
+      const ReviewFetcherService = require('../src/api/google-review/services/review-fetcher');
       const reviewFetcher = new ReviewFetcherService();
       
       const result = await reviewFetcher.fetchAllReviews();
       
-      strapi.log.info(`🎯 Daily review fetch completed: ${result.total_fetched} reviews saved from ${result.platforms_processed} platforms`);
+      if (result.error) {
+        strapi.log.error(`❌ Daily review fetch failed: ${result.error}`);
+      } else {
+        strapi.log.info(`🎯 Daily review fetch completed: ${result.total_fetched} reviews fetched, ${result.total_saved} saved from ${result.platforms_processed} platforms`);
+      }
     } catch (error) {
       strapi.log.error('❌ Daily review fetch failed:', error.message);
     }

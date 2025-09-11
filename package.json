@@ -19,6 +19,7 @@
     "@strapi/strapi": "5.15.0",
     "axios": "^1.11.0",
     "better-sqlite3": "^12.2.0",
+    "dotenv": "^17.2.2",
     "firebase-admin": "^13.4.0",
     "fs-extra": "^10.0.0",
     "googleapis": "^144.0.0",

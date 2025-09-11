@@ -121,7 +121,7 @@ curl "https://maps.googleapis.com/maps/api/place/textsearch/json?query=restauran
 curl -H "Authorization: Bearer ${YELP_API_KEY}" "https://api.yelp.com/v3/businesses/search?location=Pattaya&term=restaurants"
 
 # Test Foursquare API
-curl -H "Authorization: ${FOURSQUARE_CLIENT_ID}" "https://api.foursquare.com/v3/places/search?query=restaurants&near=Pattaya"
+curl -H "Authorization: ${FOURSQUARE_CLIENT_ID}" "https://places-api.foursquare.com/places/search?query=restaurants&near=Pattaya"
 ```
 
 ## Troubleshooting
