@@ -1,0 +1,62 @@
+{
+  "collectionName": "components_social_ai_analysis",
+  "info": {
+    "displayName": "AI Analysis",
+    "description": "AI analysis results for social media posts"
+  },
+  "options": {},
+  "attributes": {
+    "is_safe": {
+      "type": "boolean",
+      "required": true
+    },
+    "is_english": {
+      "type": "boolean",
+      "required": true
+    },
+    "is_relevant": {
+      "type": "boolean",
+      "required": true
+    },
+    "sentiment": {
+      "type": "enumeration",
+      "enum": [
+        "Positive",
+        "Neutral",
+        "Negative"
+      ],
+      "required": true
+    },
+    "business_name": {
+      "type": "string"
+    },
+    "category": {
+      "type": "enumeration",
+      "enum": [
+        "Nightlife",
+        "Food & Drink",
+        "News & Events",
+        "Activities & Tours",
+        "General"
+      ]
+    },
+    "confidence_score": {
+      "type": "decimal",
+      "min": 0,
+      "max": 1
+    },
+    "analysis_timestamp": {
+      "type": "datetime",
+      "required": true
+    },
+    "model_version": {
+      "type": "string"
+    },
+    "processing_time_ms": {
+      "type": "integer"
+    },
+    "raw_response": {
+      "type": "json"
+    }
+  }
+}

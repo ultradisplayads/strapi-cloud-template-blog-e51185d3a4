@@ -1,12 +1,11 @@
 'use strict';
 
 /**
- * social-feed router
+ * Enhanced social-feed router with new endpoints
  */
 
 const { createCoreRouter } = require('@strapi/strapi').factories;
 
-// Custom routes for social feed
 module.exports = {
   routes: [
     // Existing routes

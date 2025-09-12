@@ -1,0 +1,67 @@
+{
+  "kind": "collectionType",
+  "collectionName": "content_safety_keywords",
+  "info": {
+    "singularName": "content-safety-keyword",
+    "pluralName": "content-safety-keywords",
+    "displayName": "Content Safety Keyword",
+    "description": "Keywords and terms to block from social feed"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "term": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "category": {
+      "type": "enumeration",
+      "enum": [
+        "Explicit Content",
+        "Violence",
+        "Hate Speech",
+        "Spam",
+        "Political",
+        "Religious",
+        "Drugs",
+        "Gambling",
+        "Other"
+      ],
+      "required": true
+    },
+    "severity": {
+      "type": "enumeration",
+      "enum": [
+        "Low",
+        "Medium",
+        "High",
+        "Critical"
+      ],
+      "default": "Medium",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "added_by": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "added_at": {
+      "type": "datetime",
+      "required": true
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    },
+    "case_sensitive": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

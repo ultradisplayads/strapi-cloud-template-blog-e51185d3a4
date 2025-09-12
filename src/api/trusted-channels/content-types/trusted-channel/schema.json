@@ -1,0 +1,80 @@
+{
+  "kind": "collectionType",
+  "collectionName": "trusted_channels",
+  "info": {
+    "singularName": "trusted-channel",
+    "pluralName": "trusted-channels",
+    "displayName": "Trusted Channel",
+    "description": "Trusted social media channels that bypass certain filters"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "platform": {
+      "type": "enumeration",
+      "enum": [
+        "X",
+        "Facebook",
+        "Instagram",
+        "Bluesky",
+        "TikTok",
+        "LinkedIn",
+        "YouTube"
+      ],
+      "required": true
+    },
+    "channel_id": {
+      "type": "string",
+      "required": true
+    },
+    "channel_name": {
+      "type": "string",
+      "required": true
+    },
+    "channel_handle": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "trust_level": {
+      "type": "enumeration",
+      "enum": [
+        "High",
+        "Medium",
+        "Low"
+      ],
+      "default": "Medium",
+      "required": true
+    },
+    "auto_approve": {
+      "type": "boolean",
+      "default": false
+    },
+    "added_by": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "added_at": {
+      "type": "datetime",
+      "required": true
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    },
+    "verification_status": {
+      "type": "enumeration",
+      "enum": [
+        "Verified",
+        "Pending",
+        "Rejected"
+      ],
+      "default": "Pending"
+    }
+  }
+}
