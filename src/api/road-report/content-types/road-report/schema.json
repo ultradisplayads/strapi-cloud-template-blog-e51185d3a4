@@ -1,0 +1,21 @@
+{
+  "kind": "collectionType",
+  "collectionName": "road_reports",
+  "info": {
+    "singularName": "road-report",
+    "pluralName": "road-reports",
+    "displayName": "Road Report"
+  },
+  "options": { "draftAndPublish": true },
+  "attributes": {
+    "ReportType": { "type": "enumeration", "enum": ["accident", "construction", "weather", "other"], "required": true },
+    "Location": { "type": "string", "required": true },
+    "Description": { "type": "text" },
+    "Status": { "type": "enumeration", "enum": ["pending", "approved", "rejected"], "default": "pending" },
+    "SubmittedAt": { "type": "datetime" },
+    "ApprovedUntil": { "type": "datetime" },
+    "User": { "type": "relation", "relation": "manyToOne", "target": "plugin::users-permissions.user" }
+  }
+}
+
+
