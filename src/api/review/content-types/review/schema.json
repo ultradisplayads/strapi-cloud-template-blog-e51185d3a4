@@ -1,0 +1,66 @@
+{
+  "kind": "collectionType",
+  "collectionName": "reviews",
+  "info": {
+    "singularName": "review",
+    "pluralName": "reviews",
+    "displayName": "Review",
+    "description": "User reviews and ratings"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "content": {
+      "type": "text",
+      "required": true
+    },
+    "rating": {
+      "type": "integer",
+      "required": true,
+      "min": 1,
+      "max": 5
+    },
+    "author": {
+      "type": "string",
+      "required": true
+    },
+    "authorEmail": {
+      "type": "email"
+    },
+    "business": {
+      "type": "string"
+    },
+    "category": {
+      "type": "enumeration",
+      "enum": ["restaurant", "hotel", "attraction", "service", "other"],
+      "default": "other"
+    },
+    "location": {
+      "type": "string"
+    },
+    "verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "helpful": {
+      "type": "integer",
+      "default": 0
+    },
+    "images": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "tags": {
+      "type": "json"
+    }
+  }
+}
+

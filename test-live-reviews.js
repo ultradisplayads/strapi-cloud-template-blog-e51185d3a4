@@ -12,7 +12,7 @@ async function testLiveReviews() {
 
   const baseUrl = process.env.NODE_ENV === 'production' 
     ? "https://api.pattaya1.com/api" 
-    : "http://localhost:1337/api";
+    : "https://api.pattaya1.com/api";
 
   try {
     // Test 1: Latest reviews endpoint (now fetches from API)
