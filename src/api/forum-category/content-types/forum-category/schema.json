@@ -1,0 +1,40 @@
+{
+  "kind": "collectionType",
+  "collectionName": "forum_categories",
+  "info": {
+    "singularName": "forum-category",
+    "pluralName": "forum-categories",
+    "displayName": "Forum Category"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "category_id_from_discourse": {
+      "type": "integer",
+      "required": true,
+      "unique": true
+    },
+    "category_name": {
+      "type": "string",
+      "required": true
+    },
+    "display_icon": {
+      "type": "string",
+      "required": true
+    },
+    "display_color": {
+      "type": "string",
+      "required": true
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "sort_order": {
+      "type": "integer",
+      "default": 0
+    }
+  }
+}

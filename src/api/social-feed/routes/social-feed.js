@@ -9,6 +9,7 @@ const { createCoreRouter } = require('@strapi/strapi').factories;
 // Custom routes for social feed
 module.exports = {
   routes: [
+    // Existing routes
     {
       method: 'GET',
       path: '/social-feed/live',
@@ -65,5 +66,66 @@ module.exports = {
         auth: false,
       },
     },
+    // New enhanced routes
+    {
+      method: 'GET',
+      path: '/social-feed/enhanced',
+      handler: 'social-feed.enhanced',
+      config: {
+        auth: false,
+      },
+    },
+    {
+      method: 'GET',
+      path: '/social-feed/categories',
+      handler: 'social-feed.categories',
+      config: {
+        auth: false,
+      },
+    },
+    {
+      method: 'GET',
+      path: '/social-feed/trending-hashtags',
+      handler: 'social-feed.trendingHashtags',
+      config: {
+        auth: false,
+      },
+    },
+    {
+      method: 'GET',
+      path: '/social-feed/business/:businessId',
+      handler: 'social-feed.byBusiness',
+      config: {
+        auth: false,
+      },
+    },
+    {
+      method: 'POST',
+      path: '/social-feed/aggregate',
+      handler: 'social-feed.aggregate',
+      config: {
+        auth: false,
+      },
+    },
+    {
+      method: 'GET',
+      path: '/social-feed/moderation-queue',
+      handler: 'social-feed.moderationQueue',
+      config: {
+        auth: {
+          scope: ['admin']
+        },
+      },
+    },
+    {
+      method: 'POST',
+      path: '/social-feed/moderate/:postId',
+      handler: 'social-feed.moderate',
+      config: {
+        auth: {
+          scope: ['admin']
+        },
+      },
+    }
   ],
 };

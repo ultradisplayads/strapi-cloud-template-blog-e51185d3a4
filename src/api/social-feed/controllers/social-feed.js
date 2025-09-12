@@ -373,5 +373,307 @@ module.exports = createCoreController('api::social-media-post.social-media-post'
       strapi.log.error('Failed to fetch Twitter post:', error.message);
       ctx.throw(500, `Failed to fetch Twitter post: ${error.message}`);
     }
+  },
+
+  // Enhanced social feed with new data model
+  async enhanced(ctx) {
+    try {
+      const { 
+        keywords = 'Pattaya,Thailand,Beach,Nightlife,Food,Tourism',
+        limit = 20,
+        platform = 'all',
+        category = 'all',
+        status = 'Approved'
+      } = ctx.query;
+
+      // Parse keywords
+      const keywordArray = String(keywords).split(',').map(k => k.trim().toLowerCase());
+      
+      // Build filters for new social-posts collection
+      const filters = {
+        status: status,
+        $or: [
+          { post_text: { $containsi: keywordArray[0] } },
+          { hashtags: { $containsi: keywordArray[0] } },
+          { location: { $containsi: keywordArray[0] } }
+        ]
+      };
+
+      // Add additional keyword filters
+      if (keywordArray.length > 1) {
+        const additionalKeywords = keywordArray.slice(1);
+        additionalKeywords.forEach(keyword => {
+          filters.$or.push(
+            { post_text: { $containsi: keyword } },
+            { hashtags: { $containsi: keyword } },
+            { location: { $containsi: keyword } }
+          );
+        });
+      }
+
+      // Platform filter
+      if (platform !== 'all') {
+        filters.source_platform = platform;
+      }
+
+      // Category filter
+      if (category !== 'all') {
+        filters.category = category;
+      }
+
+      // Get posts from new collection
+      const posts = await strapi.entityService.findMany('api::social-posts.social-post', {
+        filters,
+        populate: ['mentioned_business', 'engagement_metrics', 'ai_analysis'],
+        sort: [
+          { featured: 'desc' },
+          { timestamp: 'desc' }
+        ],
+        limit: parseInt(String(limit))
+      });
+
+      // Get enhanced stats
+      const stats = await this.getEnhancedStats.call(this, keywordArray);
+
+      ctx.body = {
+        data: {
+          posts,
+          stats,
+          keywords: keywordArray,
+          lastUpdated: new Date().toISOString(),
+          totalPosts: posts.length
+        }
+      };
+    } catch (error) {
+      ctx.throw(400, error.message);
+    }
+  },
+
+  // Get available categories
+  async categories(ctx) {
+    try {
+      const categories = [
+        { value: 'all', label: 'All Categories' },
+        { value: 'Nightlife', label: 'Nightlife' },
+        { value: 'Food & Drink', label: 'Food & Drink' },
+        { value: 'News & Events', label: 'News & Events' },
+        { value: 'Activities & Tours', label: 'Activities & Tours' },
+        { value: 'General', label: 'General' }
+      ];
+
+      ctx.body = { data: categories };
+    } catch (error) {
+      ctx.throw(400, error.message);
+    }
+  },
+
+  // Get trending hashtags from new collection
+  async trendingHashtags(ctx) {
+    try {
+      const { limit = 10 } = ctx.query;
+      
+      const posts = await strapi.entityService.findMany('api::social-posts.social-post', {
+        filters: {
+          status: 'Approved',
+          hashtags: { $notNull: true }
+        },
+        sort: { timestamp: 'desc' },
+        limit: 100
+      });
+
+      // Extract and count hashtags
+      const hashtagCounts = {};
+      posts.forEach(post => {
+        if (post.hashtags && Array.isArray(post.hashtags)) {
+          post.hashtags.forEach(hashtag => {
+            const cleanHashtag = String(hashtag).toLowerCase().replace('#', '');
+            hashtagCounts[cleanHashtag] = (hashtagCounts[cleanHashtag] || 0) + 1;
+          });
+        }
+      });
+
+      // Sort and return top hashtags
+      const trending = Object.entries(hashtagCounts)
+        .sort(([,a], [,b]) => b - a)
+        .slice(0, parseInt(String(limit)))
+        .map(([hashtag, count]) => ({ hashtag, count }));
+
+      ctx.body = { data: trending };
+    } catch (error) {
+      ctx.throw(400, error.message);
+    }
+  },
+
+  // Get posts by business
+  async byBusiness(ctx) {
+    try {
+      const { businessId } = ctx.params;
+      const { limit = 10 } = ctx.query;
+
+      const posts = await strapi.entityService.findMany('api::social-posts.social-post', {
+        filters: {
+          mentioned_business: businessId,
+          status: 'Approved'
+        },
+        populate: ['mentioned_business', 'engagement_metrics'],
+        sort: { timestamp: 'desc' },
+        limit: parseInt(String(limit))
+      });
+
+      ctx.body = { data: posts };
+    } catch (error) {
+      ctx.throw(400, error.message);
+    }
+  },
+
+  // Trigger enhanced aggregation
+  async aggregate(ctx) {
+    try {
+      const { keywords = ['Pattaya'], forceRefresh = false } = ctx.request.body || {};
+      
+      const enhancedService = strapi.service('api::social-feed.social-feed-enhanced');
+      const newPosts = await enhancedService.aggregatePosts(keywords, forceRefresh);
+      
+      ctx.body = {
+        data: {
+          message: `Successfully processed ${newPosts.length} posts through enhanced pipeline`,
+          posts: newPosts,
+          timestamp: new Date().toISOString(),
+          source: 'Enhanced Aggregation'
+        }
+      };
+    } catch (error) {
+      ctx.throw(500, error.message);
+    }
+  },
+
+  // Get moderation queue
+  async moderationQueue(ctx) {
+    try {
+      const { status = 'Pending Review', limit = 50 } = ctx.query;
+
+      const posts = await strapi.entityService.findMany('api::social-posts.social-post', {
+        filters: { status },
+        populate: ['mentioned_business', 'ai_analysis'],
+        sort: { processed_at: 'desc' },
+        limit: parseInt(String(limit))
+      });
+
+      ctx.body = { data: posts };
+    } catch (error) {
+      ctx.throw(400, error.message);
+    }
+  },
+
+  // Moderate a post
+  async moderate(ctx) {
+    try {
+      const { postId } = ctx.params;
+      const { action, notes } = ctx.request.body;
+
+      if (!['Approved', 'Rejected', 'Quarantined'].includes(action)) {
+        return ctx.throw(400, 'Invalid moderation action');
+      }
+
+      const updatedPost = await strapi.entityService.update('api::social-posts.social-post', postId, {
+        data: {
+          status: action,
+          moderation_notes: notes,
+          last_updated: new Date()
+        }
+      });
+
+      ctx.body = { data: updatedPost };
+    } catch (error) {
+      ctx.throw(400, error.message);
+    }
+  },
+
+  // Get enhanced statistics
+  async getEnhancedStats(keywords) {
+    try {
+      const keywordFilters = keywords.map(keyword => ({
+        $or: [
+          { post_text: { $containsi: keyword } },
+          { hashtags: { $containsi: keyword } },
+          { location: { $containsi: keyword } }
+        ]
+      }));
+
+      const allPosts = await strapi.entityService.findMany('api::social-posts.social-post', {
+        filters: {
+          status: 'Approved',
+          $or: keywordFilters
+        },
+        populate: ['engagement_metrics']
+      });
+
+      const stats = {
+        totalPosts: allPosts.length,
+        totalLikes: 0,
+        totalComments: 0,
+        totalShares: 0,
+        platforms: {},
+        categories: {},
+        recentActivity: 0,
+        aiAnalysis: {
+          totalAnalyzed: 0,
+          safeContent: 0,
+          englishContent: 0,
+          relevantContent: 0
+        }
+      };
+
+      // Calculate engagement metrics
+      allPosts.forEach(post => {
+        if (post.engagement_metrics) {
+          stats.totalLikes += post.engagement_metrics.likes || 0;
+          stats.totalComments += post.engagement_metrics.comments || 0;
+          stats.totalShares += post.engagement_metrics.shares || 0;
+        }
+
+        // Platform distribution
+        const platform = post.source_platform;
+        stats.platforms[platform] = (stats.platforms[platform] || 0) + 1;
+
+        // Category distribution
+        if (post.category) {
+          stats.categories[post.category] = (stats.categories[post.category] || 0) + 1;
+        }
+
+        // AI analysis stats
+        if (post.ai_analysis) {
+          stats.aiAnalysis.totalAnalyzed++;
+          if (post.ai_analysis.is_safe) stats.aiAnalysis.safeContent++;
+          if (post.ai_analysis.is_english) stats.aiAnalysis.englishContent++;
+          if (post.ai_analysis.is_relevant) stats.aiAnalysis.relevantContent++;
+        }
+      });
+
+      // Calculate recent activity (posts from last 24 hours)
+      const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+      stats.recentActivity = allPosts.filter(post => 
+        post.timestamp && new Date(post.timestamp) > oneDayAgo
+      ).length;
+
+      return stats;
+    } catch (error) {
+      strapi.log.error('Failed to get enhanced stats:', error.message);
+      return {
+        totalPosts: 0,
+        totalLikes: 0,
+        totalComments: 0,
+        totalShares: 0,
+        platforms: {},
+        categories: {},
+        recentActivity: 0,
+        aiAnalysis: {
+          totalAnalyzed: 0,
+          safeContent: 0,
+          englishContent: 0,
+          relevantContent: 0
+        }
+      };
+    }
   }
 }));

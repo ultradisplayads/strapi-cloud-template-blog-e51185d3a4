@@ -1,0 +1,44 @@
+{
+  "kind": "collectionType",
+  "collectionName": "pinned_forum_threads",
+  "info": {
+    "singularName": "pinned-forum-thread",
+    "pluralName": "pinned-forum-threads",
+    "displayName": "Pinned Forum Thread"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "thread_url": {
+      "type": "string",
+      "required": true
+    },
+    "display_title": {
+      "type": "string",
+      "required": true
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "display_order": {
+      "type": "integer",
+      "default": 0
+    },
+    "category_id": {
+      "type": "integer"
+    },
+    "author_name": {
+      "type": "string"
+    },
+    "last_activity": {
+      "type": "datetime"
+    },
+    "reply_count": {
+      "type": "integer",
+      "default": 0
+    }
+  }
+}
