@@ -11,7 +11,7 @@ require('dotenv').config();
 function buildApiUrl(endpoint) {
   const baseUrl = process.env.NODE_ENV === 'production' 
     ? "https://api.pattaya1.com/api" 
-    : "http://localhost:1337/api";
+    : "https://api.pattaya1.com/api";
   
   if (!endpoint) return baseUrl;
   

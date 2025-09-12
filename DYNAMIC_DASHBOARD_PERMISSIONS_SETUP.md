@@ -5,7 +5,7 @@ This guide explains how to set up permissions for the new dynamic dashboard APIs
 ## Accessing Permissions
 
 1. **Login to Strapi Admin Dashboard**
-   - Go to `http://localhost:1337/admin` (or your Strapi URL)
+   - Go to `https://api.pattaya1.com/admin` (or your Strapi URL)
    - Login with your admin credentials
 
 2. **Navigate to Settings**
@@ -130,14 +130,14 @@ Since we created custom routes, you may need to set up additional permissions:
 ### Test Public Access
 ```bash
 # This should work without authentication
-curl http://localhost:1337/api/admin/widget-configs
+curl https://api.pattaya1.com/api/admin/widget-configs
 ```
 
 ### Test Authenticated Access
 ```bash
 # This should require authentication
 curl -H "Authorization: Bearer YOUR_TOKEN" \
-     http://localhost:1337/api/users/me/layout
+     https://api.pattaya1.com/api/users/me/layout
 ```
 
 ### Test Admin Access
@@ -147,7 +147,7 @@ curl -X PUT \
      -H "Authorization: Bearer ADMIN_TOKEN" \
      -H "Content-Type: application/json" \
      -d '{"widgetConfigs": {...}}' \
-     http://localhost:1337/api/admin/widget-configs
+     https://api.pattaya1.com/api/admin/widget-configs
 ```
 
 ## Troubleshooting
