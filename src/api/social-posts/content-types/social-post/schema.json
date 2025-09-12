@@ -1,0 +1,134 @@
+{
+  "kind": "collectionType",
+  "collectionName": "social_posts",
+  "info": {
+    "singularName": "social-post",
+    "pluralName": "social-posts",
+    "displayName": "Social Post",
+    "description": "Enhanced social media posts with AI analysis and business linking"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "source_platform": {
+      "type": "enumeration",
+      "enum": [
+        "X",
+        "Facebook",
+        "Instagram",
+        "Bluesky",
+        "TikTok",
+        "LinkedIn",
+        "YouTube"
+      ],
+      "required": true
+    },
+    "post_id": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "author_name": {
+      "type": "string",
+      "required": true
+    },
+    "author_handle": {
+      "type": "string",
+      "required": true
+    },
+    "author_avatar_url": {
+      "type": "string"
+    },
+    "post_text": {
+      "type": "text",
+      "required": true
+    },
+    "post_url": {
+      "type": "string",
+      "required": true
+    },
+    "timestamp": {
+      "type": "datetime",
+      "required": true
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "Approved",
+        "Pending Review",
+        "Quarantined",
+        "Rejected"
+      ],
+      "default": "Pending Review",
+      "required": true
+    },
+    "sentiment": {
+      "type": "enumeration",
+      "enum": [
+        "Positive",
+        "Neutral",
+        "Negative"
+      ]
+    },
+    "category": {
+      "type": "enumeration",
+      "enum": [
+        "Nightlife",
+        "Food & Drink",
+        "News & Events",
+        "Activities & Tours",
+        "General"
+      ]
+    },
+    "mentioned_business": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::business.business",
+      "inversedBy": "social_mentions"
+    },
+    "engagement_metrics": {
+      "type": "component",
+      "component": "social.engagement-metrics",
+      "repeatable": false
+    },
+    "media_attachments": {
+      "type": "component",
+      "component": "social.media-attachment",
+      "repeatable": true
+    },
+    "hashtags": {
+      "type": "json"
+    },
+    "location": {
+      "type": "string"
+    },
+    "verified_author": {
+      "type": "boolean",
+      "default": false
+    },
+    "ai_analysis": {
+      "type": "component",
+      "component": "social.ai-analysis",
+      "repeatable": false
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "business_featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "moderation_notes": {
+      "type": "text"
+    },
+    "processed_at": {
+      "type": "datetime"
+    },
+    "last_updated": {
+      "type": "datetime"
+    }
+  }
+}

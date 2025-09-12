@@ -1,0 +1,20 @@
+{
+  "kind": "collectionType",
+  "collectionName": "parking_lots",
+  "info": {
+    "singularName": "parking-lot",
+    "pluralName": "parking-lots",
+    "displayName": "Parking Lot"
+  },
+  "options": { "draftAndPublish": true },
+  "attributes": {
+    "Name": { "type": "string", "required": true },
+    "Location": { "type": "string" },
+    "Status": { "type": "enumeration", "enum": ["spaces", "likely-full", "closed"], "default": "spaces" },
+    "SpacesAvailable": { "type": "integer" },
+    "Order": { "type": "integer", "default": 0 },
+    "LastUpdated": { "type": "datetime" }
+  }
+}
+
+

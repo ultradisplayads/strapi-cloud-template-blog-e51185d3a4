@@ -37,7 +37,7 @@ module.exports = {
       const lastRun = settings.lastCleanupRun ? new Date(settings.lastCleanupRun) : null;
       const frequencyMs = settings.cleanupFrequencyMinutes * 60 * 1000;
       
-      if (lastRun && (now - lastRun) < frequencyMs) {
+      if (lastRun && (now.getTime() - lastRun.getTime()) < frequencyMs) {
         return; // Not time yet
       }
 
@@ -123,6 +123,28 @@ module.exports = {
       strapi.log.info(`✅ Daily rejected cleanup completed: ${deletedArticles.count} old rejected articles removed`);
     } catch (error) {
       strapi.log.error('❌ Daily rejected cleanup failed:', error.message);
+    }
+  }
+  ,
+  /**
+   * Transport hub jobs
+   * - Travel times summary every 20 minutes
+   * - Static map refresh every 5 minutes
+   */
+  '*/20 * * * *': async ({ strapi }) => {
+    try {
+      strapi.log.info('🛣️ Updating travel times summary...');
+      await strapi.api['traffic-summary'].services['traffic-summary'].updateSummary();
+    } catch (error) {
+      strapi.log.error('❌ Travel times summary failed:', error.message);
+    }
+  },
+  '*/5 * * * *': async ({ strapi }) => {
+    try {
+      strapi.log.info('🗺️ Refreshing cached static traffic map...');
+      await strapi.service('api::traffic-map.traffic-map').refreshStaticMap();
+    } catch (error) {
+      strapi.log.error('❌ Static map refresh failed:', error.message);
     }
   }
 };

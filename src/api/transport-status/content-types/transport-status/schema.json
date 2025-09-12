@@ -1,0 +1,19 @@
+{
+  "kind": "collectionType",
+  "collectionName": "transport_statuses",
+  "info": {
+    "singularName": "transport-status",
+    "pluralName": "transport-statuses",
+    "displayName": "Transport Status"
+  },
+  "options": { "draftAndPublish": true },
+  "attributes": {
+    "Name": { "type": "string", "required": true },
+    "Status": { "type": "enumeration", "enum": ["on-schedule", "delayed", "suspended"], "default": "on-schedule" },
+    "Notes": { "type": "text" },
+    "Order": { "type": "integer", "default": 0 },
+    "LastUpdated": { "type": "datetime" }
+  }
+}
+
+

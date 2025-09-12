@@ -1,0 +1,61 @@
+{
+  "kind": "collectionType",
+  "collectionName": "banned_social_users",
+  "info": {
+    "singularName": "banned-social-user",
+    "pluralName": "banned-social-users",
+    "displayName": "Banned Social User",
+    "description": "Users banned from appearing in social feed"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "platform": {
+      "type": "enumeration",
+      "enum": [
+        "X",
+        "Facebook",
+        "Instagram",
+        "Bluesky",
+        "TikTok",
+        "LinkedIn",
+        "YouTube"
+      ],
+      "required": true
+    },
+    "user_handle_or_id": {
+      "type": "string",
+      "required": true
+    },
+    "reason": {
+      "type": "enumeration",
+      "enum": [
+        "Spam",
+        "Inappropriate Content",
+        "Harassment",
+        "Fake Account",
+        "Copyright Violation",
+        "Other"
+      ],
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "banned_by": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "banned_at": {
+      "type": "datetime",
+      "required": true
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}

@@ -86,6 +86,35 @@
     },
     "LastUpdated": {
       "type": "datetime"
+    },
+    "overlay_text": {
+      "type": "text"
+    },
+    "overlay_position": {
+      "type": "enumeration",
+      "enum": [
+        "Top-Left",
+        "Top-Right",
+        "Bottom-Left",
+        "Bottom-Right",
+        "Center"
+      ],
+      "default": "Bottom-Right"
+    },
+    "overlay_text_color": {
+      "type": "string",
+      "default": "#FFFFFF"
+    },
+    "overlay_background_color": {
+      "type": "string",
+      "default": "rgba(0,0,0,0.6)"
+    },
+    "overlay_font_size": {
+      "type": "decimal",
+      "default": 1.2
+    },
+    "sponsor_url": {
+      "type": "string"
     }
   }
 }
