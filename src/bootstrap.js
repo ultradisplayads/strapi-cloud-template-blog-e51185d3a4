@@ -170,9 +170,16 @@ async function importSeedData() {
   // Allow read of application content types
   await setPublicPermissions({
     'flight-tracker': ['find', 'findOne'],
+    'videos': ['find', 'findOne'],
+    'trusted-channels-video': ['find', 'findOne'],
+    'banned-channels-video': ['find', 'findOne'],
+    'banned-keywords-video': ['find', 'findOne'],
+    'video-search-keywords': ['find', 'findOne'],
+    'trending-tags-video': ['find', 'findOne'],
   });
 
   console.log('Flight Tracker Widget permissions set up successfully');
+  console.log('Featured Videos Widget permissions set up successfully');
 }
 
 async function main() {
@@ -207,6 +214,20 @@ module.exports = async ({ strapi }) => {
   }
   
   await seedExampleApp();
+  
+  // Initialize Video Scheduler for Featured Videos Widget
+  try {
+    const VideoScheduler = require('./services/video-scheduler');
+    const videoScheduler = new VideoScheduler();
+    await videoScheduler.initialize();
+    
+    // Store scheduler instance globally for access from other parts of the app
+    strapi.videoScheduler = videoScheduler;
+    
+    console.log('✅ Video Scheduler initialized successfully');
+  } catch (error) {
+    console.error('❌ Error initializing Video Scheduler:', error);
+  }
   
   console.log('✅ Flight Tracker Widget backend initialized successfully');
 };
