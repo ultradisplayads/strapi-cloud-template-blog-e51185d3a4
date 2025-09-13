@@ -42,7 +42,9 @@ COPY package.json package-lock.json ./
 # Install dependencies
 RUN npm install -g node-gyp
 RUN npm config set registry https://registry.npmjs.org/
+# Install dependencies first
 RUN npm ci --include=optional
+# Force rebuild sharp for the correct platform
 RUN npm rebuild sharp --verbose
 
 # Copy application files
@@ -76,10 +78,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && apt-get update && apt-get install -y --no-install-recommends nodejs \
   && corepack enable
 
-# Create non-root user
+# Create non-root user to run the app (match previous node image behavior)
 RUN groupadd -g 1000 node \
   && useradd -m -u 1000 -g node node
 
+# Set environment variables
+ARG NODE_ENV=production
+ENV NODE_ENV=${NODE_ENV}
+
+# Set working directory
 WORKDIR /opt/app
 
 # Copy package files
@@ -87,27 +94,33 @@ COPY package.json package-lock.json ./
 
 # Install production dependencies only
 RUN npm ci --omit=dev
-RUN npm rebuild sharp --verbose
 
 # Copy all built application files from builder stage
 COPY --from=builder /opt/app ./
 
-# Create public/uploads directory
+# Remove development files and reinstall production dependencies
+RUN rm -rf node_modules
+RUN npm install --omit=dev --include=optional
+# Force rebuild sharp for the correct platform in production
+RUN npm rebuild sharp --verbose
+
+# Create public/uploads directory for file uploads
 RUN mkdir -p ./public/uploads
 
 # Copy health check
 COPY healthcheck.js ./
 
-# Set permissions
+# Set proper permissions
 RUN chown -R node:node /opt/app
 USER node
 
 # Expose port
 EXPOSE 1337
 
+
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD node healthcheck.js
 
-# Start Strapi with news script (exactly like before)
-CMD ["sh", "-c", "npm run start & npm run news:start"]
+# Start the application
+CMD ["npm", "start"]
