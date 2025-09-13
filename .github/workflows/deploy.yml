@@ -21,7 +21,7 @@ jobs:
           command_timeout: 20m     # 20 minutes for docker build or deploy script
           script_stop: true        # fail fast on error
           script: |
-            cd /root/strapi
+            cd /root/strapi/backend
             git fetch --all
             git reset --hard origin/main
             chmod +x deploy.sh
