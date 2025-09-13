@@ -1,5 +1,16 @@
 version: '3.8'
 
+volumes:
+  strapi_data:
+    driver: local
+  strapi-uploads:
+    driver: local
+
+networks:
+  strapi-network:
+    name: strapi-network
+    driver: bridge
+
 services:
   strapi:
     container_name: strapi-app
@@ -11,13 +22,9 @@ services:
     restart: unless-stopped
     env_file: .env
     environment:
-      - NODE_ENV=${NODE_ENV:-production}
-      - DATABASE_CLIENT=${DATABASE_CLIENT}
-      - DATABASE_HOST=strapi-db
-      - DATABASE_PORT=${DATABASE_PORT}
-      - DATABASE_NAME=${DATABASE_NAME}
-      - DATABASE_USERNAME=${DATABASE_USERNAME}
-      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - NODE_ENV=${NODE_ENV:-development}
+      - DATABASE_CLIENT=sqlite
+      - DATABASE_FILENAME=/opt/app/data/data.db
       - JWT_SECRET=${JWT_SECRET}
       - ADMIN_JWT_SECRET=${ADMIN_JWT_SECRET}
       - APP_KEYS=${APP_KEYS}
@@ -27,56 +34,15 @@ services:
       - PORT=${PORT:-1337}
     volumes:
       - ./public/uploads:/opt/app/public/uploads
-      - ./data:/opt/app/data
+      - strapi_data:/opt/app/data
       - strapi-uploads:/opt/app/public/uploads
     ports:
       - "${PORT:-1337}:1337"
     networks:
       - strapi-network
-    depends_on:
-      strapi-db:
-        condition: service_healthy
     healthcheck:
       test: ["CMD", "node", "healthcheck.js"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
-
-  strapi-db:
-    container_name: strapi-database
-    platform: linux/amd64
-    restart: unless-stopped
-    image: mysql:8.0
-    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-    environment:
-      MYSQL_ROOT_PASSWORD: ${DATABASE_PASSWORD}
-      MYSQL_DATABASE: ${DATABASE_NAME}
-      MYSQL_USER: ${DATABASE_USERNAME}
-      MYSQL_PASSWORD: ${DATABASE_PASSWORD}
-    volumes:
-      - strapi-data:/var/lib/mysql
-      - ./database/init:/docker-entrypoint-initdb.d
-    ports:
-      - "3306:3306"
-    networks:
-      - strapi-network
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DATABASE_PASSWORD}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-
-
-
-volumes:
-  strapi-data:
-    driver: local
-  strapi-uploads:
-    driver: local
-
-networks:
-  strapi-network:
-    name: strapi-network
-    driver: bridge

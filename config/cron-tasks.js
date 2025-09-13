@@ -6,129 +6,15 @@ module.exports = {
     try {
       strapi.log.info('🔄 Running 1-minute news fetch...');
       
-      // Get all active news sources
-      const sources = await strapi.entityService.findMany('api::news-source.news-source', {
-        filters: { isActive: true }
-      });
+      // Use the breaking news service to fetch from News API
+      const breakingNewsService = strapi.service('api::breaking-news.breaking-news');
+      const result = await breakingNewsService.fetchAndProcessNews();
       
-      strapi.log.info(`📡 Found ${sources.length} active news sources`);
-      
-      let totalArticles = 0;
-      
-      // Use RSS parser directly for better reliability
-      const RSS = require('rss-parser');
-      const parser = new RSS({
-        customFields: {
-          item: ['creator', 'dc:creator']
-        }
-      });
-      
-      for (const source of sources) {
-        try {
-          strapi.log.info(`📰 Fetching from ${source.name}...`);
-          
-          if (source.sourceType === 'rss_feed') {
-            const feed = await parser.parseURL(source.url);
-            const articles = feed.items.slice(0, 3); // Limit to 3 per source
-            
-            for (const item of articles) {
-              try {
-                // Create unique slug with timestamp
-                const slug = `${item.title.toLowerCase()
-                  .replace(/[^a-z0-9]+/g, '-')
-                  .replace(/^-+|-+$/g, '')
-                  .substring(0, 50)}-${Date.now()}`;
-                
-                await strapi.entityService.create('api::breaking-news.breaking-news', {
-                  data: {
-                    Title: item.title || 'Untitled',
-                    Summary: (item.contentSnippet || item.content || '').substring(0, 200),
-                    Category: 'General',
-                    Source: source.name,
-                    URL: item.link || '#',
-                    IsBreaking: false,
-                    PublishedTimestamp: item.pubDate ? new Date(item.pubDate) : new Date(),
-                    isPinned: false,
-                    voteScore: 0,
-                    upvotes: 0,
-                    downvotes: 0,
-                    userVotes: {},
-                    moderationStatus: 'approved',
-                    isHidden: false,
-                    fetchedFromAPI: true,
-                    apiSource: source.name,
-                    originalAPIData: item,
-                    publishedAt: new Date()
-                  }
-                });
-                totalArticles++;
-                strapi.log.info(`✅ Created: ${item.title}`);
-              } catch (createError) {
-                // Skip duplicates or validation errors
-                strapi.log.debug(`Skipped article: ${createError.message}`);
-                continue;
-              }
-            }
-          } else if (source.sourceType === 'news_api') {
-            // Handle NewsAPI.org and GNews.io
-            let apiUrl = source.url;
-            let params = {};
-            
-            if (source.name.includes('NewsAPI')) {
-              // NewsAPI.org format
-              apiUrl = `${source.url}?country=th&apiKey=${source.apiKey}`;
-            } else if (source.name.includes('GNews')) {
-              // GNews.io format
-              apiUrl = `${source.url}?country=th&apikey=${source.apiKey}`;
-            }
-            
-            const response = await fetch(apiUrl);
-            const data = await response.json();
-            
-            let articles = [];
-            if (data.articles) {
-              articles = data.articles.slice(0, 3); // Limit to 3 per source
-            }
-            
-            for (const item of articles) {
-              try {
-                await strapi.entityService.create('api::breaking-news.breaking-news', {
-                  data: {
-                    Title: item.title || 'Untitled',
-                    Summary: (item.description || item.content || '').substring(0, 200),
-                    Category: 'General',
-                    Source: source.name,
-                    URL: item.url || item.link || '#',
-                    IsBreaking: false,
-                    PublishedTimestamp: item.publishedAt ? new Date(item.publishedAt) : new Date(),
-                    isPinned: false,
-                    voteScore: 0,
-                    upvotes: 0,
-                    downvotes: 0,
-                    userVotes: {},
-                    moderationStatus: 'approved',
-                    isHidden: false,
-                    fetchedFromAPI: true,
-                    apiSource: source.name,
-                    originalAPIData: item,
-                    publishedAt: new Date()
-                  }
-                });
-                totalArticles++;
-                strapi.log.info(`✅ Created: ${item.title}`);
-              } catch (createError) {
-                // Skip duplicates or validation errors
-                strapi.log.debug(`Skipped article: ${createError.message}`);
-                continue;
-              }
-            }
-          }
-        } catch (sourceError) {
-          strapi.log.error(`❌ Failed to fetch from ${source.name}: ${sourceError.message}`);
-        }
+      if (result) {
+        strapi.log.info(`🎯 News fetch completed: ${result.total} new articles (${result.approved} approved, ${result.needsReview} need review)`);
+      } else {
+        strapi.log.info('🎯 News fetch completed: No new articles');
       }
-      
-      strapi.log.info(`🎯 News fetch completed: ${totalArticles} new articles added`);
     } catch (error) {
       strapi.log.error('❌ Scheduled news fetch failed:', error.message);
     }
@@ -151,7 +37,7 @@ module.exports = {
       const lastRun = settings.lastCleanupRun ? new Date(settings.lastCleanupRun) : null;
       const frequencyMs = settings.cleanupFrequencyMinutes * 60 * 1000;
       
-      if (lastRun && (now - lastRun) < frequencyMs) {
+      if (lastRun && (now.getTime() - lastRun.getTime()) < frequencyMs) {
         return; // Not time yet
       }
 
@@ -170,6 +56,47 @@ module.exports = {
       }
     } catch (error) {
       strapi.log.error('❌ Dynamic cleanup failed:', error.message);
+    }
+  },
+
+  /**
+   * Daily review fetch at 6 AM - Fetch new reviews from all platforms
+   */
+  '0 6 * * *': async ({ strapi }) => {
+    try {
+      strapi.log.info('🔄 Running daily review fetch...');
+      
+      const ReviewFetcherService = require('../src/api/google-review/services/review-fetcher');
+      const reviewFetcher = new ReviewFetcherService();
+      
+      const result = await reviewFetcher.fetchAllReviews();
+      
+      if (result.error) {
+        strapi.log.error(`❌ Daily review fetch failed: ${result.error}`);
+      } else {
+        strapi.log.info(`🎯 Daily review fetch completed: ${result.total_fetched} reviews fetched, ${result.total_saved} saved from ${result.platforms_processed} platforms`);
+      }
+    } catch (error) {
+      strapi.log.error('❌ Daily review fetch failed:', error.message);
+    }
+  },
+
+  /**
+   * Daily review cleanup at 3 AM - Remove expired reviews for ToS compliance
+   */
+  '0 3 * * *': async ({ strapi }) => {
+    try {
+      strapi.log.info('🧹 Running daily review cleanup...');
+      
+      const result = await strapi.service('api::google-review.google-review').cleanupExpiredReviews();
+      
+      if (result.deleted_count > 0) {
+        strapi.log.info(`✅ Review cleanup completed: ${result.deleted_count} expired reviews deleted`);
+      } else {
+        strapi.log.info('✅ Review cleanup completed: No expired reviews found');
+      }
+    } catch (error) {
+      strapi.log.error('❌ Review cleanup failed:', error.message);
     }
   },
 
@@ -196,6 +123,28 @@ module.exports = {
       strapi.log.info(`✅ Daily rejected cleanup completed: ${deletedArticles.count} old rejected articles removed`);
     } catch (error) {
       strapi.log.error('❌ Daily rejected cleanup failed:', error.message);
+    }
+  }
+  ,
+  /**
+   * Transport hub jobs
+   * - Travel times summary every 20 minutes
+   * - Static map refresh every 5 minutes
+   */
+  '*/20 * * * *': async ({ strapi }) => {
+    try {
+      strapi.log.info('🛣️ Updating travel times summary...');
+      await strapi.api['traffic-summary'].services['traffic-summary'].updateSummary();
+    } catch (error) {
+      strapi.log.error('❌ Travel times summary failed:', error.message);
+    }
+  },
+  '*/5 * * * *': async ({ strapi }) => {
+    try {
+      strapi.log.info('🗺️ Refreshing cached static traffic map...');
+      await strapi.service('api::traffic-map.traffic-map').refreshStaticMap();
+    } catch (error) {
+      strapi.log.error('❌ Static map refresh failed:', error.message);
     }
   }
 };

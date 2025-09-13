@@ -10,7 +10,7 @@ class OptimizedAlgoliaService {
       process.env.ALGOLIA_API_KEY || 'your-admin-api-key'
     );
 
-    this.strapiBaseUrl = process.env.STRAPI_URL || 'http://localhost:1337';
+    this.strapiBaseUrl = process.env.STRAPI_URL || 'https://api.pattaya1.com';
     
     // Single unified index for all content types
     this.unifiedIndex = this.client.initIndex('unified_search');
@@ -32,6 +32,11 @@ class OptimizedAlgoliaService {
         endpoint: 'news-sources',
         searchableFields: ['name', 'description', 'sourceType'],
         facetFields: ['sourceType', 'isActive', 'priority']
+      },
+      'review': { 
+        endpoint: 'reviews',
+        searchableFields: ['title', 'content', 'author', 'business', 'category'],
+        facetFields: ['category', 'rating', 'verified', 'location']
       },
       
       // Business & Commerce
@@ -97,6 +102,13 @@ class OptimizedAlgoliaService {
         endpoint: 'flight-trackers',
         searchableFields: ['FlightNumber', 'Airline', 'AirportName', 'OriginAirport', 'DestinationAirport', 'Terminal', 'Gate'],
         facetFields: ['Airport', 'FlightType', 'FlightStatus', 'Airline', 'Terminal']
+      },
+      
+      // Video Content
+      'video': { 
+        endpoint: 'videos',
+        searchableFields: ['title', 'description', 'channel_name', 'category', 'video_id'],
+        facetFields: ['videostatus', 'category', 'channel_name', 'is_promoted', 'featured']
       }
     };
   }
@@ -196,6 +208,21 @@ class OptimizedAlgoliaService {
       normalized.location = item.location;
       normalized.startDate = item.startDate;
       normalized.endDate = item.endDate;
+    } else if (contentType === 'video') {
+      normalized.videoId = item.video_id;
+      normalized.channelName = item.channel_name;
+      normalized.videostatus = item.videostatus;
+      normalized.viewCount = item.view_count || 0;
+      normalized.duration = item.duration;
+      normalized.thumbnailUrl = item.thumbnail_url;
+      normalized.isPromoted = item.is_promoted || false;
+      normalized.featured = item.featured || false;
+    } else if (contentType === 'review') {
+      normalized.rating = item.rating;
+      normalized.author = item.author;
+      normalized.business = item.business;
+      normalized.verified = item.verified;
+      normalized.helpful = item.helpful || 0;
     }
 
     // Add facet fields
@@ -290,6 +317,11 @@ class OptimizedAlgoliaService {
       console.log(`❌ Error adding item:`, error.message);
       return false;
     }
+  }
+
+  // Alias for lifecycle compatibility
+  async indexSingleItem(contentType, item) {
+    return await this.addItem(contentType, item);
   }
 
   // Delete item from unified index

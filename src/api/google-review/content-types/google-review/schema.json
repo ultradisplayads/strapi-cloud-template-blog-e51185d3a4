@@ -4,13 +4,29 @@
   "info": {
     "singularName": "google-review",
     "pluralName": "google-reviews",
-    "displayName": "Google Review"
+    "displayName": "Google Review",
+    "description": "Multi-platform business reviews from Google, Yelp, Foursquare, and Facebook"
   },
   "options": {
-    "draftAndPublish": true
+    "draftAndPublish": false
   },
   "pluginOptions": {},
   "attributes": {
+    "source_platform": {
+      "type": "enumeration",
+      "enum": [
+        "Google",
+        "Facebook",
+        "Yelp",
+        "Foursquare"
+      ],
+      "required": true
+    },
+    "source_review_id": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
     "AuthorName": {
       "type": "string",
       "required": true
@@ -50,6 +66,16 @@
     },
     "BusinessUrl": {
       "type": "string"
+    },
+    "business": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::business.business",
+      "inversedBy": "google_reviews"
+    },
+    "cache_expiry_date": {
+      "type": "datetime",
+      "required": true
     },
     "Verified": {
       "type": "boolean",

@@ -71,6 +71,22 @@
     },
     "LastUpdated": {
       "type": "datetime"
+    },
+    "hashtag": {
+      "type": "string",
+      "required": true,
+      "description": "The hashtag or keyword for trending search"
+    },
+    "duration_hours": {
+      "type": "integer",
+      "default": 24,
+      "required": true,
+      "description": "How many hours this trend should be active"
+    },
+    "start_time": {
+      "type": "datetime",
+      "required": true,
+      "description": "When this trending topic becomes active"
     }
   }
 }

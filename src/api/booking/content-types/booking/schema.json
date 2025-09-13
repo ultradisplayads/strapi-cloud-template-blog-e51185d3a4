@@ -102,5 +102,12 @@
     "special_requests": {
       "type": "text"
     }
+    ,
+    "restaurant": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::restaurant.restaurant",
+      "inversedBy": "bookings"
+    }
   }
 }

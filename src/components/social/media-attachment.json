@@ -1,0 +1,46 @@
+{
+  "collectionName": "components_social_media_attachments",
+  "info": {
+    "displayName": "Media Attachment",
+    "description": "Social media post media attachments"
+  },
+  "options": {},
+  "attributes": {
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "image",
+        "video",
+        "gif",
+        "audio",
+        "document"
+      ],
+      "required": true
+    },
+    "url": {
+      "type": "string",
+      "required": true
+    },
+    "thumbnail_url": {
+      "type": "string"
+    },
+    "alt_text": {
+      "type": "string"
+    },
+    "width": {
+      "type": "integer"
+    },
+    "height": {
+      "type": "integer"
+    },
+    "duration": {
+      "type": "integer"
+    },
+    "file_size": {
+      "type": "integer"
+    },
+    "mime_type": {
+      "type": "string"
+    }
+  }
+}

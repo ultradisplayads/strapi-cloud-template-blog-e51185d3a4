@@ -1648,75 +1648,6 @@ export interface ApiNewsSettingsNewsSettings extends Struct.SingleTypeSchema {
   };
 }
 
-export interface ApiNewsSourceNewsSource extends Struct.CollectionTypeSchema {
-  collectionName: 'news_sources';
-  info: {
-    description: 'Manage multiple news sources including RSS feeds, APIs, and social media';
-    displayName: 'News Source';
-    pluralName: 'news-sources';
-    singularName: 'news-source';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    apiKey: Schema.Attribute.String & Schema.Attribute.Private;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    description: Schema.Attribute.Text;
-    fetchInterval: Schema.Attribute.Integer &
-      Schema.Attribute.Required &
-      Schema.Attribute.SetMinMax<
-        {
-          max: 1440;
-          min: 5;
-        },
-        number
-      > &
-      Schema.Attribute.DefaultTo<30>;
-    isActive: Schema.Attribute.Boolean &
-      Schema.Attribute.Required &
-      Schema.Attribute.DefaultTo<true>;
-    keyValue: Schema.Attribute.Text;
-    lastError: Schema.Attribute.Text;
-    lastFetchedAt: Schema.Attribute.DateTime;
-    lastFetchStatus: Schema.Attribute.Enumeration<
-      ['success', 'error', 'pending']
-    > &
-      Schema.Attribute.DefaultTo<'pending'>;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::news-source.news-source'
-    > &
-      Schema.Attribute.Private;
-    name: Schema.Attribute.String &
-      Schema.Attribute.Required &
-      Schema.Attribute.Unique;
-    priority: Schema.Attribute.Integer &
-      Schema.Attribute.SetMinMax<
-        {
-          max: 10;
-          min: 1;
-        },
-        number
-      > &
-      Schema.Attribute.DefaultTo<1>;
-    publishedAt: Schema.Attribute.DateTime;
-    rssUrl: Schema.Attribute.String;
-    sourceType: Schema.Attribute.Enumeration<
-      ['rss_feed', 'news_api', 'facebook_page', 'website_scraper']
-    > &
-      Schema.Attribute.Required;
-    totalArticlesFetched: Schema.Attribute.Integer &
-      Schema.Attribute.DefaultTo<0>;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    url: Schema.Attribute.String & Schema.Attribute.Required;
-  };
-}
 
 export interface ApiPhotoGalleryPhotoGallery
   extends Struct.CollectionTypeSchema {
@@ -3151,7 +3082,6 @@ declare module '@strapi/strapi' {
       'api::local-search.local-search': ApiLocalSearchLocalSearch;
       'api::news-article.news-article': ApiNewsArticleNewsArticle;
       'api::news-settings.news-settings': ApiNewsSettingsNewsSettings;
-      'api::news-source.news-source': ApiNewsSourceNewsSource;
       'api::photo-gallery.photo-gallery': ApiPhotoGalleryPhotoGallery;
       'api::quick-link.quick-link': ApiQuickLinkQuickLink;
       'api::radio-station.radio-station': ApiRadioStationRadioStation;

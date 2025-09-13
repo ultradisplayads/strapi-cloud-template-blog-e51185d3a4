@@ -6,5 +6,16 @@
 
 const { createCoreRouter } = require('@strapi/strapi').factories;
 
-// @ts-ignore
-module.exports = createCoreRouter('api::forum-activity.forum-activity');
+// Custom routes for enhanced forum activity
+module.exports = {
+  routes: [
+    {
+      method: 'GET',
+      path: '/forum-activity/enhanced',
+      handler: 'forum-activity.getEnhanced',
+      config: {
+        auth: false,
+      },
+    },
+  ],
+};

@@ -37,7 +37,8 @@ module.exports = createCoreController('api::admin-widget-configs.admin-widget-co
         "google-reviews": { "allowResize": true, "allowDrag": true, "allowDelete": true, "isLocked": false },
         "curator-social": { "allowResize": true, "allowDrag": true, "allowDelete": true, "isLocked": false },
         "currency-converter": { "allowResize": true, "allowDrag": true, "allowDelete": true, "isLocked": false },
-        "traffic": { "allowResize": false, "allowDrag": false, "allowDelete": false, "isLocked": true }
+        "traffic": { "allowResize": false, "allowDrag": false, "allowDelete": false, "isLocked": true },
+        "sports-fixtures": { "allowResize": true, "allowDrag": true, "allowDelete": true, "isLocked": false }
       };
       
       ctx.body = widgetConfigs;

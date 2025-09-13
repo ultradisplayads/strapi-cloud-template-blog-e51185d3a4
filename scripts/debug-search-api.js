@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 // Debug script to test search API endpoints
-const BASE_URL = 'http://localhost:1337';
+const BASE_URL = 'https://api.pattaya1.com';
 
 async function testSearchEndpoints() {
   console.log('🔍 Testing Search API Endpoints...\n');

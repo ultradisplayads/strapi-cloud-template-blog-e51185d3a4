@@ -5,37 +5,41 @@
  */
 
 const { createCoreService } = require('@strapi/strapi').factories;
+const YouTubeAPIService = require('../../../services/youtube-api');
 
 module.exports = createCoreService('api::video.video', ({ strapi }) => ({
   /**
-   * Fetch videos by keyword from existing youtube-video content type
+   * Fetch videos by keyword with content filtering
    * @param {string} keyword - Search keyword
    * @param {Object} options - Search options
-   * @returns {Promise<Array>} Filtered video objects
+   * @returns {Promise<Array>} Filtered and normalized video objects
    */
   async fetchVideosByKeyword(keyword, options = {}) {
-    try {
-      // Fetch from existing youtube-video content type
-      const videos = await strapi.entityService.findMany('api::youtube-video.youtube-video', {
-        filters: {
-          $or: [
-            { title: { $containsi: keyword } },
-            { description: { $containsi: keyword } },
-            { tags: { $containsi: keyword } }
-          ]
-        },
-        limit: options.maxResults || 10,
-        sort: { createdAt: 'desc' }
-      });
+    const youtubeService = new YouTubeAPIService();
+    
+    if (!youtubeService.isConfigured()) {
+      throw new Error('YouTube API key not configured');
+    }
 
-      if (!videos || videos.length === 0) {
+    try {
+      // Step 1: Search for videos
+      const searchResponse = await youtubeService.searchVideos(keyword, options);
+      
+      if (!searchResponse.items || searchResponse.items.length === 0) {
         return [];
       }
 
-      // Apply content filtering
-      const filteredVideos = await this.applyContentFiltering(videos);
+      // Step 2: Get detailed video information
+      const videoIds = searchResponse.items.map(item => item.id.videoId);
+      const videoDetails = await youtubeService.getVideoDetails(videoIds);
 
-      // Apply channel validation
+      // Step 3: Normalize response
+      const normalizedVideos = youtubeService.normalizeVideoResponse(searchResponse, videoDetails.items);
+
+      // Step 4: Apply content filtering
+      const filteredVideos = await this.applyContentFiltering(normalizedVideos);
+
+      // Step 5: Apply channel validation
       const validatedVideos = await this.applyChannelValidation(filteredVideos);
 
       return validatedVideos;
@@ -52,8 +56,8 @@ module.exports = createCoreService('api::video.video', ({ strapi }) => ({
    */
   async applyContentFiltering(videos) {
     try {
-      // Get all active banned keywords from existing content-safety-keywords
-      const bannedKeywords = await strapi.entityService.findMany('api::content-safety-keyword.content-safety-keyword', {
+      // Get all active banned keywords
+      const bannedKeywords = await strapi.entityService.findMany('api::banned-keywords-video.banned-keywords-video', {
         filters: { active: true },
         fields: ['keyword', 'case_sensitive', 'match_type', 'applies_to']
       });
@@ -70,51 +74,6 @@ module.exports = createCoreService('api::video.video', ({ strapi }) => ({
     } catch (error) {
       strapi.log.error('Error applying content filtering:', error);
       return videos; // Return unfiltered videos on error
-    }
-  },
-
-  /**
-   * Apply channel validation (trusted/banned channels)
-   * @param {Array} videos - Array of video objects
-   * @returns {Promise<Array>} Validated videos with status assignment
-   */
-  async applyChannelValidation(videos) {
-    try {
-      // Get trusted and banned channels from existing content types
-      const [trustedChannels, bannedChannels] = await Promise.all([
-        strapi.entityService.findMany('api::trusted-channel.trusted-channel', {
-          filters: { active: true, platform: 'YouTube' },
-          fields: ['channel_id', 'trust_level', 'auto_approve']
-        }),
-        strapi.entityService.findMany('api::banned-channel.banned-channel', {
-          filters: { active: true, platform: 'YouTube' },
-          fields: ['channel_id']
-        })
-      ]);
-
-      const bannedChannelIds = new Set(bannedChannels.map(ch => ch.channel_id));
-      const trustedChannelMap = new Map(trustedChannels.map(ch => [ch.channel_id, ch]));
-
-      return videos.map(video => {
-        // Check if channel is banned
-        if (bannedChannelIds.has(video.channel_id)) {
-          return null; // Filter out banned channels
-        }
-
-        // Check if channel is trusted
-        const trustedChannel = trustedChannelMap.get(video.channel_id);
-        if (trustedChannel) {
-          video.videostatus = trustedChannel.auto_approve ? 'active' : 'pending';
-          video.trust_level = trustedChannel.trust_level;
-        } else {
-          video.videostatus = 'pending'; // Default status for unknown channels
-        }
-
-        return video;
-      }).filter(video => video !== null); // Remove banned channels
-    } catch (error) {
-      strapi.log.error('Error applying channel validation:', error);
-      return videos.map(video => ({ ...video, videostatus: 'pending' })); // Return with pending status on error
     }
   },
 
@@ -140,15 +99,16 @@ module.exports = createCoreService('api::video.video', ({ strapi }) => ({
       case 'Tags':
         searchText = Array.isArray(video.tags) ? video.tags.join(' ') : '';
         break;
-      case 'Channel':
+      case 'Channel Name':
         searchText = video.channel_name || '';
         break;
       case 'All':
       default:
-        searchText = `${video.title} ${video.description} ${video.channel_name}`;
+        searchText = `${video.title} ${video.description} ${video.channel_name} ${Array.isArray(video.tags) ? video.tags.join(' ') : ''}`;
         break;
     }
 
+    // Apply case sensitivity
     const searchIn = case_sensitive ? searchText : searchText.toLowerCase();
     const searchFor = case_sensitive ? keyword : keyword.toLowerCase();
 
@@ -174,16 +134,59 @@ module.exports = createCoreService('api::video.video', ({ strapi }) => ({
   },
 
   /**
+   * Apply channel validation (trusted/banned channels)
+   * @param {Array} videos - Array of video objects
+   * @returns {Promise<Array>} Validated videos with status assignment
+   */
+  async applyChannelValidation(videos) {
+    try {
+      // Get trusted and banned channels
+      const [trustedChannels, bannedChannels] = await Promise.all([
+        strapi.entityService.findMany('api::trusted-channels-video.trusted-channels-video', {
+          filters: { active: true },
+          fields: ['channel_id', 'trust_level', 'auto_approve']
+        }),
+        strapi.entityService.findMany('api::banned-channels-video.banned-channels-video', {
+          filters: { active: true },
+          fields: ['channel_id', 'ban_level']
+        })
+      ]);
+
+      return videos.map(video => {
+        // Check if channel is banned
+        const bannedChannel = bannedChannels.find(banned => banned.channel_id === video.channel_id);
+        if (bannedChannel) {
+          return null; // Filter out banned channels
+        }
+
+        // Check if channel is trusted
+        const trustedChannel = trustedChannels.find(trusted => trusted.channel_id === video.channel_id);
+        if (trustedChannel) {
+          video.status = trustedChannel.auto_approve ? 'active' : 'pending';
+          video.trust_level = trustedChannel.trust_level;
+        } else {
+          video.status = 'pending'; // Default status for unknown channels
+        }
+
+        return video;
+      }).filter(video => video !== null); // Remove banned channels
+    } catch (error) {
+      strapi.log.error('Error applying channel validation:', error);
+      return videos.map(video => ({ ...video, status: 'pending' })); // Return with pending status on error
+    }
+  },
+
+  /**
    * Fetch videos from all active search keywords
    * @param {Object} options - Fetch options
    * @returns {Promise<Array>} Array of all fetched videos
    */
   async fetchVideosFromKeywords(options = {}) {
     try {
-      // Get all active search keywords from existing trending-topics
-      const searchKeywords = await strapi.entityService.findMany('api::trending-topic.trending-topic', {
+      // Get all active search keywords
+      const searchKeywords = await strapi.entityService.findMany('api::video-search-keywords.video-search-keywords', {
         filters: { active: true },
-        fields: ['name', 'priority'],
+        fields: ['keyword', 'max_results', 'language', 'region', 'priority'],
         sort: { priority: 'desc' }
       });
 
@@ -192,19 +195,22 @@ module.exports = createCoreService('api::video.video', ({ strapi }) => ({
       }
 
       const allVideos = [];
-
+      
       for (const keywordObj of searchKeywords) {
         try {
-          const videos = await this.fetchVideosByKeyword(keywordObj.name, {
-            maxResults: 10,
-            relevanceLanguage: 'en',
-            regionCode: 'TH',
+          const videos = await this.fetchVideosByKeyword(keywordObj.keyword, {
+            maxResults: keywordObj.max_results || 10,
+            relevanceLanguage: keywordObj.language || 'en',
+            regionCode: keywordObj.region || 'TH',
             ...options
           });
 
+          // Update keyword usage statistics
+          await this.updateKeywordStats(keywordObj.id, videos.length);
+
           allVideos.push(...videos);
         } catch (error) {
-          strapi.log.error(`Error fetching videos for keyword "${keywordObj.name}":`, error);
+          strapi.log.error(`Error fetching videos for keyword "${keywordObj.keyword}":`, error);
           continue;
         }
       }

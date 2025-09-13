@@ -138,6 +138,12 @@
       "target": "api::review.review",
       "mappedBy": "business"
     },
+    "google_reviews": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::google-review.google-review",
+      "mappedBy": "business"
+    },
     "owner": {
       "type": "relation",
       "relation": "manyToOne",
@@ -153,6 +159,12 @@
     },
     "notification_line_id": {
       "type": "string"
+    },
+    "social_mentions": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::social-posts.social-post",
+      "mappedBy": "mentioned_business"
     }
   }
 }
