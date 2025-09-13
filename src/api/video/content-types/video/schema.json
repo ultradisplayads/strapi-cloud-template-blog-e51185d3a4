@@ -1,0 +1,120 @@
+{
+  "kind": "collectionType",
+  "collectionName": "videos",
+  "info": {
+    "singularName": "video",
+    "pluralName": "videos",
+    "displayName": "Videos",
+    "description": "Featured videos for the video widget"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "video_id": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "thumbnail_url": {
+      "type": "string",
+      "required": true
+    },
+    "channel_name": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "duration": {
+      "type": "string"
+    },
+    "view_count": {
+      "type": "integer",
+      "default": 0
+    },
+    "like_count": {
+      "type": "integer",
+      "default": 0
+    },
+    "channel_id": {
+      "type": "string"
+    },
+    "video_published_at": {
+      "type": "datetime"
+    },
+    "category": {
+      "type": "enumeration",
+      "enum": [
+        "Travel",
+        "Food",
+        "Nightlife",
+        "Culture",
+        "Adventure",
+        "Hotels",
+        "Entertainment",
+        "Sports",
+        "Business",
+        "Events"
+      ]
+    },
+    "tags": {
+      "type": "json"
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "priority": {
+      "type": "integer",
+      "default": 0
+    },
+    "moderation_reason": {
+      "type": "text"
+    },
+    "moderated_at": {
+      "type": "datetime"
+    },
+    "moderated_by": {
+      "type": "string"
+    },
+    "source_keyword": {
+      "type": "string"
+    },
+    "is_promoted": {
+      "type": "boolean",
+      "default": false
+    },
+    "promotion_expiry": {
+      "type": "datetime"
+    },
+    "promotion_start": {
+      "type": "datetime"
+    },
+    "promotion_cost": {
+      "type": "decimal"
+    },
+    "sponsor_name": {
+      "type": "string"
+    },
+    "sponsor_contact": {
+      "type": "string"
+    },
+    "videostatus": {
+      "type": "enumeration",
+      "default": "pending",
+      "enum": [
+        "archived",
+        "pending",
+        "active",
+        "rejected"
+      ]
+    }
+  }
+}

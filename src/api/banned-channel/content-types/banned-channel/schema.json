@@ -1,0 +1,66 @@
+{
+  "kind": "collectionType",
+  "collectionName": "banned_channels",
+  "info": {
+    "singularName": "banned-channel",
+    "pluralName": "banned-channels",
+    "displayName": "Banned Channel",
+    "description": "Channels that are banned from content aggregation"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "platform": {
+      "type": "enumeration",
+      "enum": [
+        "YouTube",
+        "Vimeo",
+        "Dailymotion",
+        "Twitch"
+      ],
+      "default": "YouTube",
+      "required": true
+    },
+    "channel_id": {
+      "type": "string",
+      "required": true,
+      "unique": false
+    },
+    "channel_name": {
+      "type": "string",
+      "required": false
+    },
+    "reason": {
+      "type": "text",
+      "required": false
+    },
+    "ban_level": {
+      "type": "enumeration",
+      "enum": [
+        "soft",
+        "hard",
+        "permanent"
+      ],
+      "default": "soft"
+    },
+    "banned_by": {
+      "type": "string",
+      "required": false
+    },
+    "ban_date": {
+      "type": "datetime",
+      "default": "2024-01-01T00:00:00.000Z"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true,
+      "required": true
+    },
+    "notes": {
+      "type": "text",
+      "required": false
+    }
+  }
+}
