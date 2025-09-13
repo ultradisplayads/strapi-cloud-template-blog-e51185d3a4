@@ -152,7 +152,7 @@ class VideoScheduler {
    */
   async performVideoFetching() {
     try {
-      const videosService = strapi.service('api::videos.videos');
+      const videosService = strapi.service('api::video.video');
       
       // Fetch videos from all active search keywords
       const videos = await videosService.fetchVideosFromKeywords({
@@ -182,7 +182,7 @@ class VideoScheduler {
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
       // Remove videos older than 30 days with status 'inactive'
-      const deletedVideos = await strapi.entityService.deleteMany('api::videos.videos', {
+      const deletedVideos = await strapi.entityService.deleteMany('api::video.video', {
         filters: {
           $and: [
             { status: 'inactive' },
@@ -209,8 +209,8 @@ class VideoScheduler {
    */
   async performStatsUpdate() {
     try {
-      // Get all search keywords
-      const keywords = await strapi.entityService.findMany('api::video-search-keywords.video-search-keywords', {
+      // Get all search keywords from trending-topic
+      const keywords = await strapi.entityService.findMany('api::trending-topic.trending-topic', {
         filters: { active: true }
       });
 
@@ -219,18 +219,17 @@ class VideoScheduler {
       for (const keyword of keywords) {
         try {
           // Calculate success rate based on recent usage
-          const recentVideos = await strapi.entityService.findMany('api::videos.videos', {
+          const recentVideos = await strapi.entityService.findMany('api::video.video', {
             filters: {
               createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString() } // Last 7 days
             }
           });
 
-          const successRate = recentVideos.length > 0 ? Math.min(100, (recentVideos.length / keyword.usage_count) * 100) : keyword.success_rate;
+          const successRate = recentVideos.length > 0 ? Math.min(100, recentVideos.length * 10) : 50;
 
-          // Update keyword statistics
-          await strapi.entityService.update('api::video-search-keywords.video-search-keywords', keyword.id, {
+          // Update keyword statistics in trending-topic
+          await strapi.entityService.update('api::trending-topic.trending-topic', keyword.id, {
             data: {
-              success_rate: Math.round(successRate),
               last_used: new Date().toISOString()
             }
           });
@@ -332,12 +331,11 @@ class VideoScheduler {
    */
   async checkActiveTrendingTags() {
     try {
-      const activeTags = await strapi.entityService.findMany('api::trending-tags-video.trending-tags-video', {
+      const activeTags = await strapi.entityService.findMany('api::trending-topic.trending-topic', {
         filters: { 
-          active: true,
-          is_trending: true
+          active: true
         },
-        fields: ['tag', 'priority', 'fetch_frequency']
+        fields: ['name', 'priority']
       });
 
       return Array.isArray(activeTags) ? activeTags : [];
@@ -353,13 +351,13 @@ class VideoScheduler {
    */
   async performTrendingFetch(trendingTags) {
     try {
-      const videosService = strapi.service('api::videos.videos');
+      const videosService = strapi.service('api::video.video');
       let totalVideos = 0;
 
       for (const tag of trendingTags) {
         try {
           // Fetch more videos for trending tags (10 instead of 5)
-          const videos = await videosService.fetchVideosByKeyword(tag.tag, {
+          const videos = await videosService.fetchVideosByKeyword(tag.name, {
             maxResults: 10,
             relevanceLanguage: 'en',
             regionCode: 'TH'
@@ -368,7 +366,7 @@ class VideoScheduler {
           // Save videos to database with trending priority
           for (const video of videos) {
             try {
-              await strapi.entityService.create('api::videos.videos', {
+              await strapi.entityService.create('api::video.video', {
                 data: {
                   ...video,
                   priority: tag.priority || 5, // Higher priority for trending
@@ -385,9 +383,9 @@ class VideoScheduler {
             }
           }
 
-          strapi.log.info(`Trending fetch completed for tag "${tag.tag}": ${videos.length} videos`);
+          strapi.log.info(`Trending fetch completed for tag "${tag.name}": ${videos.length} videos`);
         } catch (error) {
-          strapi.log.error(`Error fetching trending videos for tag "${tag.tag}":`, error);
+          strapi.log.error(`Error fetching trending videos for tag "${tag.name}":`, error);
         }
       }
 
