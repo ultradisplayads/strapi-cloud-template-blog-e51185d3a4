@@ -17,8 +17,9 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_SSH_PORT }}
+          timeout: 600              # extend to 10 mins (avoid "Run Command Timeout")
+          command_timeout: 20m      # give Docker build up to 20 mins if needed
+          script_stop: true         # fail fast if any script step fails
           script: |
             cd /root/strapi
-            git fetch --all
-            git reset --hard origin/main
-            ./deploy.sh
+            git fetch
