@@ -5,41 +5,37 @@
  */
 
 const { createCoreService } = require('@strapi/strapi').factories;
-const YouTubeAPIService = require('../../../services/youtube-api');
 
 module.exports = createCoreService('api::video.video', ({ strapi }) => ({
   /**
-   * Fetch videos by keyword with content filtering
+   * Fetch videos by keyword from existing youtube-video content type
    * @param {string} keyword - Search keyword
    * @param {Object} options - Search options
-   * @returns {Promise<Array>} Filtered and normalized video objects
+   * @returns {Promise<Array>} Filtered video objects
    */
   async fetchVideosByKeyword(keyword, options = {}) {
-    const youtubeService = new YouTubeAPIService();
-    
-    if (!youtubeService.isConfigured()) {
-      throw new Error('YouTube API key not configured');
-    }
-
     try {
-      // Step 1: Search for videos
-      const searchResponse = await youtubeService.searchVideos(keyword, options);
-      
-      if (!searchResponse.items || searchResponse.items.length === 0) {
+      // Fetch from existing youtube-video content type
+      const videos = await strapi.entityService.findMany('api::youtube-video.youtube-video', {
+        filters: {
+          $or: [
+            { title: { $containsi: keyword } },
+            { description: { $containsi: keyword } },
+            { tags: { $containsi: keyword } }
+          ]
+        },
+        limit: options.maxResults || 10,
+        sort: { createdAt: 'desc' }
+      });
+
+      if (!videos || videos.length === 0) {
         return [];
       }
 
-      // Step 2: Get detailed video information
-      const videoIds = searchResponse.items.map(item => item.id.videoId);
-      const videoDetails = await youtubeService.getVideoDetails(videoIds);
+      // Apply content filtering
+      const filteredVideos = await this.applyContentFiltering(videos);
 
-      // Step 3: Normalize response
-      const normalizedVideos = youtubeService.normalizeVideoResponse(searchResponse, videoDetails.items);
-
-      // Step 4: Apply content filtering
-      const filteredVideos = await this.applyContentFiltering(normalizedVideos);
-
-      // Step 5: Apply channel validation
+      // Apply channel validation
       const validatedVideos = await this.applyChannelValidation(filteredVideos);
 
       return validatedVideos;
