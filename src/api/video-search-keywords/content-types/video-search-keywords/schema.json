@@ -1,0 +1,97 @@
+{
+  "kind": "collectionType",
+  "collectionName": "video_search_keywords",
+  "info": {
+    "singularName": "video-search-keywords",
+    "pluralName": "video-search-keywords-list",
+    "displayName": "Video Search Keywords",
+    "description": "Search keywords for finding featured videos"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "keyword": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "category": {
+      "type": "enumeration",
+      "enum": [
+        "Travel",
+        "Food",
+        "Nightlife",
+        "Culture",
+        "Adventure",
+        "Hotels",
+        "Entertainment",
+        "Sports",
+        "Business",
+        "Events"
+      ],
+      "required": true
+    },
+    "priority": {
+      "type": "enumeration",
+      "enum": [
+        "High",
+        "Medium",
+        "Low"
+      ],
+      "default": "Medium",
+      "required": true
+    },
+    "search_frequency": {
+      "type": "enumeration",
+      "enum": [
+        "Daily",
+        "Weekly",
+        "Monthly",
+        "On Demand"
+      ],
+      "default": "Weekly",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "added_by": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "added_at": {
+      "type": "datetime",
+      "required": true
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    },
+    "last_used": {
+      "type": "datetime"
+    },
+    "usage_count": {
+      "type": "integer",
+      "default": 0
+    },
+    "success_rate": {
+      "type": "decimal",
+      "default": 0
+    },
+    "max_results": {
+      "type": "integer",
+      "default": 10
+    },
+    "language": {
+      "type": "string",
+      "default": "en"
+    },
+    "region": {
+      "type": "string",
+      "default": "TH"
+    }
+  }
+}

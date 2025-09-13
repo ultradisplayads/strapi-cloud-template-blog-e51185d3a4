@@ -1,0 +1,90 @@
+{
+  "kind": "collectionType",
+  "collectionName": "banned_keywords_video",
+  "info": {
+    "singularName": "banned-keywords-video",
+    "pluralName": "banned-keywords-videos",
+    "displayName": "Banned Keywords Video",
+    "description": "Banned keywords for featured video widget content filtering"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "keyword": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "category": {
+      "type": "enumeration",
+      "enum": [
+        "Explicit Content",
+        "Violence",
+        "Hate Speech",
+        "Spam",
+        "Political",
+        "Religious",
+        "Drugs",
+        "Gambling",
+        "Misleading",
+        "Other"
+      ],
+      "required": true
+    },
+    "severity": {
+      "type": "enumeration",
+      "enum": [
+        "Low",
+        "Medium",
+        "High",
+        "Critical"
+      ],
+      "default": "Medium",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "added_by": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "added_at": {
+      "type": "datetime",
+      "required": true
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    },
+    "case_sensitive": {
+      "type": "boolean",
+      "default": false
+    },
+    "match_type": {
+      "type": "enumeration",
+      "enum": [
+        "Exact",
+        "Contains",
+        "Starts With",
+        "Ends With",
+        "Regex"
+      ],
+      "default": "Contains"
+    },
+    "applies_to": {
+      "type": "enumeration",
+      "enum": [
+        "Title",
+        "Description",
+        "Tags",
+        "Channel Name",
+        "All"
+      ],
+      "default": "All"
+    }
+  }
+}

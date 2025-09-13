@@ -1,0 +1,91 @@
+{
+  "kind": "collectionType",
+  "collectionName": "trending_tags_video",
+  "info": {
+    "singularName": "trending-tags-video",
+    "pluralName": "trending-tags-videos",
+    "displayName": "Trending Tags Video",
+    "description": "Trending tags for featured video widget"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "tag": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "category": {
+      "type": "enumeration",
+      "enum": [
+        "Travel",
+        "Food",
+        "Nightlife",
+        "Culture",
+        "Adventure",
+        "Hotels",
+        "Entertainment",
+        "Sports",
+        "Business",
+        "Events"
+      ],
+      "required": true
+    },
+    "usage_count": {
+      "type": "integer",
+      "default": 0
+    },
+    "growth_rate": {
+      "type": "decimal",
+      "default": 0
+    },
+    "trending_score": {
+      "type": "decimal",
+      "default": 0
+    },
+    "description": {
+      "type": "text"
+    },
+    "added_by": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "added_at": {
+      "type": "datetime",
+      "required": true
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "last_updated": {
+      "type": "datetime"
+    },
+    "peak_date": {
+      "type": "datetime"
+    },
+    "related_keywords": {
+      "type": "json"
+    },
+    "priority": {
+      "type": "enumeration",
+      "enum": [
+        "High",
+        "Medium",
+        "Low"
+      ],
+      "default": "Medium"
+    },
+    "seasonal": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "kind": "collectionType",
+  "collectionName": "banned_channels_video",
+  "info": {
+    "singularName": "banned-channels-video",
+    "pluralName": "banned-channels-videos",
+    "displayName": "Banned Channels Video",
+    "description": "Banned YouTube channels for featured video widget"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "channel_id": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "channel_name": {
+      "type": "string",
+      "required": true
+    },
+    "channel_handle": {
+      "type": "string"
+    },
+    "reason": {
+      "type": "enumeration",
+      "enum": [
+        "Inappropriate Content",
+        "Copyright Violation",
+        "Spam",
+        "Misleading Information",
+        "Community Guidelines Violation",
+        "Low Quality Content",
+        "Other"
+      ],
+      "required": true
+    },
+    "ban_level": {
+      "type": "enumeration",
+      "enum": [
+        "Permanent",
+        "Temporary",
+        "Under Review"
+      ],
+      "default": "Permanent",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "banned_by": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "banned_at": {
+      "type": "datetime",
+      "required": true
+    },
+    "expires_at": {
+      "type": "datetime"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    },
+    "severity": {
+      "type": "enumeration",
+      "enum": [
+        "Low",
+        "Medium",
+        "High",
+        "Critical"
+      ],
+      "default": "Medium"
+    },
+    "reported_count": {
+      "type": "integer",
+      "default": 1
+    },
+    "last_violation": {
+      "type": "datetime"
+    },
+    "notes": {
+      "type": "text"
+    }
+  }
+}

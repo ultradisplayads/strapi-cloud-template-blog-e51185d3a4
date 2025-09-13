@@ -1,0 +1,97 @@
+{
+  "kind": "collectionType",
+  "collectionName": "trusted_channels_video",
+  "info": {
+    "singularName": "trusted-channels-video",
+    "pluralName": "trusted-channels-videos",
+    "displayName": "Trusted Channels Video",
+    "description": "Trusted YouTube channels for featured video widget"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "channel_id": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "channel_name": {
+      "type": "string",
+      "required": true
+    },
+    "channel_handle": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "trust_level": {
+      "type": "enumeration",
+      "enum": [
+        "High",
+        "Medium",
+        "Low"
+      ],
+      "default": "Medium",
+      "required": true
+    },
+    "auto_approve": {
+      "type": "boolean",
+      "default": false
+    },
+    "subscriber_count": {
+      "type": "integer",
+      "default": 0
+    },
+    "video_count": {
+      "type": "integer",
+      "default": 0
+    },
+    "category": {
+      "type": "enumeration",
+      "enum": [
+        "Travel",
+        "Food",
+        "Nightlife",
+        "Culture",
+        "Adventure",
+        "Hotels",
+        "Entertainment",
+        "Sports",
+        "Business",
+        "Events"
+      ]
+    },
+    "added_by": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "added_at": {
+      "type": "datetime",
+      "required": true
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    },
+    "verification_status": {
+      "type": "enumeration",
+      "enum": [
+        "Verified",
+        "Pending",
+        "Rejected"
+      ],
+      "default": "Pending"
+    },
+    "last_checked": {
+      "type": "datetime"
+    },
+    "notes": {
+      "type": "text"
+    }
+  }
+}
