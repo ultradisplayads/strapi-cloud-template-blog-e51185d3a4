@@ -1,0 +1,29 @@
+name: Auto Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger SSH deploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.SERVER_SSH_PORT }}
+          timeout: 600s            # 10 minutes for SSH connection
+          command_timeout: 20m     # 20 minutes for docker build or deploy script
+          script_stop: true        # fail fast on error
+          script: |
+            cd /root/strapi/backend
+            git fetch --all
+            git reset --hard origin/main
+            cd ..
+            chmod +x deploy.sh
+            ./deploy.sh
