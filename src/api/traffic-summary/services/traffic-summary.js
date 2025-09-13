@@ -1,7 +1,5 @@
 'use strict';
 
-const fetch = require('node-fetch');
-
 function minutesFromSeconds(seconds) {
   return Math.round(seconds / 60);
 }
@@ -21,6 +19,9 @@ module.exports = {
     if (!apiKey) {
       strapi.log.warn('traffic-summary: Missing GOOGLE_MAPS_API_KEY/GOOGLE_PLACES_API_KEY');
     }
+
+    // Dynamic import for node-fetch ES module
+    const { default: fetch } = await import('node-fetch');
 
     const routes = await strapi.entityService.findMany('api::traffic-route.traffic-route', {
       filters: { IsActive: { $eq: true } },
