@@ -10,7 +10,7 @@ const axios = require('axios');
 
 class AlternativeVideoScheduler {
   constructor() {
-    this.baseURL = 'http://localhost:1337/api';
+    this.baseURL = 'https://api.pattaya1.com/api';
     this.isRunning = false;
     this.cycleCount = 0;
     this.lastFetchTime = null;

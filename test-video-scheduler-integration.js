@@ -7,7 +7,7 @@
 
 const axios = require('axios');
 
-const BASE_URL = 'http://localhost:1337/api';
+const BASE_URL = 'https://api.pattaya1.com/api';
 
 async function testSchedulerIntegration() {
   console.log('🔧 Testing Video Scheduler Integration...\n');

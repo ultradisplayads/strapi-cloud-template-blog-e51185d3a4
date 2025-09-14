@@ -5,7 +5,7 @@
  * This script tests the new API endpoints and data structures
  */
 
-const BASE_URL = process.env.STRAPI_URL || 'http://localhost:1337';
+const BASE_URL = process.env.STRAPI_URL || 'https://api.pattaya1.com';
 
 async function testEnhancedForumActivity() {
   console.log('🧪 Testing Enhanced Forum Activity Widget Implementation\n');

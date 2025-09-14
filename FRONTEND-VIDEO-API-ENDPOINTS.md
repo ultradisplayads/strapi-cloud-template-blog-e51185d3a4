@@ -2,7 +2,7 @@
 
 ## Base URL
 ```
-http://localhost:1337
+https://api.pattaya1.com
 ```
 
 ## Video Management Endpoints
