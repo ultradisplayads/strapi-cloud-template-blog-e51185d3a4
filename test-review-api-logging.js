@@ -11,8 +11,8 @@ async function testReviewApiLogging() {
   console.log('🔍 Testing Review API with Console Logging...\n');
 
   const baseUrl = process.env.NODE_ENV === 'production' 
-    ? "https://api.pattaya1.com/api" 
-    : "https://api.pattaya1.com/api";
+    ? "http://locahost:1337/api" 
+    : "http://locahost:1337/api";
 
   try {
     // Test 1: Latest reviews endpoint

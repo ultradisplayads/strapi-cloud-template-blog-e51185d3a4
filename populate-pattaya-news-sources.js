@@ -3,7 +3,7 @@
 const axios = require('axios');
 
 // Configuration
-const API_BASE_URL = 'http://localhost:1337';
+const API_BASE_URL = 'http://locahost:1337';
 
 // Updated news sources based on user requirements
 const pattayaNewsSources = [
