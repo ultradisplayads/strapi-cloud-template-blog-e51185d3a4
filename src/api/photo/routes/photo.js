@@ -29,6 +29,15 @@ module.exports = {
         auth: false,
       },
     },
+    // Admin routes - must come before /photos/:id to avoid conflicts
+    {
+      method: 'GET',
+      path: '/photos/pending',
+      handler: 'photo.getPending',
+      config: {
+        auth: false, // Disable Strapi's built-in auth, rely on our Firebase middleware
+      },
+    },
     {
       method: 'GET',
       path: '/photos/:id',
@@ -50,15 +59,6 @@ module.exports = {
       method: 'POST',
       path: '/photos/:id/like',
       handler: 'photo.like',
-      config: {
-        auth: false, // Disable Strapi's built-in auth, rely on our Firebase middleware
-      },
-    },
-    // Admin routes
-    {
-      method: 'GET',
-      path: '/photos/pending',
-      handler: 'photo.getPending',
       config: {
         auth: false, // Disable Strapi's built-in auth, rely on our Firebase middleware
       },
