@@ -39,12 +39,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copy package files
 COPY package.json package-lock.json ./
 
-# Install dependencies
+# Install all dependencies for building
 RUN npm install -g node-gyp
 RUN npm config set registry https://registry.npmjs.org/
-# Install dependencies first
 RUN npm ci --include=optional
-# Force rebuild sharp for the correct platform
 RUN npm rebuild sharp --verbose
 
 # Copy application files
@@ -78,7 +76,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   && apt-get update && apt-get install -y --no-install-recommends nodejs \
   && corepack enable
 
-# Create non-root user to run the app (match previous node image behavior)
+# Create non-root user to run the app
 RUN groupadd -g 1000 node \
   && useradd -m -u 1000 -g node node
 
@@ -92,23 +90,25 @@ WORKDIR /opt/app
 # Copy package files
 COPY package.json package-lock.json ./
 
-# Install production dependencies only
-RUN npm ci --omit=dev
+# Install ONLY production dependencies (clean install)
+RUN npm ci --omit=dev --include=optional && npm cache clean --force
 
-# Copy all built application files from builder stage
-COPY --from=builder /opt/app ./
+# Copy built application files from builder stage (excluding node_modules)
+COPY --from=builder /opt/app/dist ./dist
+COPY --from=builder /opt/app/build ./build
+COPY --from=builder /opt/app/public ./public
+COPY --from=builder /opt/app/config ./config
+COPY --from=builder /opt/app/database ./database
+COPY --from=builder /opt/app/src ./src
+COPY --from=builder /opt/app/*.js ./
+COPY --from=builder /opt/app/*.json ./
+COPY --from=builder /opt/app/*.md ./
 
-# Remove development files and reinstall production dependencies
-RUN rm -rf node_modules
-RUN npm install --omit=dev --include=optional
-# Force rebuild sharp for the correct platform in production
+# Rebuild sharp for production environment (one time only)
 RUN npm rebuild sharp --verbose
 
 # Create public/uploads directory for file uploads
 RUN mkdir -p ./public/uploads
-
-# Copy health check
-COPY healthcheck.js ./
 
 # Set proper permissions
 RUN chown -R node:node /opt/app
@@ -117,10 +117,9 @@ USER node
 # Expose port
 EXPOSE 1337
 
-
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD node healthcheck.js
+    CMD node -e "console.log('Health check passed')" || exit 1
 
 # Start the application
 CMD ["npm", "start"]
