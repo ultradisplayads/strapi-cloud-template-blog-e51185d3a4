@@ -27,7 +27,7 @@
       "type": "relation",
       "relation": "manyToOne",
       "target": "plugin::users-permissions.user",
-      "required": false
+      "required": true
     },
     "hashtags": {
       "type": "relation",

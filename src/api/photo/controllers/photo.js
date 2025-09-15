@@ -11,6 +11,18 @@ module.exports = createCoreController('api::photo.photo', ({ strapi }) => ({
     const { data } = ctx.request.body;
     const user = ctx.state.user;
 
+    // Debug authentication
+    console.log('📸 Photo upload request received');
+    console.log('User from ctx.state.user:', user ? `ID: ${user.id}, Username: ${user.username}` : 'No user');
+    console.log('Authorization header:', ctx.request.header.authorization ? 'Present' : 'Missing');
+    console.log('Token preview:', ctx.request.header.authorization?.substring(0, 50) + '...');
+
+    // Ensure user is authenticated
+    if (!user) {
+      console.log('❌ No authenticated user found');
+      return ctx.unauthorized('You must be logged in to upload photos');
+    }
+
     try {
       let imageFile = null;
       
@@ -78,12 +90,12 @@ module.exports = createCoreController('api::photo.photo', ({ strapi }) => ({
         }
       }
 
-      // For public uploads, set default values
+      // Set photo data with authenticated user
       const photoData = {
         ...data,
         image: imageFile ? imageFile.id : data.image,
-        author: user ? user.id : undefined, // Don't set author if no user (let Strapi handle it)
-        status: data.status || 'approved', // Use provided status or default to approved for immediate visibility
+        author: user.id, // Set author to authenticated user ID
+        status: data.status || 'pending', // Use provided status or default to pending for admin approval
         uploaded_at: data.uploaded_at || new Date(),
         approved_at: data.approved_at || null
       };
@@ -203,7 +215,13 @@ module.exports = createCoreController('api::photo.photo', ({ strapi }) => ({
     const { id } = ctx.params;
     const user = ctx.state.user;
 
-    if (!user || user.role !== 'admin') {
+    if (!user) {
+      return ctx.forbidden('Authentication required');
+    }
+    
+    // Check if user is admin (by role name or type)
+    const isAdmin = user.role?.name === 'admin' || user.role?.type === 'admin' || user.role === 'admin';
+    if (!isAdmin) {
       return ctx.forbidden('Only admins can approve photos');
     }
 
@@ -228,7 +246,13 @@ module.exports = createCoreController('api::photo.photo', ({ strapi }) => ({
     const user = ctx.state.user;
     const { reason } = ctx.request.body;
 
-    if (!user || user.role !== 'admin') {
+    if (!user) {
+      return ctx.forbidden('Authentication required');
+    }
+    
+    // Check if user is admin (by role name or type)
+    const isAdmin = user.role?.name === 'admin' || user.role?.type === 'admin' || user.role === 'admin';
+    if (!isAdmin) {
       return ctx.forbidden('Only admins can reject photos');
     }
 

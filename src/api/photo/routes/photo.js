@@ -37,13 +37,13 @@ module.exports = {
         auth: false,
       },
     },
-    // Public routes for photo creation
+    // Authenticated routes for photo creation
     {
       method: 'POST',
       path: '/photos',
       handler: 'photo.create',
       config: {
-        auth: false,
+        auth: false, // Disable Strapi's built-in auth, rely on our Firebase middleware
       },
     },
     {
@@ -51,9 +51,7 @@ module.exports = {
       path: '/photos/:id/like',
       handler: 'photo.like',
       config: {
-        auth: {
-          scope: ['find']
-        },
+        auth: false, // Disable Strapi's built-in auth, rely on our Firebase middleware
       },
     },
     // Admin routes
@@ -62,9 +60,7 @@ module.exports = {
       path: '/photos/pending',
       handler: 'photo.getPending',
       config: {
-        auth: {
-          scope: ['find']
-        },
+        auth: false, // Disable Strapi's built-in auth, rely on our Firebase middleware
       },
     },
     {
@@ -72,9 +68,7 @@ module.exports = {
       path: '/photos/:id/approve',
       handler: 'photo.approve',
       config: {
-        auth: {
-          scope: ['find']
-        },
+        auth: false, // Disable Strapi's built-in auth, rely on our Firebase middleware
       },
     },
     {
@@ -82,9 +76,7 @@ module.exports = {
       path: '/photos/:id/reject',
       handler: 'photo.reject',
       config: {
-        auth: {
-          scope: ['find']
-        },
+        auth: false, // Disable Strapi's built-in auth, rely on our Firebase middleware
       },
     },
     {
