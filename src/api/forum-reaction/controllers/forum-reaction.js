@@ -24,6 +24,7 @@ async function updateReactionCounts(targetId, oldType, newType, oldAction, newAc
     // Get current reaction counts, defaulting to zero if not set
     const currentCounts = {
       like: 0, love: 0, laugh: 0, wow: 0, sad: 0, angry: 0
+      
     };
     
     // Decrement old reaction if changing
