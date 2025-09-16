@@ -9,29 +9,24 @@ const discourseService = require('./discourse');
 
 module.exports = createCoreService('api::forum-activity.forum-activity', ({ strapi }) => ({
   /**
-   * Get enhanced forum activity data
+   * Get enhanced forum activity data from real Strapi forum topics
    */
   async getEnhancedForumActivity(limit = 5) {
     try {
-      // Get pinned threads first
+      // Get real forum topics from Strapi
+      const realTopics = await this.getRealForumTopics(limit);
+      
+      // Get pinned threads for additional content
       const pinnedThreads = await this.getPinnedThreads();
       
-      // Get live data from Discourse
-      const discourseTopics = await discourseService.getLatestTopics(limit);
+      // Combine real topics and pinned threads
+      const allTopics = [...realTopics];
+      const realTopicIds = realTopics.map(t => t.id);
       
-      // Get forum categories for matching
-      const categories = await this.getForumCategories();
-      
-      // Process and merge data
-      const processedTopics = await this.processTopics(discourseTopics, categories);
-      
-      // Combine pinned and live topics, removing duplicates
-      const allTopics = [...pinnedThreads];
-      const pinnedUrls = pinnedThreads.map(t => t.url);
-      
-      processedTopics.forEach(topic => {
-        if (!pinnedUrls.includes(topic.url)) {
-          allTopics.push(topic);
+      // Add pinned threads that aren't already in real topics
+      pinnedThreads.forEach(thread => {
+        if (!realTopicIds.includes(thread.id)) {
+          allTopics.push(thread);
         }
       });
       
@@ -47,6 +42,62 @@ module.exports = createCoreService('api::forum-activity.forum-activity', ({ stra
     } catch (error) {
       strapi.log.error('Error getting enhanced forum activity:', error);
       return this.getFallbackData();
+    }
+  },
+
+  /**
+   * Get real forum topics from Strapi database
+   */
+  async getRealForumTopics(limit = 5) {
+    try {
+      // @ts-ignore
+      const topics = await strapi.entityService.findMany('api::forum-topic.forum-topic', {
+        populate: [
+          'author',
+          'category', 
+          'lastPost',
+          'lastPost.author',
+          'reactions',
+          'reactions.user'
+        ],
+        sort: { lastActivity: 'desc' },
+        limit: limit
+      });
+
+      if (!Array.isArray(topics)) {
+        return [];
+      }
+
+      return topics.map(topic => ({
+        id: topic.id,
+        title: topic.title,
+        url: `/forum/${topic.id}`,
+        category_id: topic.category?.id || 1,
+        author: {
+          username: topic.author?.username || 'Unknown User',
+          name: topic.author?.username || 'Unknown User',
+          avatar_template: null
+        },
+        reply_count: topic.postCount || 0,
+        view_count: topic.viewCount || 0,
+        like_count: topic.reactionCounts?.like || 0,
+        last_activity: topic.lastActivity || topic.createdAt,
+        created_at: topic.createdAt,
+        is_hot: topic.isHot || false,
+        is_pinned: topic.isPinned || false,
+        tags: [],
+        excerpt: topic.excerpt || topic.content?.substring(0, 150) || '',
+        category_info: {
+          name: topic.category?.name || 'General',
+          icon: '💬',
+          color: '#3B82F6'
+        },
+        // Store original topic data for reactions
+        _originalTopic: topic
+      }));
+    } catch (error) {
+      strapi.log.error('Error getting real forum topics:', error);
+      return [];
     }
   },
 

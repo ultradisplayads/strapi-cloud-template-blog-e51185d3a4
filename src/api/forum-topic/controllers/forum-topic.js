@@ -61,8 +61,14 @@ module.exports = createCoreController('api::forum-topic.forum-topic', ({ strapi 
         }
       });
       
+      // Fetch the created topic with populated relations
+      // @ts-ignore
+      const populatedTopic = await strapi.entityService.findOne('api::forum-topic.forum-topic', topic.id, {
+        populate: ['author', 'category', 'lastPost', 'lastPost.author', 'reactions', 'reactions.user']
+      });
+      
       strapi.log.info(`Topic created: ${topic.id} by user ${user.id}`);
-      return ctx.send({ data: topic });
+      return ctx.send({ data: populatedTopic });
     } catch (error) {
       strapi.log.error('Error creating topic:', error);
       return ctx.internalServerError('Failed to create topic');

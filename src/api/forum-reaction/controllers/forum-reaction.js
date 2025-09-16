@@ -21,9 +21,14 @@ async function updateReactionCounts(targetId, oldType, newType, oldAction, newAc
     
     if (!entity) return;
     
-    // Get current reaction counts, defaulting to zero if not set
+    // Get current reaction counts from entity, defaulting to zero if not set
     const currentCounts = {
-      like: 0, love: 0, laugh: 0, wow: 0, sad: 0, angry: 0
+      like: entity.reactionCounts?.like || 0,
+      love: entity.reactionCounts?.love || 0,
+      laugh: entity.reactionCounts?.laugh || 0,
+      wow: entity.reactionCounts?.wow || 0,
+      sad: entity.reactionCounts?.sad || 0,
+      angry: entity.reactionCounts?.angry || 0
     };
     
     // Decrement old reaction if changing
@@ -40,11 +45,13 @@ async function updateReactionCounts(targetId, oldType, newType, oldAction, newAc
     if (isTopicReaction) {
       // @ts-ignore
       await strapi.entityService.update('api::forum-topic.forum-topic', targetId, {
+        // @ts-ignore
         data: { reactionCounts: currentCounts }
       });
     } else {
       // @ts-ignore
       await strapi.entityService.update('api::forum-post.forum-post', targetId, {
+        // @ts-ignore
         data: { reactionCounts: currentCounts }
       });
     }
@@ -94,6 +101,7 @@ module.exports = createCoreController('api::forum-reaction.forum-reaction', ({ s
         const oldType = existingReaction[0].type;
         // @ts-ignore
         const updatedReaction = await strapi.entityService.update('api::forum-reaction.forum-reaction', existingReaction[0].id, {
+          // @ts-ignore
           data: { type }
         });
         

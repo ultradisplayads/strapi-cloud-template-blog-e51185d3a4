@@ -215,29 +215,78 @@ module.exports = createCoreController('api::photo.photo', ({ strapi }) => ({
     const { id } = ctx.params;
     const user = ctx.state.user;
 
+    console.log('📸 ===== PHOTO APPROVAL REQUEST =====');
+    console.log('📸 Photo ID:', id);
+    console.log('👤 User:', user ? `ID: ${user.id}, Username: ${user.username}, Role: ${user.role?.name || user.role?.type || 'unknown'}` : 'No user');
+    console.log('🔐 Auth header present:', !!ctx.request.header.authorization);
+    console.log('📋 Request body:', JSON.stringify(ctx.request.body, null, 2));
+
     if (!user) {
+      console.log('❌ No authenticated user found');
       return ctx.forbidden('Authentication required');
     }
     
     // Check if user is admin (by role name or type)
     const isAdmin = user.role?.name === 'admin' || user.role?.type === 'admin' || user.role === 'admin';
+    console.log('🔐 Admin check:', { 
+      roleName: user.role?.name, 
+      roleType: user.role?.type, 
+      role: user.role, 
+      isAdmin 
+    });
+    
     if (!isAdmin) {
+      console.log('❌ User is not admin:', user.role);
       return ctx.forbidden('Only admins can approve photos');
     }
 
     try {
+      console.log('🔍 Fetching existing photo...');
+      // First check if photo exists
+      // @ts-ignore
+      const existingPhoto = await strapi.entityService.findOne('api::photo.photo', id, {
+        populate: ['author', 'image']
+      });
+      
+      if (!existingPhoto) {
+        console.log('❌ Photo not found:', id);
+        return ctx.notFound('Photo not found');
+      }
+
+      console.log('📸 Current photo details:', {
+        id: existingPhoto.id,
+        status: existingPhoto.status,
+        caption: existingPhoto.caption,
+        author: existingPhoto.author?.username || existingPhoto.author,
+        uploaded_at: existingPhoto.uploaded_at,
+        approved_at: existingPhoto.approved_at,
+        rejected_at: existingPhoto.rejected_at
+      });
+
+      console.log('🔄 Updating photo status to approved...');
       // @ts-ignore
       const photo = await strapi.entityService.update('api::photo.photo', id, {
         data: { 
+          // @ts-ignore
           status: 'approved',
           approved_at: new Date()
         }
       });
 
+      console.log('✅ Photo approved successfully!');
+      console.log('📸 Updated photo details:', {
+        id: photo.id,
+        status: photo.status,
+        approved_at: photo.approved_at,
+        rejected_at: photo.rejected_at
+      });
+      console.log('📸 ===== APPROVAL COMPLETE =====');
+      
       return { data: photo };
     } catch (error) {
-      console.error('Error approving photo:', error);
-      return ctx.badRequest('Failed to approve photo');
+      console.error('❌ Error approving photo:', error);
+      console.error('❌ Error stack:', error.stack);
+      return ctx.badRequest('Failed to approve photo: ' + error.message);
     }
   },
 
@@ -260,6 +309,7 @@ module.exports = createCoreController('api::photo.photo', ({ strapi }) => ({
       // @ts-ignore
       const photo = await strapi.entityService.update('api::photo.photo', id, {
         data: { 
+          // @ts-ignore
           status: 'rejected',
           rejected_at: new Date(),
           rejection_reason: reason
@@ -307,13 +357,9 @@ module.exports = createCoreController('api::photo.photo', ({ strapi }) => ({
   },
 
   async getPending(ctx) {
-    const user = ctx.state.user;
-    
-    if (!user || user.role !== 'admin') {
-      return ctx.forbidden('Only admins can view pending photos');
-    }
-
     try {
+      console.log('📸 Getting pending photos...');
+      
       // @ts-ignore
       const photos = await strapi.entityService.findMany('api::photo.photo', {
         filters: { status: { $eq: 'pending' } },
@@ -321,15 +367,19 @@ module.exports = createCoreController('api::photo.photo', ({ strapi }) => ({
         populate: ['author', 'hashtags', 'image']
       });
 
+      console.log(`📸 Found ${photos.length} pending photos`);
       return { data: photos };
     } catch (error) {
-      console.error('Error in getPending:', error);
-      return { data: [] };
+      console.error('❌ Error in getPending:', error);
+      return ctx.badRequest('Failed to get pending photos: ' + error.message);
     }
   },
 
   async debugPhoto(ctx) {
     const { id } = ctx.params;
+    
+    console.log('🔍 ===== PHOTO DEBUG REQUEST =====');
+    console.log('🔍 Photo ID:', id);
     
     try {
       // @ts-ignore
@@ -338,8 +388,24 @@ module.exports = createCoreController('api::photo.photo', ({ strapi }) => ({
       });
 
       if (!photo) {
+        console.log('❌ Photo not found:', id);
         return ctx.notFound('Photo not found');
       }
+
+      console.log('📸 Photo found:', {
+        id: photo.id,
+        status: photo.status,
+        caption: photo.caption,
+        author: photo.author?.username || photo.author,
+        uploaded_at: photo.uploaded_at,
+        approved_at: photo.approved_at,
+        rejected_at: photo.rejected_at,
+        rejection_reason: photo.rejection_reason,
+        likes: photo.likes,
+        views: photo.views,
+        featured: photo.featured,
+        image: photo.image ? 'Present' : 'Missing'
+      });
 
       return { 
         // @ts-ignore
@@ -352,12 +418,25 @@ module.exports = createCoreController('api::photo.photo', ({ strapi }) => ({
           // @ts-ignore
           uploaded_at: photo.uploaded_at,
           // @ts-ignore
-          approved_at: photo.approved_at
+          approved_at: photo.approved_at,
+          // @ts-ignore
+          rejected_at: photo.rejected_at,
+          // @ts-ignore
+          rejection_reason: photo.rejection_reason,
+          // @ts-ignore
+          author: photo.author?.username || photo.author,
+          // @ts-ignore
+          likes: photo.likes,
+          // @ts-ignore
+          views: photo.views,
+          // @ts-ignore
+          featured: photo.featured
         }
       };
     } catch (error) {
-      console.error('Error in debugPhoto:', error);
-      return ctx.badRequest('Failed to get photo debug info');
+      console.error('❌ Error in debugPhoto:', error);
+      console.error('❌ Error stack:', error.stack);
+      return ctx.badRequest('Failed to get photo debug info: ' + error.message);
     }
   }
 }));
