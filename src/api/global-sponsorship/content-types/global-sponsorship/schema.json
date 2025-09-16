@@ -27,7 +27,7 @@
     "sponsoredWidgets": {
       "type": "json",
       "default": [],
-      "description": "Array of widget types that should show this sponsorship. Example: [\"radio\", \"news\", \"events\"]. Available options: radio, weather, news, events, deals, business, social, traffic, youtube, photos, quick-links, trending, breaking-news, live-events, business-spotlight, hot-deals"
+      "description": "Array of widget types that should show this sponsorship. Available widgets: radio, weather, news, events, deals, business, social, traffic, youtube, photos, quick-links, trending, breaking-news, live-events, currency-converter, google-reviews, flight-tracker, restaurant, movie, travel. Example: [\"radio\", \"weather\", \"news\"]"
     },
     "defaultColor": {
       "type": "string",
