@@ -27,14 +27,21 @@ module.exports = createCoreService('api::weather.weather', ({ strapi }) => ({
    * @param {string} params.units - Units (metric or imperial)
    * @returns {Object} Weather data
    */
+  /**
+   * @param {{ lat: number, lon: number, units?: 'metric'|'imperial'|string }} params
+   * @returns {Promise<any>}
+   */
   async getWeather({ lat, lon, units = 'metric' }) {
     try {
       // Round coordinates for caching
       const latRounded = this.roundCoord(lat);
       const lonRounded = this.roundCoord(lon);
 
+      // Normalize units
+      const unitsNormalized = units === 'imperial' ? 'imperial' : 'metric';
+
       // Check cache first
-      const cachedData = await this.getCachedWeather(latRounded, lonRounded, units);
+      const cachedData = await this.getCachedWeather(latRounded, lonRounded, unitsNormalized);
       if (cachedData) {
         console.log(`Weather cache hit for ${latRounded}, ${lonRounded} (${units})`);
         return cachedData;
@@ -43,10 +50,10 @@ module.exports = createCoreService('api::weather.weather', ({ strapi }) => ({
       console.log(`Weather cache miss for ${latRounded}, ${lonRounded} (${units}), fetching from API`);
       
       // Fetch fresh data from OpenWeatherMap
-      const weatherData = await this.fetchWeatherFromAPI(lat, lon, units);
+      const weatherData = await this.fetchWeatherFromAPI(lat, lon, unitsNormalized);
       
       // Cache the data
-      await this.cacheWeatherData(latRounded, lonRounded, units, weatherData);
+      await this.cacheWeatherData(latRounded, lonRounded, unitsNormalized, weatherData);
       
       return weatherData;
     } catch (error) {
@@ -59,8 +66,8 @@ module.exports = createCoreService('api::weather.weather', ({ strapi }) => ({
    * Get cached weather data
    * @param {number} latRounded - Rounded latitude
    * @param {number} lonRounded - Rounded longitude
-   * @param {string} units - Units (metric or imperial)
-   * @returns {Object|null} Cached weather data or null if expired/not found
+   * @param {'metric'|'imperial'} units - Units (metric or imperial)
+   * @returns {Promise<any|null>} Cached weather data or null if expired/not found
    */
   async getCachedWeather(latRounded, lonRounded, units) {
     try {
@@ -68,7 +75,7 @@ module.exports = createCoreService('api::weather.weather', ({ strapi }) => ({
         filters: {
           latRounded,
           lonRounded,
-          units,
+          units: /** @type {any} */ (units),
           expiresAt: {
             $gt: new Date().toISOString()
           }
@@ -93,6 +100,11 @@ module.exports = createCoreService('api::weather.weather', ({ strapi }) => ({
    * @param {number} lonRounded - Rounded longitude
    * @param {string} units - Units (metric or imperial)
    * @param {Object} data - Weather data to cache
+   * @param {number} latRounded
+   * @param {number} lonRounded
+   * @param {'metric'|'imperial'} units
+   * @param {any} data
+   * @returns {Promise<void>}
    */
   async cacheWeatherData(latRounded, lonRounded, units, data) {
     try {
@@ -107,7 +119,7 @@ module.exports = createCoreService('api::weather.weather', ({ strapi }) => ({
         filters: {
           latRounded,
           lonRounded,
-          units
+          units: /** @type {any} */ (units)
         },
         limit: 1
       });
@@ -126,7 +138,7 @@ module.exports = createCoreService('api::weather.weather', ({ strapi }) => ({
           data: {
             latRounded,
             lonRounded,
-            units,
+            units: /** @type {any} */ (units),
             payload: data,
             expiresAt: expiresAt.toISOString()
           }
@@ -146,6 +158,12 @@ module.exports = createCoreService('api::weather.weather', ({ strapi }) => ({
    * @param {string} units - Units (metric or imperial)
    * @returns {Object} Weather data
    */
+  /**
+   * @param {number} lat
+   * @param {number} lon
+   * @param {'metric'|'imperial'} units
+   * @returns {Promise<any>}
+   */
   async fetchWeatherFromAPI(lat, lon, units) {
     const apiKey = process.env.OWM_API_KEY;
     console.log('🔑 API Key check:', apiKey ? 'Present' : 'Missing');
@@ -156,8 +174,8 @@ module.exports = createCoreService('api::weather.weather', ({ strapi }) => ({
     const unitsParam = units === 'imperial' ? 'imperial' : 'metric';
     
     try {
-      // Fetch current weather, forecast, and air quality
-      const [currentResponse, forecastResponse, airQualityResponse] = await Promise.all([
+      // Fetch current weather, forecast, air quality, and onecall (alerts + uv)
+      const [currentResponse, forecastResponse, airQualityResponse, oneCallResponse] = await Promise.all([
         axios.get(`https://api.openweathermap.org/data/2.5/weather`, {
           params: {
             lat,
@@ -180,14 +198,42 @@ module.exports = createCoreService('api::weather.weather', ({ strapi }) => ({
             lon,
             appid: apiKey
           }
+        }),
+        axios.get(`https://api.openweathermap.org/data/3.0/onecall`, {
+          params: {
+            lat,
+            lon,
+            appid: apiKey,
+            units: unitsParam,
+            exclude: 'minutely,hourly,daily'
+          }
         })
       ]);
+
+      // Optionally fetch tide times
+      let tidesData = null;
+      try {
+        tidesData = await this.fetchTides(lat, lon);
+      } catch (tideErr) {
+        console.warn('Tide data unavailable:', tideErr.message || tideErr);
+      }
+      
+      // Fetch marine wave data from Open-Meteo (free, no key)
+      let waveHeightM = null;
+      try {
+        waveHeightM = await this.fetchOpenMeteoWaveHeight(lat, lon);
+      } catch (waveErr) {
+        console.warn('Marine wave data unavailable:', waveErr.message || waveErr);
+      }
 
       // Process the data
       const weatherData = this.processWeatherData(
         currentResponse.data,
         forecastResponse.data,
         airQualityResponse.data,
+        oneCallResponse.data,
+        tidesData,
+        waveHeightM,
         units
       );
 
@@ -211,7 +257,16 @@ module.exports = createCoreService('api::weather.weather', ({ strapi }) => ({
    * @param {string} units - Units (metric or imperial)
    * @returns {Object} Processed weather data
    */
-  processWeatherData(currentData, forecastData, airQualityData, units) {
+  /**
+   * @param {any} currentData
+   * @param {any} forecastData
+   * @param {any} airQualityData
+   * @param {any} oneCallData
+   * @param {any} tidesData
+   * @param {number|null} waveHeightM
+   * @param {'metric'|'imperial'} units
+   */
+  processWeatherData(currentData, forecastData, airQualityData, oneCallData, tidesData, waveHeightM, units) {
     // Process current weather
     const current = {
       temperature: Math.round(currentData.main.temp),
@@ -222,7 +277,7 @@ module.exports = createCoreService('api::weather.weather', ({ strapi }) => ({
       windSpeed: currentData.wind.speed,
       pressure: currentData.main.pressure,
       visibility: currentData.visibility / 1000, // Convert to km
-      uvIndex: 7, // Default value, can be enhanced later
+      uvIndex: oneCallData?.current?.uvi ?? 7,
       icon: currentData.weather[0].icon,
       sunrise: new Date(currentData.sys.sunrise * 1000).toISOString(),
       sunset: new Date(currentData.sys.sunset * 1000).toISOString()
@@ -248,18 +303,44 @@ module.exports = createCoreService('api::weather.weather', ({ strapi }) => ({
       no2: airQualityData.list[0].components.no2
     } : null;
 
-    // Process alerts (if any)
-    const alerts = currentData.alerts || [];
+    // Process alerts (if any) from One Call API
+    const alerts = (oneCallData && Array.isArray(oneCallData.alerts))
+      ? oneCallData.alerts.map(alert => ({
+          event: alert.event,
+          severity: alert.tags && alert.tags.length > 0 ? alert.tags[0] : 'info',
+          start: new Date(alert.start * 1000).toISOString(),
+          end: new Date(alert.end * 1000).toISOString(),
+          description: alert.description
+        }))
+      : [];
 
-    // Process marine data (placeholder for now)
-    const marine = {
-      tideTimes: [
-        { type: 'High', time: new Date(Date.now() + 6 * 60 * 60 * 1000).toISOString() },
-        { type: 'Low', time: new Date(Date.now() + 12 * 60 * 60 * 1000).toISOString() }
-      ],
-      seaState: 'Moderate',
-      waveHeightM: 0.8
-    };
+    // Process marine/tide data if available
+    let marine = null;
+    if (tidesData && tidesData.data && Array.isArray(tidesData.data.weather) && tidesData.data.weather.length > 0) {
+      const todayWeather = tidesData.data.weather[0];
+      const tideArray = todayWeather.tides && Array.isArray(todayWeather.tides) && todayWeather.tides.length > 0
+        ? todayWeather.tides[0].tide
+        : [];
+      if (Array.isArray(tideArray) && tideArray.length > 0) {
+        const tideTimes = tideArray.map((t) => ({
+          type: (t.tide_type && String(t.tide_type).toLowerCase().includes('high')) ? 'High' : 'Low',
+          time: new Date(t.tideDateTime).toISOString()
+        }));
+        marine = /** @type {any} */ ({
+          tideTimes,
+          seaState: null,
+          waveHeightM: null
+        });
+      }
+    }
+
+    // Map wave height to sea state if available
+    if (typeof waveHeightM === 'number') {
+      const seaState = waveHeightM < 0.5 ? 'Calm' : waveHeightM <= 1.5 ? 'Moderate' : 'Rough';
+      marine = /** @type {any} */ (marine || {});
+      /** @type {any} */ (marine).seaState = seaState;
+      /** @type {any} */ (marine).waveHeightM = Number(waveHeightM.toFixed(2));
+    }
 
     return {
       location: {
@@ -276,6 +357,57 @@ module.exports = createCoreService('api::weather.weather', ({ strapi }) => ({
       lastUpdated: new Date().toISOString(),
       source: 'OpenWeatherMap'
     };
+  },
+
+  /**
+   * Fetch today's tide extremes using World Weather Online Marine API
+   * @param {number} lat
+   * @param {number} lon
+   * @returns {Promise<any|null>}
+   */
+  async fetchTides(lat, lon) {
+    const apiKey = process.env.WWO_API_KEY;
+    if (!apiKey) return null;
+    const url = 'https://api.worldweatheronline.com/premium/v1/marine.ashx';
+    const params = { key: apiKey, q: `${lat},${lon}`, format: 'json', tide: 'yes' };
+    const res = await axios.get(url, { params });
+    return res.data;
+  },
+
+  /**
+   * Fetch current wave height (meters) from Open-Meteo Marine API (no key required)
+   * @param {number} lat
+   * @param {number} lon
+   * @returns {Promise<number|null>}
+   */
+  async fetchOpenMeteoWaveHeight(lat, lon) {
+    const url = 'https://marine-api.open-meteo.com/v1/marine';
+    const params = {
+      latitude: lat,
+      longitude: lon,
+      hourly: 'wave_height',
+      timezone: 'auto'
+    };
+    const res = await axios.get(url, { params });
+    const times = res.data?.hourly?.time;
+    const heights = res.data?.hourly?.wave_height;
+    if (!Array.isArray(times) || !Array.isArray(heights) || heights.length === 0) {
+      return null;
+    }
+    // Pick the entry closest to now (local time per API)
+    const now = new Date();
+    let bestIdx = 0;
+    let bestDiff = Infinity;
+    for (let i = 0; i < times.length; i++) {
+      const t = new Date(times[i]).getTime();
+      const diff = Math.abs(t - now.getTime());
+      if (diff < bestDiff) {
+        bestDiff = diff;
+        bestIdx = i;
+      }
+    }
+    const val = heights[bestIdx];
+    return typeof val === 'number' ? val : null;
   },
 
   /**
@@ -337,6 +469,11 @@ module.exports = createCoreService('api::weather.weather', ({ strapi }) => ({
    * @param {number} lon - Longitude
    * @returns {string} Location name
    */
+  /**
+   * @param {number} lat
+   * @param {number} lon
+   * @returns {Promise<string>}
+   */
   async getLocationName(lat, lon) {
     try {
       const apiKey = process.env.OWM_API_KEY;
@@ -366,12 +503,26 @@ module.exports = createCoreService('api::weather.weather', ({ strapi }) => ({
    * @param {Object} currentWeather - Current weather data
    * @returns {Array} Activity suggestions
    */
+  /**
+   * @param {any} currentWeather
+   * @returns {Promise<any[]>}
+   */
   async getWeatherSuggestions(currentWeather) {
     try {
+      const mapCondition = (cond) => {
+        const c = String(cond || '').toLowerCase();
+        if (c === 'clear') return 'sunny';
+        if (c === 'clouds' || c === 'cloudy') return 'cloudy';
+        if (c === 'rain') return 'rainy';
+        if (c === 'thunderstorm') return 'thunderstorm';
+        if (c === 'drizzle') return 'drizzle';
+        return c;
+      };
+      const normalized = mapCondition(currentWeather.condition);
       const suggestions = await strapi.entityService.findMany('api::weather-activity-suggestion.weather-activity-suggestion', {
         filters: {
           isActive: true,
-          weatherCondition: currentWeather.condition.toLowerCase()
+          weatherCondition: /** @type {any} */ (normalized)
         },
         sort: { priority: 'asc' }
       });
@@ -392,6 +543,9 @@ module.exports = createCoreService('api::weather.weather', ({ strapi }) => ({
   /**
    * Get weather settings
    * @returns {Object} Weather settings
+   */
+  /**
+   * @returns {Promise<any>}
    */
   async getWeatherSettings() {
     try {
