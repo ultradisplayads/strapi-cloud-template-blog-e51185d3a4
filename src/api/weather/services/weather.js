@@ -174,8 +174,8 @@ module.exports = createCoreService('api::weather.weather', ({ strapi }) => ({
     const unitsParam = units === 'imperial' ? 'imperial' : 'metric';
     
     try {
-      // Fetch current weather, forecast, air quality, and onecall (alerts + uv)
-      const [currentResponse, forecastResponse, airQualityResponse, oneCallResponse] = await Promise.all([
+      // Fetch current weather, forecast, and air quality (free tier)
+      const [currentResponse, forecastResponse, airQualityResponse] = await Promise.all([
         axios.get(`https://api.openweathermap.org/data/2.5/weather`, {
           params: {
             lat,
@@ -198,15 +198,6 @@ module.exports = createCoreService('api::weather.weather', ({ strapi }) => ({
             lon,
             appid: apiKey
           }
-        }),
-        axios.get(`https://api.openweathermap.org/data/3.0/onecall`, {
-          params: {
-            lat,
-            lon,
-            appid: apiKey,
-            units: unitsParam,
-            exclude: 'minutely,hourly,daily'
-          }
         })
       ]);
 
@@ -226,12 +217,28 @@ module.exports = createCoreService('api::weather.weather', ({ strapi }) => ({
         console.warn('Marine wave data unavailable:', waveErr.message || waveErr);
       }
 
+      // Try One Call (alerts + UV); if it fails, proceed without it
+      let oneCallData = null;
+      try {
+        const oc = await axios.get(`https://api.openweathermap.org/data/3.0/onecall`, {
+          params: { lat, lon, appid: apiKey, units: unitsParam, exclude: 'minutely,hourly,daily' }
+        });
+        oneCallData = oc.data;
+      } catch (ocErr) {
+        const status = ocErr?.response?.status;
+        if (status === 401) {
+          strapi.log.warn('OpenWeather One Call 3.0 unauthorized; proceeding without alerts/UV');
+        } else {
+          strapi.log.warn(`OpenWeather One Call fetch failed (${status || 'n/a'}): ${ocErr?.message || ocErr}`);
+        }
+      }
+
       // Process the data
       const weatherData = this.processWeatherData(
         currentResponse.data,
         forecastResponse.data,
         airQualityResponse.data,
-        oneCallResponse.data,
+        oneCallData,
         tidesData,
         waveHeightM,
         units
@@ -240,6 +247,13 @@ module.exports = createCoreService('api::weather.weather', ({ strapi }) => ({
       // Add location name and suggestions
       weatherData.location.name = await this.getLocationName(lat, lon);
       weatherData.suggestions = await this.getWeatherSuggestions(weatherData.current);
+      // UV fallback if missing
+      if (weatherData.current.uvIndex == null) {
+        try {
+          const uv = await this.fetchOpenMeteoUVIndex(lat, lon);
+          if (uv != null) weatherData.current.uvIndex = uv;
+        } catch (_) {}
+      }
       
       return weatherData;
     } catch (error) {
@@ -277,7 +291,7 @@ module.exports = createCoreService('api::weather.weather', ({ strapi }) => ({
       windSpeed: currentData.wind.speed,
       pressure: currentData.main.pressure,
       visibility: currentData.visibility / 1000, // Convert to km
-      uvIndex: oneCallData?.current?.uvi ?? 7,
+      uvIndex: oneCallData?.current?.uvi ?? null,
       icon: currentData.weather[0].icon,
       sunrise: new Date(currentData.sys.sunrise * 1000).toISOString(),
       sunset: new Date(currentData.sys.sunset * 1000).toISOString()
@@ -408,6 +422,35 @@ module.exports = createCoreService('api::weather.weather', ({ strapi }) => ({
     }
     const val = heights[bestIdx];
     return typeof val === 'number' ? val : null;
+  },
+
+  /**
+   * Fetch current UV index via Open-Meteo (fallback when OWM One Call is unavailable)
+   * @param {number} lat
+   * @param {number} lon
+   * @returns {Promise<number|null>}
+   */
+  async fetchOpenMeteoUVIndex(lat, lon) {
+    const url = 'https://api.open-meteo.com/v1/forecast';
+    const params = {
+      latitude: lat,
+      longitude: lon,
+      hourly: 'uv_index',
+      timezone: 'auto'
+    };
+    const res = await axios.get(url, { params });
+    const times = res.data?.hourly?.time;
+    const uvs = res.data?.hourly?.uv_index;
+    if (!Array.isArray(times) || !Array.isArray(uvs) || uvs.length === 0) return null;
+    const now = new Date();
+    let bestIdx = 0, bestDiff = Infinity;
+    for (let i = 0; i < times.length; i++) {
+      const t = new Date(times[i]).getTime();
+      const d = Math.abs(t - now.getTime());
+      if (d < bestDiff) { bestDiff = d; bestIdx = i; }
+    }
+    const val = uvs[bestIdx];
+    return typeof val === 'number' ? Math.round(val) : null;
   },
 
   /**
