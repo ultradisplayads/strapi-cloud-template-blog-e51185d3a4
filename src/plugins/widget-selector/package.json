@@ -1,0 +1,25 @@
+{
+  "name": "widget-selector",
+  "version": "0.0.1",
+  "description": "A Strapi plugin to provide a widget selector interface for global sponsorship",
+  "strapi": {
+    "displayName": "Widget Selector",
+    "name": "widget-selector",
+    "description": "Provides a checkbox interface for selecting widgets for global sponsorship",
+    "kind": "plugin"
+  },
+  "dependencies": {},
+  "author": {
+    "name": "Pattaya Pulse Team"
+  },
+  "maintainers": [
+    {
+      "name": "Pattaya Pulse Team"
+    }
+  ],
+  "engines": {
+    "node": ">=14.19.1 <=18.x.x",
+    "npm": ">=6.0.0"
+  },
+  "license": "MIT"
+}

@@ -28,7 +28,7 @@ async function makeRequest(url, options = {}) {
 
 async function listVideos() {
   console.log('📋 Current Videos:');
-  const result = await makeRequest('https://api.pattaya1.com/api/videos');
+  const result = await makeRequest('http://locahost:1337/api/videos');
   
   if (result.success && result.data.data) {
     result.data.data.forEach((video, index) => {
@@ -42,7 +42,7 @@ async function listVideos() {
 }
 
 async function updateVideoStatus(videoId, newStatus, useDocumentId = false) {
-  const url = `https://api.pattaya1.com/api/videos/${videoId}`;
+  const url = `http://locahost:1337/api/videos/${videoId}`;
   const options = {
     method: 'PUT',
     headers: {

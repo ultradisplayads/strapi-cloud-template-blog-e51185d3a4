@@ -2,7 +2,7 @@
 
 const axios = require('axios');
 
-const API_BASE = 'https://api.pattaya1.com';
+const API_BASE = 'http://locahost:1337';
 
 // Test various endpoints to see what's available
 const endpoints = [
@@ -44,7 +44,7 @@ async function testEndpoint(endpoint) {
 }
 
 async function main() {
-  console.log('🔍 Testing API endpoints at https://api.pattaya1.com\n');
+  console.log('🔍 Testing API endpoints at http://locahost:1337\n');
   
   for (const endpoint of endpoints) {
     await testEndpoint(endpoint);

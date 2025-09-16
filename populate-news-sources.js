@@ -3,8 +3,8 @@
 const axios = require('axios');
 
 // Configuration
-const API_BASE_URL = 'https://api.pattaya1.com';
-const LOCAL_BASE_URL = 'https://api.pattaya1.com';
+const API_BASE_URL = 'http://locahost:1337';
+const LOCAL_BASE_URL = 'http://locahost:1337';
 
 // Common news sources for Pattaya/Thailand
 const newsSources = [

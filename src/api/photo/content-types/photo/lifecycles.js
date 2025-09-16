@@ -15,34 +15,37 @@ module.exports = {
     try {
       // If status is being changed, automatically set the appropriate timestamp
       if (data.status && where.id) {
-        console.log(`📸 Status change detected for photo ${where.id}: ${data.status}`);
+        const nextStatus = data.status;
+        console.log(`📸 Status change detected for photo ${where.id}: ${nextStatus}`);
         
         // @ts-ignore
         const currentPhoto = await strapi.entityService.findOne('api::photo.photo', where.id);
         
         if (currentPhoto) {
-          console.log(`📸 Current photo status: ${currentPhoto.status}`);
-          console.log(`📸 New photo status: ${data.status}`);
+          const currentStatus = /** @type {any} */ (currentPhoto).status;
+          const newStatus = nextStatus;
+          console.log(`📸 Current photo status: ${currentStatus}`);
+          console.log(`📸 New photo status: ${newStatus}`);
           
           // @ts-ignore
-          if (currentPhoto.status !== data.status) {
-            console.log(`🔄 Photo ${where.id} status changing from ${currentPhoto.status} to ${data.status}`);
+          if (currentStatus !== newStatus) {
+            console.log(`🔄 Photo ${where.id} status changing from ${currentStatus} to ${newStatus}`);
             
             // Status is changing, set the appropriate timestamp
-            if (data.status === 'approved') {
+            if (newStatus === 'approved') {
               data.approved_at = new Date();
               // Clear rejected fields if approving
               data.rejected_at = null;
               data.rejection_reason = null;
               console.log(`✅ Photo ${where.id} approved at ${data.approved_at}`);
               console.log(`🧹 Cleared rejected_at and rejection_reason`);
-            } else if (data.status === 'rejected') {
+            } else if (newStatus === 'rejected') {
               data.rejected_at = new Date();
               // Clear approved field if rejecting
               data.approved_at = null;
               console.log(`❌ Photo ${where.id} rejected at ${data.rejected_at}`);
               console.log(`🧹 Cleared approved_at`);
-            } else if (data.status === 'pending') {
+            } else if (newStatus === 'pending') {
               // Reset both timestamps if going back to pending
               data.approved_at = null;
               data.rejected_at = null;
@@ -50,8 +53,11 @@ module.exports = {
               console.log(`⏳ Photo ${where.id} reset to pending`);
               console.log(`🧹 Cleared all status timestamps`);
             }
+
+            // Ensure we write to the field used by content manager
+            data.status = newStatus;
           } else {
-            console.log(`ℹ️ Photo ${where.id} status unchanged: ${data.status}`);
+            console.log(`ℹ️ Photo ${where.id} status unchanged: ${newStatus}`);
           }
         } else {
           console.log(`❌ Photo ${where.id} not found in database`);
@@ -111,9 +117,10 @@ module.exports = {
         console.log(`📸 New photo created with uploaded_at: ${data.uploaded_at}`);
       }
       
-      // Ensure status is set to pending by default
+      // Ensure status is set to approved by default
       if (!data.status) {
-        data.status = 'pending';
+        data.status = 'approved';
+        data.approved_at = new Date();
         console.log(`📸 New photo status set to: ${data.status}`);
       }
       

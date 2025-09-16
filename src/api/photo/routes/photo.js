@@ -56,6 +56,14 @@ module.exports = {
       },
     },
     {
+      method: 'PUT',
+      path: '/photos/:id',
+      handler: 'photo.update',
+      config: {
+        auth: false, // Disable Strapi's built-in auth, rely on our Firebase middleware
+      },
+    },
+    {
       method: 'POST',
       path: '/photos/:id/like',
       handler: 'photo.like',

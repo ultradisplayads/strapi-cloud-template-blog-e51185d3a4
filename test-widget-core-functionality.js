@@ -7,7 +7,7 @@
 
 const axios = require('axios');
 
-const BASE_URL = 'https://api.pattaya1.com/api';
+const BASE_URL = 'http://locahost:1337/api';
 
 async function testCoreWidgetFunctionality() {
   console.log('🎯 Testing Core Video Widget Functionality...\n');

@@ -9,7 +9,7 @@
 // @ts-ignore
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
-const API_BASE = 'https://api.pattaya1.com/api';
+const API_BASE = 'http://locahost:1337/api';
 
 // Type definitions for API responses
 /** @typedef {Object} ApiResponse
@@ -159,7 +159,7 @@ async function testWidgetManagement() {
   } catch (error) {
     console.error('❌ Test failed with error:', error.message);
     console.log('\n🔧 Troubleshooting:');
-    console.log('1. Make sure Strapi is running on https://api.pattaya1.com');
+    console.log('1. Make sure Strapi is running on http://locahost:1337');
     console.log('2. Run the initialization script: node scripts/initialize-widget-management.js');
     console.log('3. Check that the widget-management content type is created');
     console.log('4. Verify API routes are properly configured');

@@ -37,7 +37,17 @@ module.exports = [
   },
   'strapi::poweredBy',
   'strapi::query',
-  'strapi::body',
+  {
+    name: 'strapi::body',
+    config: {
+      formLimit: '64mb',
+      jsonLimit: '64mb',
+      textLimit: '64mb',
+      formidable: {
+        maxFileSize: 64 * 1024 * 1024,
+      },
+    },
+  },
   'strapi::session',
   'strapi::favicon',
   'strapi::public',
