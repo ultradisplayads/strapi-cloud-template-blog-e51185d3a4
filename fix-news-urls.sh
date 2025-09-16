@@ -29,3 +29,4 @@ echo ""
 echo "📋 Updated URLs:"
 curl -s "${API_BASE_URL}/api/news-sources" | jq '.data[] | {name: .name, url: .url}'
 
+

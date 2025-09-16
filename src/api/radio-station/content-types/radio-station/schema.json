@@ -118,6 +118,11 @@
       "type": "boolean",
       "default": false,
       "description": "Whether the pre-roll ad is currently active"
+    },
+    "IsActive": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether the station is active and should appear in the widget. Toggle off to temporarily hide the station."
     }
   }
 }
