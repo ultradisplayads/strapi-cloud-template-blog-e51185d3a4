@@ -124,8 +124,78 @@ module.exports = {
     } catch (error) {
       strapi.log.error('❌ Daily rejected cleanup failed:', error.message);
     }
-  }
-  ,
+  },
+  
+  /**
+   * Featured Videos Scheduler (migrated to Strapi cron)
+   * - Daytime fetch every 30 min (06:00-23:00)
+   * - Nighttime fetch every 2 hours (00:00-05:59)
+   * - Trending mode every 5 min
+   * - Daily cleanup 2 AM
+   * - Stats update every 6 hours
+   */
+  '*/30 6-23 * * *': async ({ strapi }) => {
+    try {
+      const VideoScheduler = require('../src/services/video-scheduler');
+      const videoScheduler = new VideoScheduler({ strapi });
+      await videoScheduler.performVideoFetching();
+    } catch (error) {
+      strapi.log.error('❌ Daytime video fetch failed:', error.message);
+    }
+  },
+  '0 */2 0-5 * * *': async ({ strapi }) => {
+    try {
+      const VideoScheduler = require('../src/services/video-scheduler');
+      const videoScheduler = new VideoScheduler({ strapi });
+      await videoScheduler.performVideoFetching();
+    } catch (error) {
+      strapi.log.error('❌ Nighttime video fetch failed:', error.message);
+    }
+  },
+  '*/5 * * * *': async ({ strapi }) => {
+    try {
+      const VideoScheduler = require('../src/services/video-scheduler');
+      const videoScheduler = new VideoScheduler({ strapi });
+      const activeTags = await videoScheduler.checkActiveTrendingTags();
+      if (activeTags.length > 0) {
+        await videoScheduler.performTrendingFetch(activeTags);
+      }
+    } catch (error) {
+      strapi.log.error('❌ Trending mode fetch failed:', error.message);
+    }
+  },
+  '0 2 * * *': async ({ strapi }) => {
+    try {
+      const VideoScheduler = require('../src/services/video-scheduler');
+      const videoScheduler = new VideoScheduler({ strapi });
+      await videoScheduler.performVideoCleanup();
+    } catch (error) {
+      strapi.log.error('❌ Video cleanup failed:', error.message);
+    }
+  },
+  '0 */6 * * *': async ({ strapi }) => {
+    try {
+      const VideoScheduler = require('../src/services/video-scheduler');
+      const videoScheduler = new VideoScheduler({ strapi });
+      await videoScheduler.performStatsUpdate();
+    } catch (error) {
+      strapi.log.error('❌ Video stats update failed:', error.message);
+    }
+  },
+  
+  /**
+   * Currency Trending Scheduler (migrated to Strapi cron)
+   * - Update every 5 minutes
+   */
+  '*/5 * * * *': async ({ strapi }) => {
+    try {
+      const CurrencyScheduler = require('../src/services/currency-scheduler');
+      const currencyScheduler = new CurrencyScheduler();
+      await currencyScheduler.updateCurrencyData();
+    } catch (error) {
+      strapi.log.error('❌ Currency update failed:', error.message);
+    }
+  },
   /**
    * Transport hub jobs
    * - Travel times summary every 20 minutes

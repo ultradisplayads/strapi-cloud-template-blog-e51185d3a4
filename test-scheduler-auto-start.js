@@ -8,7 +8,7 @@
 const axios = require('axios');
 const fs = require('fs');
 
-const BASE_URL = 'http://localhost:1337/api';
+const BASE_URL = 'http://locahost:1337/api';
 
 class SchedulerAutoStartTester {
   constructor() {

@@ -1,7 +1,7 @@
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
 async function testVotingSystem() {
-  const baseUrl = 'https://api.pattaya1.com/api/breaking-news';
+  const baseUrl = 'http://locahost:1337/api/breaking-news';
   
   console.log('🧪 Testing Voting System...\n');
   

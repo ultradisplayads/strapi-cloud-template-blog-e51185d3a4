@@ -14,6 +14,8 @@
     "news:scheduler": "node ./scripts/alternative-scheduler.js"
   },
   "dependencies": {
+    "@strapi/design-system": "2.0.0-rc.24",
+    "@strapi/icons": "2.0.0-rc.24",
     "@strapi/plugin-cloud": "5.15.0",
     "@strapi/plugin-users-permissions": "5.15.0",
     "@strapi/strapi": "5.15.0",
@@ -30,6 +32,7 @@
     "minimatch": "^10.0.3",
     "node-cron": "^4.2.1",
     "node-fetch": "^3.3.2",
+    "pg": "^8.16.3",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-router-dom": "^6.0.0",

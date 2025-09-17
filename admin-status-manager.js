@@ -8,7 +8,7 @@
 const readline = require('readline');
 const axios = require('axios');
 
-const BASE_URL = 'http://localhost:1337';
+const BASE_URL = 'http://locahost:1337';
 const VALID_STATUSES = ['pending', 'active', 'rejected', 'archived'];
 
 class VideoStatusManager {

@@ -93,10 +93,21 @@ module.exports = createCoreController('api::weather.weather', ({ strapi }) => ({
         return ctx.badRequest('Weather condition is required');
       }
 
+      const mapCondition = (cond) => {
+        const c = String(cond || '').toLowerCase();
+        if (c === 'clear') return 'sunny';
+        if (c === 'clouds' || c === 'cloudy') return 'cloudy';
+        if (c === 'rain') return 'rainy';
+        if (c === 'thunderstorm') return 'thunderstorm';
+        if (c === 'drizzle') return 'drizzle';
+        return c;
+      };
+      const normalized = mapCondition(condition);
+
       const suggestions = await strapi.entityService.findMany('api::weather-activity-suggestion.weather-activity-suggestion', {
         filters: {
           isActive: true,
-          weatherCondition: condition.toLowerCase()
+          weatherCondition: normalized
         },
         sort: { priority: 'asc' },
         limit: 5

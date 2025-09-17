@@ -1,7 +1,7 @@
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
 async function testAdminNewsSettings() {
-  const baseUrl = 'https://api.pattaya1.com/api';
+  const baseUrl = 'http://locahost:1337/api';
   
   console.log('🧪 Testing Admin News Settings System...\n');
 

@@ -7,7 +7,7 @@
 
 const axios = require('axios');
 
-const BASE_URL = 'http://localhost:1337';
+const BASE_URL = 'http://locahost:1337';
 const VALID_STATUSES = ['pending', 'active', 'rejected', 'archived'];
 const TEST_VIDEO_ID = 13; // Using the video we know exists
 const TEST_DOCUMENT_ID = 's13zhrq2a51z3whcb6t6bt6g';

@@ -1,0 +1,73 @@
+{
+  "kind": "collectionType",
+  "collectionName": "currency_trending",
+  "info": {
+    "singularName": "currency-trending",
+    "pluralName": "currency-trendings",
+    "displayName": "Currency Trending",
+    "description": "Cached trending currency data with rates compared to THB"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "currencyCode": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "currencyName": {
+      "type": "string",
+      "required": true
+    },
+    "currencySymbol": {
+      "type": "string"
+    },
+    "currencyFlag": {
+      "type": "string"
+    },
+    "rateToTHB": {
+      "type": "decimal",
+      "required": true
+    },
+    "previousRateToTHB": {
+      "type": "decimal"
+    },
+    "change24h": {
+      "type": "decimal",
+      "default": 0
+    },
+    "changePercent24h": {
+      "type": "decimal",
+      "default": 0
+    },
+    "trend": {
+      "type": "enumeration",
+      "enum": ["up", "down", "stable"],
+      "default": "stable"
+    },
+    "rank": {
+      "type": "integer",
+      "default": 0
+    },
+    "volume24h": {
+      "type": "decimal"
+    },
+    "marketCap": {
+      "type": "decimal"
+    },
+    "lastUpdated": {
+      "type": "datetime",
+      "required": true
+    },
+    "dataSource": {
+      "type": "string",
+      "default": "exchangerate-api"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}

@@ -7,7 +7,7 @@
 
 const axios = require('axios');
 
-const BASE_URL = 'http://localhost:1337/api';
+const BASE_URL = 'http://locahost:1337/api';
 
 async function testManualFetch() {
   console.log('🔧 Testing Manual Video Scheduler Fetch...\n');

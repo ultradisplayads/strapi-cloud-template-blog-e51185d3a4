@@ -2,7 +2,7 @@
 
 ## Base URL
 ```
-http://localhost:1337
+http://locahost:1337
 ```
 
 ## Video Management Endpoints

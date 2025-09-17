@@ -11,8 +11,8 @@ async function testLiveReviews() {
   console.log('🌐 Testing Live Review Fetching from Foursquare API...\n');
 
   const baseUrl = process.env.NODE_ENV === 'production' 
-    ? "https://api.pattaya1.com/api" 
-    : "https://api.pattaya1.com/api";
+    ? "http://locahost:1337/api" 
+    : "http://locahost:1337/api";
 
   try {
     // Test 1: Latest reviews endpoint (now fetches from API)

@@ -10,8 +10,8 @@ require('dotenv').config();
 // Mock the buildApiUrl function from frontend
 function buildApiUrl(endpoint) {
   const baseUrl = process.env.NODE_ENV === 'production' 
-    ? "https://api.pattaya1.com/api" 
-    : "https://api.pattaya1.com/api";
+    ? "http://locahost:1337/api" 
+    : "http://locahost:1337/api";
   
   if (!endpoint) return baseUrl;
   

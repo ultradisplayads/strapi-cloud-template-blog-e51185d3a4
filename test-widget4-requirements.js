@@ -7,7 +7,7 @@
 
 const axios = require('axios');
 
-const BASE_URL = 'http://localhost:1337';
+const BASE_URL = 'http://locahost:1337';
 const colors = {
   green: '\x1b[32m',
   red: '\x1b[31m',
@@ -151,8 +151,8 @@ class Widget4RequirementsTest {
   async checkBannedCollections() {
     try {
       const [channelsResponse, keywordsResponse] = await Promise.all([
-        axios.get(`http://localhost:1337/api/banned-channels-videos`),
-        axios.get(`http://localhost:1337/api/banned-keywords-videos`)
+        axios.get(`http://locahost:1337/api/banned-channels-videos`),
+        axios.get(`http://locahost:1337/api/banned-keywords-videos`)
       ]);
 
       const channelsCount = channelsResponse.data?.data?.length || 0;

@@ -7,7 +7,7 @@
 
 const axios = require('axios');
 
-const STRAPI_URL = process.env.STRAPI_URL || 'http://localhost:1337';
+const STRAPI_URL = process.env.STRAPI_URL || 'http://locahost:1337';
 const API_TOKEN = process.env.STRAPI_API_TOKEN || '';
 
 async function testPhotoOverlaySchema() {

@@ -176,6 +176,8 @@ async function importSeedData() {
     'banned-keywords-video': ['find', 'findOne'],
     'video-search-keywords': ['find', 'findOne'],
     'trending-tags-video': ['find', 'findOne'],
+    'currency-trending': ['find', 'findOne'],
+    'currency-favorite': ['find', 'findOne'],
   });
 
   console.log('Flight Tracker Widget permissions set up successfully');
@@ -215,19 +217,7 @@ module.exports = async ({ strapi }) => {
   
   await seedExampleApp();
   
-  // Initialize Video Scheduler for Featured Videos Widget
-  try {
-    const VideoScheduler = require('./services/video-scheduler');
-    const videoScheduler = new VideoScheduler();
-    await videoScheduler.initialize();
-    
-    // Store scheduler instance globally for access from other parts of the app
-    strapi.videoScheduler = videoScheduler;
-    
-    console.log('✅ Video Scheduler initialized successfully');
-  } catch (error) {
-    console.error('❌ Error initializing Video Scheduler:', error);
-  }
+  // Schedulers migrated to Strapi cron tasks in config/cron-tasks.js
   
   console.log('✅ Flight Tracker Widget backend initialized successfully');
 };

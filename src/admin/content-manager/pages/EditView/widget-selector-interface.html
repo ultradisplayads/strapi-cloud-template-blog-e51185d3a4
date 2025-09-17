@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Widget Selector Interface</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f6f6f9;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        .category {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .category h3 {
+            margin: 0 0 15px 0;
+            color: #34495e;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .category-checkbox {
+            margin-right: 10px;
+        }
+        .widgets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .widget-item {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #e1e1e1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .widget-item:hover {
+            background: #f8f9fa;
+        }
+        .widget-checkbox {
+            margin: 0;
+        }
+        .widget-info {
+            flex: 1;
+        }
+        .widget-name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        .widget-description {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        .controls {
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+        .output {
+            margin-top: 30px;
+            padding: 20px;
+            background: #2c3e50;
+            color: white;
+            border-radius: 8px;
+            font-family: monospace;
+            word-break: break-all;
+        }
+        .output-label {
+            color: #ecf0f1;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        .copy-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .copy-btn:hover {
+            background: #229954;
+        }
+        .selection-summary {
+            background: #e8f4f8;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+            border-left: 4px solid #3498db;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Widget Selector for Global Sponsorship</h1>
+        
+        <div class="controls">
+            <button class="btn btn-primary" onclick="selectAll()">Select All</button>
+            <button class="btn btn-primary" onclick="selectPopular()">Select Popular</button>
+            <button class="btn btn-secondary" onclick="selectNone()">Select None</button>
+        </div>
+
+        <div id="categories"></div>
+
+        <div class="selection-summary">
+            <div class="output-label">Selected Widgets JSON (Copy this to Strapi):</div>
+            <div class="output" id="output">[]</div>
+            <button class="copy-btn" onclick="copyToClipboard()">📋 Copy JSON</button>
+        </div>
+    </div>
+
+    <script>
+        const widgets = {
+            'Media': [
+                { id: 'radio', name: 'Radio Widget', description: 'Live radio streaming' },
+                { id: 'social', name: 'Social Feed Widget', description: 'Social media feeds' },
+                { id: 'youtube', name: 'YouTube Widget', description: 'YouTube video feeds' },
+                { id: 'photos', name: 'Photo Gallery Widget', description: 'Photo gallery and images' },
+                { id: 'live-events', name: 'Live Events Widget', description: 'Live event streaming' }
+            ],
+            'Information': [
+                { id: 'weather', name: 'Weather Widget', description: 'Current weather and forecasts' },
+                { id: 'news', name: 'News Widget', description: 'Latest news articles' },
+                { id: 'events', name: 'Events Widget', description: 'Upcoming events calendar' },
+                { id: 'traffic', name: 'Traffic Widget', description: 'Traffic updates and maps' },
+                { id: 'breaking-news', name: 'Breaking News Widget', description: 'Breaking news alerts' }
+            ],
+            'Commerce': [
+                { id: 'deals', name: 'Hot Deals Widget', description: 'Special offers and deals' },
+                { id: 'business', name: 'Business Spotlight', description: 'Featured business listings' },
+                { id: 'google-reviews', name: 'Google Reviews', description: 'Business reviews and ratings' },
+                { id: 'restaurant', name: 'Restaurant Widget', description: 'Restaurant listings and menus' }
+            ],
+            'Tools': [
+                { id: 'currency-converter', name: 'Currency Converter', description: 'Currency exchange rates' },
+                { id: 'flight-tracker', name: 'Flight Tracker', description: 'Flight information and tracking' }
+            ],
+            'Navigation': [
+                { id: 'quick-links', name: 'Quick Links Widget', description: 'Quick navigation links' }
+            ],
+            'Social': [
+                { id: 'trending', name: 'Trending Widget', description: 'Trending topics and content' }
+            ],
+            'Entertainment': [
+                { id: 'movie', name: 'Movie Widget', description: 'Movie showtimes and information' }
+            ],
+            'Travel': [
+                { id: 'travel', name: 'Travel Widget', description: 'Travel information and bookings' }
+            ]
+        };
+
+        const popularWidgets = ['radio', 'weather', 'news', 'events', 'deals', 'photos', 'trending'];
+        let selectedWidgets = [];
+
+        function renderCategories() {
+            const container = document.getElementById('categories');
+            container.innerHTML = '';
+
+            Object.entries(widgets).forEach(([category, categoryWidgets]) => {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'category';
+                
+                const selectedInCategory = categoryWidgets.filter(w => selectedWidgets.includes(w.id)).length;
+                const isAllSelected = selectedInCategory === categoryWidgets.length;
+                const isPartiallySelected = selectedInCategory > 0 && selectedInCategory < categoryWidgets.length;
+
+                categoryDiv.innerHTML = `
+                    <h3>
+                        <input type="checkbox" class="category-checkbox" 
+                               ${isAllSelected ? 'checked' : ''} 
+                               ${isPartiallySelected ? 'style="opacity: 0.5"' : ''}
+                               onchange="toggleCategory('${category}')">
+                        ${category} (${selectedInCategory}/${categoryWidgets.length})
+                    </h3>
+                    <div class="widgets-grid">
+                        ${categoryWidgets.map(widget => `
+                            <div class="widget-item">
+                                <input type="checkbox" class="widget-checkbox" 
+                                       ${selectedWidgets.includes(widget.id) ? 'checked' : ''}
+                                       onchange="toggleWidget('${widget.id}')">
+                                <div class="widget-info">
+                                    <div class="widget-name">${widget.name}</div>
+                                    <div class="widget-description">${widget.description}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                
+                container.appendChild(categoryDiv);
+            });
+        }
+
+        function toggleWidget(widgetId) {
+            if (selectedWidgets.includes(widgetId)) {
+                selectedWidgets = selectedWidgets.filter(id => id !== widgetId);
+            } else {
+                selectedWidgets.push(widgetId);
+            }
+            updateOutput();
+            renderCategories();
+        }
+
+        function toggleCategory(category) {
+            const categoryWidgets = widgets[category].map(w => w.id);
+            const allSelected = categoryWidgets.every(id => selectedWidgets.includes(id));
+            
+            if (allSelected) {
+                selectedWidgets = selectedWidgets.filter(id => !categoryWidgets.includes(id));
+            } else {
+                categoryWidgets.forEach(id => {
+                    if (!selectedWidgets.includes(id)) {
+                        selectedWidgets.push(id);
+                    }
+                });
+            }
+            updateOutput();
+            renderCategories();
+        }
+
+        function selectAll() {
+            selectedWidgets = Object.values(widgets).flat().map(w => w.id);
+            updateOutput();
+            renderCategories();
+        }
+
+        function selectPopular() {
+            selectedWidgets = [...popularWidgets];
+            updateOutput();
+            renderCategories();
+        }
+
+        function selectNone() {
+            selectedWidgets = [];
+            updateOutput();
+            renderCategories();
+        }
+
+        function updateOutput() {
+            document.getElementById('output').textContent = JSON.stringify(selectedWidgets);
+        }
+
+        function copyToClipboard() {
+            const output = document.getElementById('output').textContent;
+            navigator.clipboard.writeText(output).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                const originalText = btn.textContent;
+                btn.textContent = '✅ Copied!';
+                btn.style.background = '#27ae60';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '#27ae60';
+                }, 2000);
+            });
+        }
+
+        // Initialize
+        renderCategories();
+        updateOutput();
+    </script>
+</body>
+</html>

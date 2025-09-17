@@ -29,6 +29,15 @@ module.exports = {
         auth: false,
       },
     },
+    // Admin routes - must come before /photos/:id to avoid conflicts
+    {
+      method: 'GET',
+      path: '/photos/pending',
+      handler: 'photo.getPending',
+      config: {
+        auth: false, // Disable Strapi's built-in auth, rely on our Firebase middleware
+      },
+    },
     {
       method: 'GET',
       path: '/photos/:id',
@@ -37,13 +46,21 @@ module.exports = {
         auth: false,
       },
     },
-    // Public routes for photo creation
+    // Authenticated routes for photo creation
     {
       method: 'POST',
       path: '/photos',
       handler: 'photo.create',
       config: {
-        auth: false,
+        auth: false, // Disable Strapi's built-in auth, rely on our Firebase middleware
+      },
+    },
+    {
+      method: 'PUT',
+      path: '/photos/:id',
+      handler: 'photo.update',
+      config: {
+        auth: false, // Disable Strapi's built-in auth, rely on our Firebase middleware
       },
     },
     {
@@ -51,20 +68,7 @@ module.exports = {
       path: '/photos/:id/like',
       handler: 'photo.like',
       config: {
-        auth: {
-          scope: ['find']
-        },
-      },
-    },
-    // Admin routes
-    {
-      method: 'GET',
-      path: '/photos/pending',
-      handler: 'photo.getPending',
-      config: {
-        auth: {
-          scope: ['find']
-        },
+        auth: false, // Disable Strapi's built-in auth, rely on our Firebase middleware
       },
     },
     {
@@ -72,9 +76,7 @@ module.exports = {
       path: '/photos/:id/approve',
       handler: 'photo.approve',
       config: {
-        auth: {
-          scope: ['find']
-        },
+        auth: false, // Disable Strapi's built-in auth, rely on our Firebase middleware
       },
     },
     {
@@ -82,9 +84,7 @@ module.exports = {
       path: '/photos/:id/reject',
       handler: 'photo.reject',
       config: {
-        auth: {
-          scope: ['find']
-        },
+        auth: false, // Disable Strapi's built-in auth, rely on our Firebase middleware
       },
     },
     {
