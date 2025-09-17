@@ -1,0 +1,44 @@
+{
+  "kind": "collectionType",
+  "collectionName": "currency_favorites",
+  "info": {
+    "singularName": "currency-favorite",
+    "pluralName": "currency-favorites",
+    "displayName": "Currency Favorite",
+    "description": "User's favorite currencies for quick access"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "currencyFavorites"
+    },
+    "currencyCode": {
+      "type": "string",
+      "required": true
+    },
+    "currencyName": {
+      "type": "string",
+      "required": true
+    },
+    "currencySymbol": {
+      "type": "string"
+    },
+    "currencyFlag": {
+      "type": "string"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true
+    },
+    "sortOrder": {
+      "type": "integer",
+      "default": 0
+    }
+  }
+}

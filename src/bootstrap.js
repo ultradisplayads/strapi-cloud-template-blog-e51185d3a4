@@ -176,6 +176,8 @@ async function importSeedData() {
     'banned-keywords-video': ['find', 'findOne'],
     'video-search-keywords': ['find', 'findOne'],
     'trending-tags-video': ['find', 'findOne'],
+    'currency-trending': ['find', 'findOne'],
+    'currency-favorite': ['find', 'findOne'],
   });
 
   console.log('Flight Tracker Widget permissions set up successfully');
@@ -227,6 +229,20 @@ module.exports = async ({ strapi }) => {
     console.log('✅ Video Scheduler initialized successfully');
   } catch (error) {
     console.error('❌ Error initializing Video Scheduler:', error);
+  }
+
+  // Initialize Currency Scheduler for Currency Trending Data
+  try {
+    const CurrencyScheduler = require('./services/currency-scheduler');
+    const currencyScheduler = new CurrencyScheduler();
+    await currencyScheduler.initialize();
+    
+    // Store scheduler instance globally for access from other parts of the app
+    strapi.currencyScheduler = currencyScheduler;
+    
+    console.log('✅ Currency Scheduler initialized successfully');
+  } catch (error) {
+    console.error('❌ Error initializing Currency Scheduler:', error);
   }
   
   console.log('✅ Flight Tracker Widget backend initialized successfully');
