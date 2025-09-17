@@ -85,7 +85,7 @@ async function testCronExecution() {
   
   // Test API accessibility
   try {
-    const response = await axios.get('http://localhost:1337/admin/init');
+    const response = await axios.get('https://api.pattaya1.com/admin/init');
     console.log('\n✅ Strapi server is accessible and cron jobs should be running');
   } catch (error) {
     console.log('\n❌ Cannot connect to Strapi server');

@@ -12,7 +12,7 @@ async function testCronConfiguration() {
   
   try {
     // Test if Strapi is running
-    const response = await axios.get('http://localhost:1337/admin/init');
+    const response = await axios.get('https://api.pattaya1.com/admin/init');
     console.log('✅ Strapi server is running');
     
     // Test cron jobs configuration by checking the server logs
@@ -36,7 +36,7 @@ async function testCronConfiguration() {
     
     // Test breaking news service
     try {
-      const newsResponse = await axios.get('http://localhost:1337/api/breaking-news');
+      const newsResponse = await axios.get('https://api.pattaya1.com/api/breaking-news');
       console.log(`\n✅ Breaking News API accessible (${newsResponse.data.data?.length || 0} articles)`);
     } catch (error) {
       console.log('\n⚠️  Breaking News API not accessible (may need authentication)');

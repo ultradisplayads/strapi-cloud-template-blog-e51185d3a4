@@ -197,7 +197,7 @@ Run `node test-cron-configuration.js` to verify:
 ### Debug Commands
 ```bash
 # Check if Strapi is running
-curl http://localhost:1337/admin/init
+curl https://api.pattaya1.com/admin/init
 
 # Monitor logs in real-time
 tail -f logs/strapi.log
