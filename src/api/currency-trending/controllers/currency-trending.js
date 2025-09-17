@@ -35,10 +35,40 @@ module.exports = createCoreController('api::currency-trending.currency-trending'
         };
       });
 
+      // Format data to match Strapi's standard response format with attributes wrapper
+      const formattedData = enrichedCurrencies.map(currency => ({
+        id: currency.id,
+        documentId: currency.documentId,
+        attributes: {
+          currencyCode: currency.currencyCode,
+          currencyName: currency.currencyName,
+          currencySymbol: currency.currencySymbol,
+          currencyFlag: currency.currencyFlag,
+          rateToTHB: currency.rateToTHB,
+          previousRateToTHB: currency.previousRateToTHB,
+          change24h: currency.change24h,
+          changePercent24h: currency.changePercent24h,
+          trend: currency.trend,
+          rank: currency.rank,
+          volume24h: currency.volume24h,
+          marketCap: currency.marketCap,
+          lastUpdated: currency.lastUpdated,
+          dataSource: currency.dataSource,
+          isActive: currency.isActive,
+          displayRate: currency.displayRate,
+          displayChange: currency.displayChange,
+          displayChangePercent: currency.displayChangePercent
+        },
+        createdAt: currency.createdAt,
+        updatedAt: currency.updatedAt,
+        publishedAt: currency.publishedAt,
+        locale: currency.locale
+      }));
+
       return ctx.send({
-        data: enrichedCurrencies,
+        data: formattedData,
         meta: {
-          total: enrichedCurrencies.length,
+          total: formattedData.length,
           lastUpdated: currencies[0]?.lastUpdated || new Date().toISOString()
         }
       });
