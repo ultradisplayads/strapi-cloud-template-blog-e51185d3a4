@@ -95,6 +95,12 @@
       "relation": "oneToMany",
       "target": "api::booking.booking",
       "mappedBy": "user"
+    },
+    "currencyFavorites": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::currency-favorite.currency-favorite",
+      "mappedBy": "user"
     }
   }
 }
