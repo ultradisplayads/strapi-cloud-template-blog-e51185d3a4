@@ -167,8 +167,39 @@ class VideoScheduler {
         maxResults: 5, // Limit to 5 videos per keyword to manage quota
         saveToDatabase: true
       });
+      // Persist fetched videos to database (avoid duplicates)
+      let savedCount = 0;
+      for (const rawVideo of videos) {
+        try {
+          // Map transient "status" to schema field "videostatus"
+          const videoToSave = { ...rawVideo };
+          if (videoToSave.status && !videoToSave.videostatus) {
+            videoToSave.videostatus = videoToSave.status;
+            delete videoToSave.status;
+          }
 
-      this.strapi.log.info(`Automated video fetching completed: ${videos.length} videos processed`);
+          // Check existence by unique video_id
+          const existing = await this.strapi.entityService.findMany('api::video.video', {
+            filters: { video_id: videoToSave.video_id },
+            limit: 1
+          });
+
+          if (!Array.isArray(existing) || existing.length === 0) {
+            await this.strapi.entityService.create('api::video.video', {
+              data: videoToSave
+            });
+            savedCount++;
+          }
+        } catch (saveError) {
+          // Skip duplicates or other save errors, log non-unique issues
+          const message = saveError?.message || String(saveError);
+          if (!message.toLowerCase().includes('unique') && !message.toLowerCase().includes('duplicate')) {
+            this.strapi.log.error(`Error saving fetched video: ${message}`);
+          }
+        }
+      }
+
+      this.strapi.log.info(`Automated video fetching completed: ${videos.length} videos processed, ${savedCount} saved`);
       
       // Update scheduler statistics
       await this.updateSchedulerStats('video_fetch', videos.length);
@@ -219,7 +250,8 @@ class VideoScheduler {
     try {
       // Get all search keywords from trending-topic
       const keywords = await this.strapi.entityService.findMany('api::trending-topic.trending-topic', {
-        filters: { active: true }
+        filters: { IsActive: true },
+        fields: ['id', 'Title', 'hashtag']
       });
 
       let updatedCount = 0;
@@ -244,7 +276,7 @@ class VideoScheduler {
 
           updatedCount++;
         } catch (error) {
-          this.strapi.log.error(`Error updating stats for keyword ${keyword.keyword}:`, error);
+          this.strapi.log.error(`Error updating stats for keyword ${keyword.hashtag || keyword.Title || keyword.id}:`, error);
         }
       }
 
@@ -340,10 +372,8 @@ class VideoScheduler {
   async checkActiveTrendingTags() {
     try {
       const activeTags = await this.strapi.entityService.findMany('api::trending-topic.trending-topic', {
-        filters: { 
-          active: true
-        },
-        fields: ['name', 'priority']
+        filters: { IsActive: true },
+        fields: ['id', 'Title', 'hashtag', 'Rank']
       });
 
       return Array.isArray(activeTags) ? activeTags : [];
@@ -365,35 +395,48 @@ class VideoScheduler {
       for (const tag of trendingTags) {
         try {
           // Fetch more videos for trending tags (10 instead of 5)
-          const videos = await videosService.fetchVideosByKeyword(tag.name, {
+          const keyword = tag.hashtag || tag.Title || '';
+          if (!keyword) {
+            continue;
+          }
+          const videos = await videosService.fetchVideosByKeyword(keyword, {
             maxResults: 10,
             relevanceLanguage: 'en',
             regionCode: 'TH'
           });
 
-          // Save videos to database with trending priority
+          // Save videos to database with trending priority (skip duplicates)
           for (const video of videos) {
             try {
-              await this.strapi.entityService.create('api::video.video', {
-                data: {
-                  ...video,
-                  priority: tag.priority || 5, // Higher priority for trending
-                  featured: true, // Mark as featured for trending content
-                  publishedAt: new Date().toISOString()
-                }
+              // Check duplicate by unique video_id
+              const existing = await this.strapi.entityService.findMany('api::video.video', {
+                filters: { video_id: video.video_id },
+                limit: 1
               });
-              totalVideos++;
+
+              if (!Array.isArray(existing) || existing.length === 0) {
+                await this.strapi.entityService.create('api::video.video', {
+                  data: {
+                    ...video,
+                    priority: tag.Rank || 5, // Use Rank field if available
+                    featured: true, // Mark as featured for trending content
+                    publishedAt: new Date().toISOString()
+                  }
+                });
+                totalVideos++;
+              }
             } catch (saveError) {
               // Skip duplicates or other save errors
-              if (!saveError.message.includes('duplicate')) {
-                this.strapi.log.error(`Error saving trending video: ${saveError.message}`);
+              const message = saveError?.message || String(saveError);
+              if (!message.toLowerCase().includes('unique') && !message.toLowerCase().includes('duplicate')) {
+                this.strapi.log.error(`Error saving trending video: ${message}`);
               }
             }
           }
 
-          this.strapi.log.info(`Trending fetch completed for tag "${tag.name}": ${videos.length} videos`);
+          this.strapi.log.info(`Trending fetch completed for tag "${keyword}": ${videos.length} videos`);
         } catch (error) {
-          this.strapi.log.error(`Error fetching trending videos for tag "${tag.name}":`, error);
+          this.strapi.log.error(`Error fetching trending videos for tag "${tag.hashtag || tag.Title}":`, error);
         }
       }
 

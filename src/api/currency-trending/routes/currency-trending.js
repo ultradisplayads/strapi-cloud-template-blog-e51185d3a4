@@ -35,3 +35,4 @@ module.exports = createCoreRouter('api::currency-trending.currency-trending', {
     },
   },
 });
+

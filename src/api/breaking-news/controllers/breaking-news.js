@@ -559,6 +559,25 @@ module.exports = createCoreController('api::breaking-news.breaking-news', ({ str
       strapi.log.error('Cleanup error:', error);
       ctx.throw(500, error.message);
     }
+  },
+
+  // Test endpoint to manually trigger news fetch
+  async testFetch(ctx) {
+    try {
+      const result = await strapi.service('api::breaking-news.breaking-news').fetchAndProcessNews();
+      
+      ctx.body = {
+        success: true,
+        message: 'News fetch test completed',
+        result
+      };
+    } catch (error) {
+      ctx.status = 500;
+      ctx.body = {
+        success: false,
+        error: error.message
+      };
+    }
   }
 
 }));

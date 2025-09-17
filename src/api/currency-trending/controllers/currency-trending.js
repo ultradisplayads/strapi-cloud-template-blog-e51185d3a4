@@ -142,3 +142,4 @@ module.exports = createCoreController('api::currency-trending.currency-trending'
     }
   }
 }));
+
