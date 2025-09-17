@@ -217,33 +217,7 @@ module.exports = async ({ strapi }) => {
   
   await seedExampleApp();
   
-  // Initialize Video Scheduler for Featured Videos Widget
-  try {
-    const VideoScheduler = require('./services/video-scheduler');
-    const videoScheduler = new VideoScheduler();
-    await videoScheduler.initialize();
-    
-    // Store scheduler instance globally for access from other parts of the app
-    strapi.videoScheduler = videoScheduler;
-    
-    console.log('✅ Video Scheduler initialized successfully');
-  } catch (error) {
-    console.error('❌ Error initializing Video Scheduler:', error);
-  }
-
-  // Initialize Currency Scheduler for Currency Trending Data
-  try {
-    const CurrencyScheduler = require('./services/currency-scheduler');
-    const currencyScheduler = new CurrencyScheduler();
-    await currencyScheduler.initialize();
-    
-    // Store scheduler instance globally for access from other parts of the app
-    strapi.currencyScheduler = currencyScheduler;
-    
-    console.log('✅ Currency Scheduler initialized successfully');
-  } catch (error) {
-    console.error('❌ Error initializing Currency Scheduler:', error);
-  }
+  // Schedulers migrated to Strapi cron tasks in config/cron-tasks.js
   
   console.log('✅ Flight Tracker Widget backend initialized successfully');
 };
