@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_BASE_URL="http://locahost:1337"
+API_BASE_URL="https://api.pattaya1.com"
 
 echo "🔧 Fixing news source URLs to use RSS feeds..."
 

@@ -4,7 +4,7 @@ const axios = require('axios');
 class FlightDataScheduler {
   constructor() {
     this.aviationService = new AviationStackService();
-    this.strapiUrl = process.env.STRAPI_URL || 'http://locahost:1337';
+    this.strapiUrl = process.env.STRAPI_URL || 'https://api.pattaya1.com';
     this.updateInterval = 5 * 60 * 1000; // 5 minutes
     this.airports = ['BKK', 'DMK', 'UTP'];
     this.isRunning = false;
