@@ -42,3 +42,4 @@ module.exports = createCoreRouter('api::currency-favorite.currency-favorite', {
   },
 });
 
+

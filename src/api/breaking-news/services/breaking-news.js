@@ -63,7 +63,13 @@ module.exports = createCoreService('api::breaking-news.breaking-news', ({ strapi
       );
 
       if (response.data.status === 'ok') {
-        return response.data.articles;
+        // Process News API articles to include image data
+        return response.data.articles.map(article => ({
+          ...article,
+          featuredImage: article.urlToImage || null,
+          imageAlt: article.title || '',
+          imageCaption: ''
+        }));
       }
 
       throw new Error(`News API error: ${response.data.message}`);
@@ -79,17 +85,75 @@ module.exports = createCoreService('api::breaking-news.breaking-news', ({ strapi
   async fetchFromRSS(rssUrl, sourceName) {
     try {
       if (!rssUrl) return [];
-      const parser = new Parser();
+      
+      // Enhanced parser with custom fields for image extraction
+      const parser = new Parser({
+        customFields: {
+          item: [
+            ['media:content', 'mediaContent'],
+            ['media:thumbnail', 'mediaThumbnail'],
+            ['enclosure', 'enclosure'],
+            ['description', 'fullDescription']
+          ]
+        }
+      });
+      
       const feed = await parser.parseURL(rssUrl);
       if (!feed || !Array.isArray(feed.items)) return [];
 
-      return feed.items.map(item => ({
-        title: item.title || item.contentSnippet || 'No Title',
-        description: item.contentSnippet || item.content || '',
-        url: item.link,
-        publishedAt: item.isoDate || item.pubDate || new Date().toISOString(),
-        source: { name: sourceName || feed.title || 'RSS' }
-      }));
+      return feed.items.map(item => {
+        // Extract featured image with multiple methods
+        let featuredImage = null;
+        let imageAlt = '';
+        let imageCaption = '';
+        
+        // Method 1: Check media fields
+        if (item.mediaContent && item.mediaContent.url) {
+          featuredImage = item.mediaContent.url;
+        } else if (item.mediaThumbnail && item.mediaThumbnail.url) {
+          featuredImage = item.mediaThumbnail.url;
+        } else if (item.enclosure && item.enclosure.url && item.enclosure.type && item.enclosure.type.startsWith('image/')) {
+          featuredImage = item.enclosure.url;
+        }
+        
+        // Method 2: Extract from content
+        if (!featuredImage) {
+          const contentToSearch = item.content || item.description || item.fullDescription || '';
+          const imgRegex = /<img[^>]+src="([^">]+)"/i;
+          const match = imgRegex.exec(contentToSearch);
+          if (match) {
+            featuredImage = match[1];
+            
+            // Extract alt text
+            const altRegex = /<img[^>]+alt="([^">]*)"/i;
+            const altMatch = altRegex.exec(contentToSearch);
+            if (altMatch) {
+              imageAlt = altMatch[1];
+            }
+          }
+        }
+        
+        // Ensure full URL for relative paths
+        if (featuredImage && !featuredImage.startsWith('http')) {
+          try {
+            const sourceUrl = new URL(rssUrl);
+            featuredImage = `${sourceUrl.protocol}//${sourceUrl.hostname}${featuredImage.startsWith('/') ? '' : '/'}${featuredImage}`;
+          } catch (urlError) {
+            strapi.log.warn(`Failed to resolve relative image URL: ${featuredImage}`);
+          }
+        }
+        
+        return {
+          title: item.title || item.contentSnippet || 'No Title',
+          description: item.contentSnippet || item.content || '',
+          url: item.link,
+          publishedAt: item.isoDate || item.pubDate || new Date().toISOString(),
+          source: { name: sourceName || feed.title || 'RSS' },
+          featuredImage: featuredImage,
+          imageAlt: imageAlt,
+          imageCaption: imageCaption
+        };
+      });
     } catch (error) {
       strapi.log.error(`Failed to fetch RSS from ${sourceName || rssUrl}:`, error.message);
       return [];
@@ -111,6 +175,7 @@ module.exports = createCoreService('api::breaking-news.breaking-news', ({ strapi
     const allArticles = [];
     const list = Array.isArray(sources) ? sources : [];
     for (const src of list) {
+      // @ts-ignore
       const items = await this.fetchFromRSS(src.rssUrl, src.name);
       allArticles.push(...items);
 
@@ -121,6 +186,7 @@ module.exports = createCoreService('api::breaking-news.breaking-news', ({ strapi
           data: {
             lastFetchedAt: new Date(),
             lastFetchStatus: items.length > 0 ? 'success' : 'pending',
+            // @ts-ignore
             totalArticlesFetched: (src.totalArticlesFetched || 0) + (items.length || 0)
           }
         });
@@ -142,8 +208,8 @@ module.exports = createCoreService('api::breaking-news.breaking-news', ({ strapi
     const content = `${title} ${summary}`.toLowerCase();
     const keywords = settings.moderationKeywords || [];
     
-    for (const keyword of keywords) {
-      if (content.includes(keyword.toLowerCase())) {
+    for (const keyword of (Array.isArray(keywords) ? keywords : [])) {
+      if (typeof keyword === 'string' && content.includes(keyword.toLowerCase())) {
         return 'needs_review';
       }
     }
@@ -187,7 +253,11 @@ module.exports = createCoreService('api::breaking-news.breaking-news', ({ strapi
           fetchedFromAPI: true,
           apiSource: 'NewsAPI',
           originalAPIData: article,
-          publishedAt: moderationStatus === 'approved' ? new Date() : null
+          publishedAt: moderationStatus === 'approved' ? new Date() : null,
+          // Store image data
+          FeaturedImage: article.featuredImage || null,
+          ImageAlt: article.imageAlt || '',
+          ImageCaption: article.imageCaption || ''
         }
       });
 
@@ -215,12 +285,15 @@ module.exports = createCoreService('api::breaking-news.breaking-news', ({ strapi
         articles = await this.fetchFromNewsAPI(params);
       }
       
-      for (const article of articles) {
+      for (const article of (articles || [])) {
         const processed = await this.processArticle({
           title: article.title,
           description: article.description,
           url: article.url,
-          publishedAt: article.publishedAt
+          publishedAt: article.publishedAt,
+          featuredImage: article.featuredImage,
+          imageAlt: article.imageAlt,
+          imageCaption: article.imageCaption
         }, article.source?.name || 'RSS');
         if (processed) {
           totalProcessed++;
