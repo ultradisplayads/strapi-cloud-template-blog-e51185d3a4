@@ -101,7 +101,7 @@ async function uploadFile(file, name) {
 async function createEntry({ model, entry }) {
   try {
     // Actually create the entry in Strapi
-    await strapi.documents(`api::${model}.${model}`).create({
+    await strapi.documents(/** @type {any} */ (`api::${model}.${model}`)).create({
       data: entry,
     });
   } catch (error) {
@@ -178,6 +178,7 @@ async function importSeedData() {
     'trending-tags-video': ['find', 'findOne'],
     'currency-trending': ['find', 'findOne'],
     'currency-favorite': ['find', 'findOne'],
+    'search-analytics': ['find', 'findOne'],
   });
 
   console.log('Flight Tracker Widget permissions set up successfully');
@@ -216,6 +217,19 @@ module.exports = async ({ strapi }) => {
   }
   
   await seedExampleApp();
+  
+  // Initialize trending calculator service with error handling and delay
+  setTimeout(async () => {
+    try {
+      const TrendingCalculator = require('./services/trending-calculator');
+      strapi.trendingCalculator = new TrendingCalculator(strapi);
+      strapi.trendingCalculator.start();
+      console.log('📈 Trending Calculator service initialized');
+    } catch (error) {
+      console.error('❌ Failed to initialize Trending Calculator service:', error.message);
+      console.log('⚠️ Trending system will not be available');
+    }
+  }, 5000); // 5 second delay to ensure Strapi is fully initialized
   
   // Schedulers migrated to Strapi cron tasks in config/cron-tasks.js
   
