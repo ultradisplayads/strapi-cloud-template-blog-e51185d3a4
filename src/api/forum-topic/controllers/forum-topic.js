@@ -34,6 +34,29 @@ module.exports = createCoreController('api::forum-topic.forum-topic', ({ strapi 
         return ctx.badRequest('Title, content, and category are required');
       }
       
+      // Resolve category by name/slug if it's not already an ID
+      let categoryId = category;
+      if (typeof category === 'string') {
+        strapi.log.info('🔥 Resolving category by name/slug:', category);
+        // @ts-ignore
+        const categoryRecord = await strapi.entityService.findMany('api::forum-category.forum-category', {
+          filters: {
+            $or: [
+              { name: category },
+              { slug: category }
+            ]
+          }
+        });
+        
+        if (!categoryRecord || !Array.isArray(categoryRecord) || categoryRecord.length === 0) {
+          strapi.log.warn('🔥 Category not found:', category);
+          return ctx.badRequest(`Category '${category}' not found`);
+        }
+        
+        categoryId = categoryRecord[0].id;
+        strapi.log.info('🔥 Resolved category ID:', categoryId);
+      }
+      
       // Generate slug from title
       const slug = title.toLowerCase()
         .replace(/[^a-z0-9\s-]/g, '')
@@ -46,7 +69,7 @@ module.exports = createCoreController('api::forum-topic.forum-topic', ({ strapi 
         data: {
           title,
           content,
-          category,
+          category: categoryId,
           excerpt: excerpt || content.substring(0, 200),
           slug,
           author: user.id,

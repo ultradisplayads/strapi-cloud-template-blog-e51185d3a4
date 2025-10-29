@@ -1,7 +1,7 @@
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
 async function testPinnedNewsSystem() {
-  const baseUrl = 'http://locahost:1337/api/breaking-news';
+  const baseUrl = 'https://api.pattaya1.com/api/breaking-news';
   
   console.log('🧪 Testing Pinned News System...\n');
 

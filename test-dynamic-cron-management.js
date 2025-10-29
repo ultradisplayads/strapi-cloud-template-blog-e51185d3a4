@@ -12,7 +12,7 @@ async function testDynamicCronManagement() {
   
   try {
     // Test if Strapi is running
-    await axios.get('http://localhost:1337/admin/init');
+    await axios.get('https://api.pattaya1.com/admin/init');
     console.log('✅ Strapi server is accessible');
     
     console.log('\n📋 Available Dynamic Cron Features in Strapi 5:');

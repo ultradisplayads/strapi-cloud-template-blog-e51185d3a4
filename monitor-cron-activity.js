@@ -18,11 +18,11 @@ class CronMonitor {
   async getCurrentCounts() {
     try {
       // Get breaking news count
-      const newsResponse = await axios.get('http://localhost:1337/api/breaking-news-plural');
+      const newsResponse = await axios.get('https://api.pattaya1.com/api/breaking-news-plural');
       const newsCount = newsResponse.data?.data?.length || 0;
 
       // Get videos count
-      const videoResponse = await axios.get('http://localhost:1337/api/videos');
+      const videoResponse = await axios.get('https://api.pattaya1.com/api/videos');
       const videoCount = videoResponse.data?.data?.length || 0;
 
       return { newsCount, videoCount };

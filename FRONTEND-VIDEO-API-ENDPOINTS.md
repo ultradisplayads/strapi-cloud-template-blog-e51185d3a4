@@ -2,7 +2,7 @@
 
 ## Base URL
 ```
-http://locahost:1337
+https://api.pattaya1.com
 ```
 
 ## Video Management Endpoints

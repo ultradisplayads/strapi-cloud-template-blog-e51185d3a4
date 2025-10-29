@@ -2,7 +2,7 @@
 
 ## Base URL
 ```
-http://locahost:1337/api
+https://api.pattaya1.com/api
 ```
 
 ## Authentication
@@ -26,7 +26,7 @@ GET /flight-trackers
 
 **Example:**
 ```javascript
-fetch('http://locahost:1337/api/flight-trackers?filters[Airport][$eq]=BKK&sort=ScheduledTime:asc')
+fetch('https://api.pattaya1.com/api/flight-trackers?filters[Airport][$eq]=BKK&sort=ScheduledTime:asc')
 ```
 
 ### Get Single Flight Record
@@ -69,7 +69,7 @@ GET /flight-tracker/live/{airport}
 **Example:**
 ```javascript
 // Get live BKK arrivals
-fetch('http://locahost:1337/api/flight-tracker/live/BKK?type=arrivals&limit=10')
+fetch('https://api.pattaya1.com/api/flight-tracker/live/BKK?type=arrivals&limit=10')
 
 // Response:
 {
@@ -102,7 +102,7 @@ GET /flight-tracker/{airport}/arrivals
 ```
 **Example:**
 ```javascript
-fetch('http://locahost:1337/api/flight-tracker/BKK/arrivals?limit=15')
+fetch('https://api.pattaya1.com/api/flight-tracker/BKK/arrivals?limit=15')
 ```
 
 ### Get Airport Departures
@@ -111,7 +111,7 @@ GET /flight-tracker/{airport}/departures
 ```
 **Example:**
 ```javascript
-fetch('http://locahost:1337/api/flight-tracker/DMK/departures?limit=15')
+fetch('https://api.pattaya1.com/api/flight-tracker/DMK/departures?limit=15')
 ```
 
 ### Get All Airports Data
@@ -120,7 +120,7 @@ GET /flight-tracker/airports/all
 ```
 **Example:**
 ```javascript
-fetch('http://locahost:1337/api/flight-tracker/airports/all?limit=30')
+fetch('https://api.pattaya1.com/api/flight-tracker/airports/all?limit=30')
 
 // Response:
 {
@@ -157,7 +157,7 @@ GET /flight-tracker/cached/{airport}
 **Example:**
 ```javascript
 // Get cached BKK flights from database
-fetch('http://locahost:1337/api/flight-tracker/cached/BKK?type=both&limit=20')
+fetch('https://api.pattaya1.com/api/flight-tracker/cached/BKK?type=both&limit=20')
 ```
 
 ---
@@ -171,7 +171,7 @@ POST /flight-tracker/sync/{airport}
 **Example:**
 ```javascript
 // Sync live BKK data to database
-fetch('http://locahost:1337/api/flight-tracker/sync/BKK', {
+fetch('https://api.pattaya1.com/api/flight-tracker/sync/BKK', {
   method: 'POST'
 })
 
@@ -198,7 +198,7 @@ GET /flight-tracker/status
 ```
 **Example:**
 ```javascript
-fetch('http://locahost:1337/api/flight-tracker/status')
+fetch('https://api.pattaya1.com/api/flight-tracker/status')
 
 // Response:
 {
@@ -256,7 +256,7 @@ export const useFlightTracker = (airport, type = 'both') => {
       try {
         setLoading(true);
         const response = await fetch(
-          `http://locahost:1337/api/flight-tracker/live/${airport}?type=${type}&limit=20`
+          `https://api.pattaya1.com/api/flight-tracker/live/${airport}?type=${type}&limit=20`
         );
         const data = await response.json();
         setFlights(data.data);
@@ -305,7 +305,7 @@ export const FlightBoard = ({ airport }) => {
 ```javascript
 // flight-tracker.js
 class FlightTracker {
-  constructor(baseUrl = 'http://locahost:1337/api') {
+  constructor(baseUrl = 'https://api.pattaya1.com/api') {
     this.baseUrl = baseUrl;
   }
 

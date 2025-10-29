@@ -110,13 +110,13 @@ This will test:
 
 ```bash
 # Test the unified reviews endpoint
-curl "http://locahost:1337/api/reviews/latest?limit=5"
+curl "https://api.pattaya1.com/api/reviews/latest?limit=5"
 
 # Test review statistics
-curl "http://locahost:1337/api/reviews/stats"
+curl "https://api.pattaya1.com/api/reviews/stats"
 
 # Test with platform filter
-curl "http://locahost:1337/api/reviews/latest?platform=Foursquare&limit=10"
+curl "https://api.pattaya1.com/api/reviews/latest?platform=Foursquare&limit=10"
 ```
 
 ## 🚀 Production Deployment

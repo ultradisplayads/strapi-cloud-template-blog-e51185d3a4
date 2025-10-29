@@ -1,0 +1,99 @@
+{
+  "kind": "collectionType",
+  "collectionName": "search_analytics",
+  "info": {
+    "singularName": "search-analytics",
+    "pluralName": "search-analytics-list",
+    "displayName": "Search Analytics",
+    "description": "Tracks user search queries for trending analysis"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "query": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "searchCount": {
+      "type": "integer",
+      "default": 0
+    },
+    "lastSearched": {
+      "type": "datetime"
+    },
+    "firstSearched": {
+      "type": "datetime"
+    },
+    "category": {
+      "type": "enumeration",
+      "enum": [
+        "General",
+        "News",
+        "Events",
+        "Business",
+        "Tourism",
+        "Food",
+        "Nightlife",
+        "Entertainment",
+        "Shopping"
+      ],
+      "default": "General"
+    },
+    "trendingScore": {
+      "type": "decimal",
+      "default": 0
+    },
+    "uniqueUsers": {
+      "type": "integer",
+      "default": 0
+    },
+    "timeWindow": {
+      "type": "json",
+      "default": {
+        "24h": 0,
+        "7d": 0,
+        "30d": 0
+      },
+      "description": "Search counts within different time windows"
+    },
+    "growthRate": {
+      "type": "decimal",
+      "default": 0,
+      "description": "Growth rate of searches over time"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true
+    },
+    "isTrending": {
+      "type": "boolean",
+      "default": false
+    },
+    "trendingRank": {
+      "type": "integer",
+      "default": 0
+    },
+    "searchSources": {
+      "type": "json",
+      "default": {},
+      "description": "Counts of searches from different frontend components/sources"
+    },
+    "userAgents": {
+      "type": "json",
+      "default": [],
+      "description": "List of user agents (last 10) for analysis"
+    },
+    "sessionData": {
+      "type": "json",
+      "default": [],
+      "description": "List of session IDs (last 100) for unique user tracking"
+    },
+    "lastCalculated": {
+      "type": "datetime",
+      "description": "Timestamp of last trending score calculation"
+    }
+  }
+}

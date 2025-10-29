@@ -8,7 +8,7 @@
 
 const axios = require('axios');
 
-const BASE_URL = 'http://locahost:1337';
+const BASE_URL = 'https://api.pattaya1.com';
 const VALID_STATUSES = ['pending', 'active', 'rejected', 'archived'];
 
 async function batchUpdateStatus(status, videoIds, reason = null) {

@@ -87,6 +87,15 @@ module.exports = {
         auth: false,
         middlewares: [],
       }
+    },
+    {
+      method: 'POST',
+      path: '/breaking-news/test-fetch',
+      handler: 'breaking-news.testFetch',
+      config: {
+        auth: false,
+        middlewares: [],
+      }
     }
   ]
 };

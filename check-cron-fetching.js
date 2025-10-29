@@ -12,7 +12,7 @@ async function checkCronFetching() {
   
   try {
     // Check if Strapi is running
-    await axios.get('http://localhost:1337/admin/init');
+    await axios.get('https://api.pattaya1.com/admin/init');
     console.log('✅ Strapi server is running');
     
     const currentTime = new Date();
@@ -21,7 +21,7 @@ async function checkCronFetching() {
     // Test breaking news API
     console.log('\n📰 Testing Breaking News Fetching:');
     try {
-      const newsResponse = await axios.get('http://localhost:1337/api/breaking-news');
+      const newsResponse = await axios.get('https://api.pattaya1.com/api/breaking-news');
       if (newsResponse.data && newsResponse.data.data) {
         const articles = newsResponse.data.data;
         console.log(`✅ Found ${articles.length} breaking news articles`);
@@ -49,7 +49,7 @@ async function checkCronFetching() {
     // Test videos API
     console.log('\n🎬 Testing Video Fetching:');
     try {
-      const videoResponse = await axios.get('http://localhost:1337/api/videos');
+      const videoResponse = await axios.get('https://api.pattaya1.com/api/videos');
       if (videoResponse.data && videoResponse.data.data) {
         const videos = videoResponse.data.data;
         console.log(`✅ Found ${videos.length} videos`);
@@ -116,7 +116,7 @@ async function checkCronFetching() {
     
     // Test if breaking news service exists
     try {
-      const testNews = await axios.post('http://localhost:1337/api/breaking-news/test-fetch', {});
+      const testNews = await axios.post('https://api.pattaya1.com/api/breaking-news/test-fetch', {});
       console.log('✅ Breaking news service accessible');
     } catch (error) {
       if (error.response?.status === 404) {

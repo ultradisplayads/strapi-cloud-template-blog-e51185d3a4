@@ -4,7 +4,8 @@ const axios = require('axios');
 
 class YouTubeAPIService {
   constructor() {
-    this.apiKey = process.env.YOUTUBE_API_KEY;
+    // Hardcoded YouTube API key for production deployment
+    this.apiKey = process.env.YOUTUBE_API_KEY || 'AIzaSyCN2PoClgXJ0S2E6ixwcKUQiUYjekzl5G8';
     this.baseURL = 'https://www.googleapis.com/youtube/v3';
     this.maxRetries = 3;
     this.retryDelay = 1000; // 1 second base delay

@@ -547,6 +547,7 @@ function generateTrendingCurrencies(rates) {
       symbol: currency ? currency.symbol : code,
       rate,
       change24h,
+      changePercent24h: change24h, // Add the field the frontend expects
       trend: change24h > 0 ? 'up' : change24h < 0 ? 'down' : 'stable',
       volume: Math.random() * 1000000,
       rank: index + 1

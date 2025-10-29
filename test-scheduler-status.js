@@ -13,12 +13,12 @@ async function testSchedulerStatus() {
   try {
     // Test 1: Check if Strapi is running
     console.log('🔄 Testing Strapi server connection...');
-    const healthCheck = await axios.get('http://locahost:1337/api/videos');
+    const healthCheck = await axios.get('https://api.pattaya1.com/api/videos');
     console.log('✅ Strapi server is running\n');
     
     // Test 2: Check trending topics (used by scheduler)
     console.log('🔄 Checking trending topics for scheduler...');
-    const topicsResponse = await axios.get('http://locahost:1337/api/trending-topics');
+    const topicsResponse = await axios.get('https://api.pattaya1.com/api/trending-topics');
     const topics = topicsResponse.data.data;
     console.log(`✅ Found ${topics.length} trending topics:`);
     topics.forEach(topic => {
@@ -28,7 +28,7 @@ async function testSchedulerStatus() {
     
     // Test 3: Check video content type
     console.log('🔄 Checking video storage...');
-    const videosResponse = await axios.get('http://locahost:1337/api/videos');
+    const videosResponse = await axios.get('https://api.pattaya1.com/api/videos');
     console.log(`✅ Video storage accessible (${videosResponse.data.meta.pagination.total} videos)\n`);
     
     // Test 4: Scheduler functionality indicators
